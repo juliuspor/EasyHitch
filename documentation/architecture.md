@@ -90,7 +90,8 @@ in a web view (`code/ios/BikeSlot/Spot`): it builds each rack from the slot
 positions in the station detail, stands in front of one rack at a time, and
 shows a bike on every taken slot. It ships sample stations in
 `code/ios/BikeSlot/Demo/demo-stations.json`, a snapshot of the live pipeline
-taken with `code/ios/refresh-demo.sh`, and in demo mode a random slot changes
+taken with `code/ios/refresh-demo.sh` (a station no camera covers gets fixed
+sample states there), and in demo mode a random slot changes
 every four seconds, so the interface can be shown and developed without a
 backend. Turn it on with the **Demo data** switch in
 the app's settings, or launch with `-demoMode YES` (in Xcode, as an argument

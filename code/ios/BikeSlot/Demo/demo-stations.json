@@ -1,5 +1,453 @@
 [
   {
+    "id": "cmr-garage-03",
+    "name": "Christoph-Merian-Ring Bike Garage",
+    "location": {
+      "lat": 47.4886012,
+      "lon": 7.5983994
+    },
+    "capacity": 48,
+    "free": 16,
+    "taken": 32,
+    "unknown": 0,
+    "updated_at": null,
+    "model_url": null,
+    "slots": [
+      {
+        "number": 1,
+        "state": "taken",
+        "location": {
+          "lat": 47.488617,
+          "lon": 7.5984396
+        },
+        "changed_at": null
+      },
+      {
+        "number": 2,
+        "state": "taken",
+        "location": {
+          "lat": 47.488617,
+          "lon": 7.5984323
+        },
+        "changed_at": null
+      },
+      {
+        "number": 3,
+        "state": "taken",
+        "location": {
+          "lat": 47.488617,
+          "lon": 7.598425
+        },
+        "changed_at": null
+      },
+      {
+        "number": 4,
+        "state": "taken",
+        "location": {
+          "lat": 47.488617,
+          "lon": 7.5984176
+        },
+        "changed_at": null
+      },
+      {
+        "number": 5,
+        "state": "taken",
+        "location": {
+          "lat": 47.488617,
+          "lon": 7.5984103
+        },
+        "changed_at": null
+      },
+      {
+        "number": 6,
+        "state": "free",
+        "location": {
+          "lat": 47.488617,
+          "lon": 7.598403
+        },
+        "changed_at": null
+      },
+      {
+        "number": 7,
+        "state": "free",
+        "location": {
+          "lat": 47.488617,
+          "lon": 7.5983957
+        },
+        "changed_at": null
+      },
+      {
+        "number": 8,
+        "state": "taken",
+        "location": {
+          "lat": 47.488617,
+          "lon": 7.5983884
+        },
+        "changed_at": null
+      },
+      {
+        "number": 9,
+        "state": "taken",
+        "location": {
+          "lat": 47.488617,
+          "lon": 7.5983811
+        },
+        "changed_at": null
+      },
+      {
+        "number": 10,
+        "state": "taken",
+        "location": {
+          "lat": 47.488617,
+          "lon": 7.5983738
+        },
+        "changed_at": null
+      },
+      {
+        "number": 11,
+        "state": "free",
+        "location": {
+          "lat": 47.488617,
+          "lon": 7.5983665
+        },
+        "changed_at": null
+      },
+      {
+        "number": 12,
+        "state": "taken",
+        "location": {
+          "lat": 47.488617,
+          "lon": 7.5983592
+        },
+        "changed_at": null
+      },
+      {
+        "number": 13,
+        "state": "free",
+        "location": {
+          "lat": 47.4886116,
+          "lon": 7.5983592
+        },
+        "changed_at": null
+      },
+      {
+        "number": 14,
+        "state": "taken",
+        "location": {
+          "lat": 47.4886116,
+          "lon": 7.5983665
+        },
+        "changed_at": null
+      },
+      {
+        "number": 15,
+        "state": "free",
+        "location": {
+          "lat": 47.4886116,
+          "lon": 7.5983738
+        },
+        "changed_at": null
+      },
+      {
+        "number": 16,
+        "state": "free",
+        "location": {
+          "lat": 47.4886116,
+          "lon": 7.5983811
+        },
+        "changed_at": null
+      },
+      {
+        "number": 17,
+        "state": "free",
+        "location": {
+          "lat": 47.4886116,
+          "lon": 7.5983884
+        },
+        "changed_at": null
+      },
+      {
+        "number": 18,
+        "state": "taken",
+        "location": {
+          "lat": 47.4886116,
+          "lon": 7.5983957
+        },
+        "changed_at": null
+      },
+      {
+        "number": 19,
+        "state": "free",
+        "location": {
+          "lat": 47.4886116,
+          "lon": 7.598403
+        },
+        "changed_at": null
+      },
+      {
+        "number": 20,
+        "state": "taken",
+        "location": {
+          "lat": 47.4886116,
+          "lon": 7.5984103
+        },
+        "changed_at": null
+      },
+      {
+        "number": 21,
+        "state": "taken",
+        "location": {
+          "lat": 47.4886116,
+          "lon": 7.5984176
+        },
+        "changed_at": null
+      },
+      {
+        "number": 22,
+        "state": "free",
+        "location": {
+          "lat": 47.4886116,
+          "lon": 7.598425
+        },
+        "changed_at": null
+      },
+      {
+        "number": 23,
+        "state": "taken",
+        "location": {
+          "lat": 47.4886116,
+          "lon": 7.5984323
+        },
+        "changed_at": null
+      },
+      {
+        "number": 24,
+        "state": "taken",
+        "location": {
+          "lat": 47.4886116,
+          "lon": 7.5984396
+        },
+        "changed_at": null
+      },
+      {
+        "number": 25,
+        "state": "free",
+        "location": {
+          "lat": 47.4885909,
+          "lon": 7.5984396
+        },
+        "changed_at": null
+      },
+      {
+        "number": 26,
+        "state": "taken",
+        "location": {
+          "lat": 47.4885909,
+          "lon": 7.5984323
+        },
+        "changed_at": null
+      },
+      {
+        "number": 27,
+        "state": "free",
+        "location": {
+          "lat": 47.4885909,
+          "lon": 7.598425
+        },
+        "changed_at": null
+      },
+      {
+        "number": 28,
+        "state": "free",
+        "location": {
+          "lat": 47.4885909,
+          "lon": 7.5984176
+        },
+        "changed_at": null
+      },
+      {
+        "number": 29,
+        "state": "taken",
+        "location": {
+          "lat": 47.4885909,
+          "lon": 7.5984103
+        },
+        "changed_at": null
+      },
+      {
+        "number": 30,
+        "state": "taken",
+        "location": {
+          "lat": 47.4885909,
+          "lon": 7.598403
+        },
+        "changed_at": null
+      },
+      {
+        "number": 31,
+        "state": "taken",
+        "location": {
+          "lat": 47.4885909,
+          "lon": 7.5983957
+        },
+        "changed_at": null
+      },
+      {
+        "number": 32,
+        "state": "free",
+        "location": {
+          "lat": 47.4885909,
+          "lon": 7.5983884
+        },
+        "changed_at": null
+      },
+      {
+        "number": 33,
+        "state": "free",
+        "location": {
+          "lat": 47.4885909,
+          "lon": 7.5983811
+        },
+        "changed_at": null
+      },
+      {
+        "number": 34,
+        "state": "taken",
+        "location": {
+          "lat": 47.4885909,
+          "lon": 7.5983738
+        },
+        "changed_at": null
+      },
+      {
+        "number": 35,
+        "state": "taken",
+        "location": {
+          "lat": 47.4885909,
+          "lon": 7.5983665
+        },
+        "changed_at": null
+      },
+      {
+        "number": 36,
+        "state": "taken",
+        "location": {
+          "lat": 47.4885909,
+          "lon": 7.5983592
+        },
+        "changed_at": null
+      },
+      {
+        "number": 37,
+        "state": "free",
+        "location": {
+          "lat": 47.4885855,
+          "lon": 7.5983592
+        },
+        "changed_at": null
+      },
+      {
+        "number": 38,
+        "state": "taken",
+        "location": {
+          "lat": 47.4885855,
+          "lon": 7.5983665
+        },
+        "changed_at": null
+      },
+      {
+        "number": 39,
+        "state": "taken",
+        "location": {
+          "lat": 47.4885855,
+          "lon": 7.5983738
+        },
+        "changed_at": null
+      },
+      {
+        "number": 40,
+        "state": "taken",
+        "location": {
+          "lat": 47.4885855,
+          "lon": 7.5983811
+        },
+        "changed_at": null
+      },
+      {
+        "number": 41,
+        "state": "taken",
+        "location": {
+          "lat": 47.4885855,
+          "lon": 7.5983884
+        },
+        "changed_at": null
+      },
+      {
+        "number": 42,
+        "state": "taken",
+        "location": {
+          "lat": 47.4885855,
+          "lon": 7.5983957
+        },
+        "changed_at": null
+      },
+      {
+        "number": 43,
+        "state": "free",
+        "location": {
+          "lat": 47.4885855,
+          "lon": 7.598403
+        },
+        "changed_at": null
+      },
+      {
+        "number": 44,
+        "state": "taken",
+        "location": {
+          "lat": 47.4885855,
+          "lon": 7.5984103
+        },
+        "changed_at": null
+      },
+      {
+        "number": 45,
+        "state": "taken",
+        "location": {
+          "lat": 47.4885855,
+          "lon": 7.5984176
+        },
+        "changed_at": null
+      },
+      {
+        "number": 46,
+        "state": "taken",
+        "location": {
+          "lat": 47.4885855,
+          "lon": 7.598425
+        },
+        "changed_at": null
+      },
+      {
+        "number": 47,
+        "state": "taken",
+        "location": {
+          "lat": 47.4885855,
+          "lon": 7.5984323
+        },
+        "changed_at": null
+      },
+      {
+        "number": 48,
+        "state": "taken",
+        "location": {
+          "lat": 47.4885855,
+          "lon": 7.5984396
+        },
+        "changed_at": null
+      }
+    ]
+  },
+  {
     "id": "cmr-north-01",
     "name": "Christoph-Merian-Ring North",
     "location": {
@@ -10,7 +458,7 @@
     "free": 26,
     "taken": 9,
     "unknown": 10,
-    "updated_at": "2026-10-31T15:50:36Z",
+    "updated_at": "2026-10-31T16:13:25Z",
     "model_url": null,
     "slots": [
       {
@@ -20,7 +468,7 @@
           "lat": 47.4878522,
           "lon": 7.6001752
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 2,
@@ -29,7 +477,7 @@
           "lat": 47.4878612,
           "lon": 7.6001751
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 3,
@@ -38,7 +486,7 @@
           "lat": 47.4878702,
           "lon": 7.600175
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 4,
@@ -47,7 +495,7 @@
           "lat": 47.4878792,
           "lon": 7.6001749
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 5,
@@ -56,7 +504,7 @@
           "lat": 47.4878882,
           "lon": 7.6001748
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 6,
@@ -65,7 +513,7 @@
           "lat": 47.4879053,
           "lon": 7.6001746
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 7,
@@ -74,7 +522,7 @@
           "lat": 47.4879143,
           "lon": 7.6001744
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 8,
@@ -83,7 +531,7 @@
           "lat": 47.4879233,
           "lon": 7.6001743
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 9,
@@ -92,7 +540,7 @@
           "lat": 47.4879323,
           "lon": 7.6001742
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 10,
@@ -101,7 +549,7 @@
           "lat": 47.4879413,
           "lon": 7.6001741
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 11,
@@ -110,7 +558,7 @@
           "lat": 47.4879583,
           "lon": 7.6001739
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 12,
@@ -119,7 +567,7 @@
           "lat": 47.4879673,
           "lon": 7.6001738
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 13,
@@ -128,7 +576,7 @@
           "lat": 47.4879763,
           "lon": 7.6001736
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 14,
@@ -137,7 +585,7 @@
           "lat": 47.4879853,
           "lon": 7.6001735
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 15,
@@ -146,7 +594,7 @@
           "lat": 47.4879943,
           "lon": 7.6001734
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 16,
@@ -155,7 +603,7 @@
           "lat": 47.4880114,
           "lon": 7.6001732
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 17,
@@ -164,7 +612,7 @@
           "lat": 47.4880204,
           "lon": 7.6001731
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 18,
@@ -173,7 +621,7 @@
           "lat": 47.4880294,
           "lon": 7.600173
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 19,
@@ -182,7 +630,7 @@
           "lat": 47.4880384,
           "lon": 7.6001728
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 20,
@@ -191,7 +639,7 @@
           "lat": 47.4880474,
           "lon": 7.6001727
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 21,
@@ -200,7 +648,7 @@
           "lat": 47.4880645,
           "lon": 7.6001725
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 22,
@@ -209,7 +657,7 @@
           "lat": 47.4880735,
           "lon": 7.6001724
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 23,
@@ -218,7 +666,7 @@
           "lat": 47.4880825,
           "lon": 7.6001723
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 24,
@@ -227,7 +675,7 @@
           "lat": 47.4880915,
           "lon": 7.6001722
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 25,
@@ -236,7 +684,7 @@
           "lat": 47.4881005,
           "lon": 7.600172
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 26,
@@ -245,7 +693,7 @@
           "lat": 47.4881176,
           "lon": 7.6001718
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 27,
@@ -254,7 +702,7 @@
           "lat": 47.4881266,
           "lon": 7.6001717
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 28,
@@ -263,7 +711,7 @@
           "lat": 47.4881356,
           "lon": 7.6001716
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 29,
@@ -272,7 +720,7 @@
           "lat": 47.4881446,
           "lon": 7.6001715
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 30,
@@ -281,7 +729,7 @@
           "lat": 47.4881536,
           "lon": 7.6001714
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 31,
@@ -290,7 +738,7 @@
           "lat": 47.4881706,
           "lon": 7.6001711
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 32,
@@ -299,7 +747,7 @@
           "lat": 47.4881796,
           "lon": 7.600171
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 33,
@@ -308,7 +756,7 @@
           "lat": 47.4881886,
           "lon": 7.6001709
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 34,
@@ -317,7 +765,7 @@
           "lat": 47.4881976,
           "lon": 7.6001708
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 35,
@@ -326,7 +774,7 @@
           "lat": 47.4882066,
           "lon": 7.6001707
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 36,
@@ -431,7 +879,7 @@
     "free": 10,
     "taken": 10,
     "unknown": 0,
-    "updated_at": "2026-10-31T15:50:36Z",
+    "updated_at": "2026-10-31T16:13:25Z",
     "model_url": null,
     "slots": [
       {
@@ -441,7 +889,7 @@
           "lat": 47.4868599,
           "lon": 7.5999203
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 2,
@@ -450,7 +898,7 @@
           "lat": 47.4868599,
           "lon": 7.599927
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 3,
@@ -459,7 +907,7 @@
           "lat": 47.4868599,
           "lon": 7.5999336
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 4,
@@ -468,7 +916,7 @@
           "lat": 47.4868599,
           "lon": 7.5999403
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 5,
@@ -477,7 +925,7 @@
           "lat": 47.4868599,
           "lon": 7.5999469
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 6,
@@ -486,7 +934,7 @@
           "lat": 47.4868599,
           "lon": 7.5999536
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 7,
@@ -495,7 +943,7 @@
           "lat": 47.4868599,
           "lon": 7.5999602
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 8,
@@ -504,7 +952,7 @@
           "lat": 47.4868599,
           "lon": 7.5999669
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 9,
@@ -513,7 +961,7 @@
           "lat": 47.4868599,
           "lon": 7.5999735
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 10,
@@ -522,7 +970,7 @@
           "lat": 47.4868599,
           "lon": 7.5999802
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 11,
@@ -531,7 +979,7 @@
           "lat": 47.4869614,
           "lon": 7.6002019
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 12,
@@ -540,7 +988,7 @@
           "lat": 47.4869659,
           "lon": 7.6002019
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 13,
@@ -549,7 +997,7 @@
           "lat": 47.4869704,
           "lon": 7.6002019
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 14,
@@ -558,7 +1006,7 @@
           "lat": 47.4869749,
           "lon": 7.6002019
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 15,
@@ -567,7 +1015,7 @@
           "lat": 47.4869794,
           "lon": 7.6002019
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 16,
@@ -576,7 +1024,7 @@
           "lat": 47.4869839,
           "lon": 7.6002019
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 17,
@@ -585,7 +1033,7 @@
           "lat": 47.4869884,
           "lon": 7.6002019
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 18,
@@ -594,7 +1042,7 @@
           "lat": 47.4869929,
           "lon": 7.6002019
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 19,
@@ -603,7 +1051,7 @@
           "lat": 47.4869974,
           "lon": 7.6002019
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
       },
       {
         "number": 20,
@@ -612,7 +1060,140 @@
           "lat": 47.4870019,
           "lon": 7.6002019
         },
-        "changed_at": "2026-10-31T15:44:10Z"
+        "changed_at": "2026-10-31T16:13:25Z"
+      }
+    ]
+  },
+  {
+    "id": "kaegen-west-04",
+    "name": "K\u00e4genstrasse",
+    "location": {
+      "lat": 47.4873504,
+      "lon": 7.5978995
+    },
+    "capacity": 13,
+    "free": 2,
+    "taken": 11,
+    "unknown": 0,
+    "updated_at": null,
+    "model_url": null,
+    "slots": [
+      {
+        "number": 1,
+        "state": "taken",
+        "location": {
+          "lat": 47.4873234,
+          "lon": 7.5978995
+        },
+        "changed_at": null
+      },
+      {
+        "number": 2,
+        "state": "taken",
+        "location": {
+          "lat": 47.4873279,
+          "lon": 7.5978995
+        },
+        "changed_at": null
+      },
+      {
+        "number": 3,
+        "state": "taken",
+        "location": {
+          "lat": 47.4873324,
+          "lon": 7.5978995
+        },
+        "changed_at": null
+      },
+      {
+        "number": 4,
+        "state": "taken",
+        "location": {
+          "lat": 47.4873369,
+          "lon": 7.5978995
+        },
+        "changed_at": null
+      },
+      {
+        "number": 5,
+        "state": "free",
+        "location": {
+          "lat": 47.4873414,
+          "lon": 7.5978995
+        },
+        "changed_at": null
+      },
+      {
+        "number": 6,
+        "state": "taken",
+        "location": {
+          "lat": 47.4873459,
+          "lon": 7.5978995
+        },
+        "changed_at": null
+      },
+      {
+        "number": 7,
+        "state": "taken",
+        "location": {
+          "lat": 47.4873504,
+          "lon": 7.5978995
+        },
+        "changed_at": null
+      },
+      {
+        "number": 8,
+        "state": "taken",
+        "location": {
+          "lat": 47.4873549,
+          "lon": 7.5978995
+        },
+        "changed_at": null
+      },
+      {
+        "number": 9,
+        "state": "free",
+        "location": {
+          "lat": 47.4873594,
+          "lon": 7.5978995
+        },
+        "changed_at": null
+      },
+      {
+        "number": 10,
+        "state": "taken",
+        "location": {
+          "lat": 47.4873638,
+          "lon": 7.5978995
+        },
+        "changed_at": null
+      },
+      {
+        "number": 11,
+        "state": "taken",
+        "location": {
+          "lat": 47.4873683,
+          "lon": 7.5978995
+        },
+        "changed_at": null
+      },
+      {
+        "number": 12,
+        "state": "taken",
+        "location": {
+          "lat": 47.4873728,
+          "lon": 7.5978995
+        },
+        "changed_at": null
+      },
+      {
+        "number": 13,
+        "state": "taken",
+        "location": {
+          "lat": 47.4873773,
+          "lon": 7.5978995
+        },
+        "changed_at": null
       }
     ]
   }

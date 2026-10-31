@@ -73,11 +73,12 @@ struct StationDetail: Decodable {
     }
 
     /// The slots in their racks: a station can have several racks, for example on two sides of
-    /// a building. Slots are numbered along each rack, so a jump of more than two metres between
-    /// one number and the next starts a new rack.
+    /// a building. Slots are numbered along each rack, so a jump of more than three metres
+    /// between one number and the next starts a new rack; the rows of a garage, numbered back
+    /// and forth, stay one.
     var racks: [[Slot]] {
         slots.sorted { $0.number < $1.number }.reduce(into: []) { racks, slot in
-            if let last = racks.last?.last, last.location.distance(to: slot.location) < 2 {
+            if let last = racks.last?.last, last.location.distance(to: slot.location) < 3 {
                 racks[racks.count - 1].append(slot)
             } else {
                 racks.append([slot])

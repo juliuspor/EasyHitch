@@ -39,12 +39,15 @@
 
   // The shelter at each station, from the site photos: the API has the slots but no shelter
   // type. Any other station gets wheel holders in a painted box.
-  const SHELTERS = { "cmr-north-01": "long_shelter", "cmr-south-02": "curved_shelter" };
+  const SHELTERS = { "cmr-north-01": "long_shelter", "cmr-south-02": "curved_shelter",
+    "cmr-garage-03": "bike_garage", "kaegen-west-04": "curved_shelter" };
   // Per kind of rack: how to build it, and at most how many metres of it to fit on screen.
+  // A kind with a `pitch` lays out its slots itself, in rows the catalog numbers in order.
   const KINDS = {
     curved_shelter: { build: curvedShelter },
     open_stand: { build: openStand },
     long_shelter: { build: longShelter, view: 10 },
+    bike_garage: { build: bikeGarage, pitch: 0.55 },
   };
   const PITCH = 0.6; // slot spacing of a rack with a single slot, where none can be measured
 
@@ -199,16 +202,25 @@
     const across = 2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(FOV / 2)) * camera.aspect);
 
     racks = config.racks.map((numbers) => {
-      const a = where.get(numbers[0]), b = where.get(numbers[numbers.length - 1]);
-      const length = Math.hypot(b[0] - a[0], b[1] - a[1]);
-      const middle = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
-      // The rack runs from its first slot to its last. Its open front faces the nearer street,
-      // where riders come from, so turn it round if that street is on its left.
-      let heading = numbers.length > 1 ? Math.atan2(b[1] - a[1], b[0] - a[0]) : 0;
+      // The rack stands at the middle of its slots and runs along their principal axis, which
+      // is the row for a single row and the long side for the rows of a garage.
+      const points = numbers.map((n) => where.get(n));
+      const middle = [0, 1].map((k) => points.reduce((sum, p) => sum + p[k], 0) / points.length);
+      let sxx = 0, syy = 0, sxy = 0;
+      for (const [x, y] of points) {
+        const dx = x - middle[0], dy = y - middle[1];
+        sxx += dx * dx;
+        syy += dy * dy;
+        sxy += dx * dy;
+      }
+      let heading = 0.5 * Math.atan2(2 * sxy, sxx - syy);
+      // Its open front faces the nearer street, where riders come from, so turn it round if
+      // that street is on its left.
       const street = (side) => Math.min(...site.roads.filter((r) => r.kind === "road").map((r) => distanceToLine(
         [middle[0] + side * 6 * Math.sin(heading), middle[1] - side * 6 * Math.cos(heading)], r.line)));
-      const order = street(-1) < street(1) ? [...numbers].reverse() : numbers;
-      if (order !== numbers) heading += Math.PI;
+      if (street(-1) < street(1)) heading += Math.PI;
+      const along = (n) => (where.get(n)[0] - middle[0]) * Math.cos(heading) + (where.get(n)[1] - middle[1]) * Math.sin(heading);
+      const order = spec.pitch ? numbers : [...numbers].sort((m, n) => along(m) - along(n));
 
       const holder = new THREE.Group();
       holder.position.copy(toScene(middle));
@@ -216,7 +228,8 @@
       scene.add(holder);
       holder.updateMatrixWorld(true); // localToWorld below needs it before the first frame
 
-      const pitch = numbers.length > 1 ? length / (numbers.length - 1) : PITCH;
+      const length = along(order[order.length - 1]) - along(order[0]);
+      const pitch = spec.pitch || (numbers.length > 1 ? length / (numbers.length - 1) : PITCH);
       const built = spec.build(holder, numbers.length, pitch);
       built.places.forEach((place, i) => slots.set(order[i], makeSlot(place, pitch, order[i])));
       holder.traverse((o) => { if (o.isMesh) o.castShadow = true; });
@@ -583,6 +596,53 @@
     }
     rack(parent, n, pitch, -depth / 2 + 0.35);
     return { places: row(parent, n, pitch, -0.2), width: length };
+  }
+
+  // The bike garage: a concrete hall open to the street, with rows of double-sided floor
+  // racks. The rack is placed at the middle of its slots, so the hall is built around them.
+  function bikeGarage(parent, n, pitch) {
+    const rows = 2, perSide = Math.ceil(n / rows / 2), width = perSide * pitch + 2.4, depth = 6.4, height = 3.2;
+    const hall = new THREE.Group();
+    hall.position.z = 1.7 + 2.9 * (rows - 1) / 2;
+    parent.add(hall);
+    const walls = new THREE.MeshStandardMaterial({ color: 0xd3d1cc, roughness: 0.95, side: THREE.DoubleSide });
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(width, depth), new THREE.MeshStandardMaterial({ color: 0xe4e6e6, roughness: 0.8 }));
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.set(0, 0.04, -depth / 2);
+    floor.receiveShadow = true;
+    hall.add(floor);
+    for (const [w, h, x, y, z, ry] of [[width, height, 0, height / 2, -depth, 0], [depth, height, -width / 2, height / 2, -depth / 2, Math.PI / 2],
+      [depth, height, width / 2, height / 2, -depth / 2, Math.PI / 2], [width, depth, 0, height, -depth / 2, 0]]) {
+      const panel = new THREE.Mesh(new THREE.PlaneGeometry(w, h), walls);
+      panel.position.set(x, y, z);
+      if (w === width && h === depth) panel.rotation.x = Math.PI / 2; else panel.rotation.y = ry;
+      panel.receiveShadow = true;
+      hall.add(panel);
+    }
+    const strip = new THREE.MeshBasicMaterial({ color: 0xfdfdf6 });
+    for (let i = 0; i < 3; i++) {
+      const light = new THREE.Mesh(new THREE.PlaneGeometry(0.25, depth - 1), strip);
+      light.rotation.x = Math.PI / 2;
+      light.position.set(-width / 3 + i * width / 3, height - 0.02, -depth / 2);
+      hall.add(light);
+    }
+    const lamp = new THREE.PointLight(0xffffff, 0.8, 18);
+    lamp.position.set(0, height - 0.4, -depth / 2);
+    hall.add(lamp);
+    const places = [];
+    for (let r = 0; r < rows; r++) {
+      const holder = new THREE.Group();
+      holder.position.z = -1.7 - r * 2.9;
+      hall.add(holder);
+      for (const side of [1, -1]) {
+        const half = new THREE.Group();
+        half.rotation.y = side === 1 ? 0 : Math.PI;
+        holder.add(half);
+        rack(half, perSide, pitch, -0.05);
+        places.push(...row(half, perSide, pitch, 0.3));
+      }
+    }
+    return { places: places.slice(0, n), width, lookHeight: 0.9 };
   }
 
   // Front-wheel holders: a vertical loop per slot on a rail along x.
