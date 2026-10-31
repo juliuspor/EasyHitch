@@ -176,12 +176,12 @@
     <div class="tagline"><span class="old">People</span><span class="new">Bikers</span><span>for Process Automation</span></div>
   </section>
 
-  <!-- 2 · Demo on the phone: a recording of the app's demo mode, the fallback for the live demo -->
+  <!-- 2 · Demo on the phone: a recording of the app's demo mode, played once while Julius acts it out on his phone -->
   <section class="slide" id="s2">
     <div class="phone">
       <i class="btn b1"></i><i class="btn b2"></i><i class="btn b3"></i><i class="btn b4"></i>
       <div class="screen">
-        <video id="demo" src="demo.mp4" muted loop playsinline preload="auto"></video>
+        <video id="demo" src="demo.mp4" muted playsinline preload="auto"></video>
       </div>
     </div>
   </section>
@@ -257,7 +257,7 @@ addEventListener('resize', fit); fit();
 const slides = [...document.querySelectorAll('.slide')];
 const NOTES = [
   '~40 s · Innovation + impact. Open on the logo alone. 7:45 at E+H: both stands look full, you circle, you are late. Click to reveal the name: Easy+Hitch tells you which exact spot is free before you turn the corner. Spot-level, not just “full”, from low-cost cameras like the challenge’s ESP32 boards. Less searching, more people choosing the bike, and real occupancy data for facility planning.',
-  '~80 s · Live demo on the phone, on Demo data: the blue dot on Christoph-Merian-Ring, the map with free spots per stand, the south stand, then 3D Navigation down the street, turning left to the free spot. If the live demo fails, this slide’s phone plays a recording of the same flow.',
+  '~80 s · Demo, acted out on the phone while this slide plays the app’s recording once from the start: the blue dot on Christoph-Merian-Ring and the free spots per stand; tap the south stand at 0:02.5 and 3D Navigation at 0:05; the ride down the street lands at the free spot at 0:15, and the rack holds from there.',
   '~45 s · Technical depth + fair play. Edge: the XIAO ESP32S3 camera board feeds a secure edge device on site over USB, a Mac in our tests. There YOLO11n redacts faces and PP-OCRv5 redacts licence plates, and a frame leaves the site only when the view changed. AWS: two Lambda functions, each behind its own function URL, no API Gateway. The Ingest API compares each slot with its last fingerprint in DynamoDB and asks Jev 1.14, TypeSafe’s decision model, through OpenRouter, one yes-or-no question per changed slot, with no training data. DynamoDB keeps slot states and fingerprints, never images, and the keys sit in SSM Parameter Store. The Availability API serves the iOS app over REST and AI agents over MCP. In the demo, a simulator fills the stations without a camera. Nobody is tracked.',
   '~10 s · Close while the hamster lands: “You ride, we find the spot. Easy+Hitch.” Thank the jury.',
 ];
@@ -647,7 +647,9 @@ function arrive() {
 
 // ---------------------------------------------------------------- slide 2: the app's demo mode, recorded
 // demo.mp4 is the iOS app in demo mode, recorded in the iPhone 17 Pro simulator: the rider's blue dot
-// on the map, the south station, then 3D Navigation down Christoph-Merian-Ring to its free spot.
+// on the map, the south station, then 3D Navigation down Christoph-Merian-Ring to its free spot. It
+// plays once from the start whenever the slide opens and then stays on the rack, like the phone would,
+// so the demo can be acted out on a real phone in time with it.
 const phone = (() => {
   const video = document.getElementById('demo');
   return {
