@@ -1,2 +1,5 @@
 # macOS Finder metadata
 .DS_Store
+
+# Local credentials, never committed
+secrets.txt
