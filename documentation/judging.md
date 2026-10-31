@@ -249,15 +249,14 @@ connection. Each slide has speaker notes
 ([`NOTES`](../assets/pitch/index.html#L238-L243), press N). Press T for a
 three-minute timer that turns yellow at 2:30 and red at 3:00
 ([`setInterval`](../assets/pitch/index.html#L267-L271)). The
-[script](../assets/pitch/script.md) gives every line, who says it and when.
+[script](../assets/pitch/script.md) gives every line and who says it.
 
-| Time | Slide | Focus |
-|---|---|---|
-| 0:00 to 0:30 | Hello | A teammate arrives late, no free bike spot: the problem at 7:45 |
-| 0:30 to 1:20 | Demo | Live: the map, free spots per station, directions, the rack in 3D |
-| 1:20 to 2:10 | Tech | Edge, AWS, AI model, end user, privacy by design, what is built |
-| 2:10 to 2:35 | Tech | The same answers for AI agents through MCP |
-| 2:35 to 3:00 | Finale | "Easy+Hitch!" with the hamster, then "You ride, we find the spot." |
+| Scene | What happens |
+|---|---|
+| In the Endress+Hauser office | A teammate comes in late with a bike and a helmet: no free biking spot |
+| Demo | The live 3D drive to the parking lot, with the free spots shown before arriving |
+| Architecture slide | Edge, AWS, AI model and end user |
+| After the architecture | Download the app, or plug it into an AI agent |
 
 ## Demo
 
