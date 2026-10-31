@@ -225,9 +225,10 @@ All but the second print nothing.
   ([`_pinned_model`](../code/edge/text.py#L64-L70)). The deck
   bundles canvas-confetti with its
   [ISC licence](../assets/pitch/vendor/LICENSE-canvas-confetti), and its
-  architecture slide uses brand icons from Simple Icons under CC0. The marks
-  belong to their owners. The campus map data comes from OpenStreetMap under
-  the ODbL, attributed in the
+  architecture slide uses brand icons from Simple Icons under CC0, AWS's
+  classic DynamoDB logo, and TypeSafe's mark from its website.
+  The marks belong to their owners. The campus map data comes from
+  OpenStreetMap under the ODbL, attributed in the
   [README](../README.md#credits). The recorded frames are the hosts' photos.
   The Endress+Hauser symbol comes from endress.com and is used for the
   sponsor's own challenge. The diagrams are rendered with archify 3.2.0.
@@ -246,9 +247,9 @@ The deck, [`assets/pitch/index.html`](../assets/pitch/index.html), has four
 slides and one story: the 7:45 problem, the live demo, the pipeline, and a
 finale. It runs offline in a browser, and only its web fonts need a
 connection. Each slide has speaker notes
-([`NOTES`](../assets/pitch/index.html#L238-L243), press N). Press T for a
+([`NOTES`](../assets/pitch/index.html#L251-L256), press N). Press T for a
 three-minute timer that turns yellow at 2:30 and red at 3:00
-([`setInterval`](../assets/pitch/index.html#L267-L271)). The
+([`setInterval`](../assets/pitch/index.html#L280-L284)). The
 [script](../assets/pitch/script.md) gives every line and who says it.
 
 | Scene | What happens |

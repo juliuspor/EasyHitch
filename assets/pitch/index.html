@@ -69,13 +69,26 @@
   .screen video { width: 100%; height: 100%; object-fit: cover; display: block; }
 
   /* ---------- slide 3 ---------- */
-  #s3 { display: grid; place-items: center; padding: 0 96px; }
-  #arch { width: 1408px; height: 356px; }
+  #s3 { display: grid; place-items: center; padding: 0 60px; }   /* as wide as the road below */
+  #arch { width: 1480px; height: 400px; }   /* the 1494-wide drawing, scaled to the road */
   #arch .zone rect { fill: rgba(255,255,255,0.03); stroke: rgba(191,230,247,0.3); stroke-width: 1.5; stroke-dasharray: 6 8; }
   #arch .zone text { fill: var(--eh-pale); font-family: Inter, sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.16em; }
   #arch .node text { fill: var(--ink); font-family: Inter, sans-serif; }
   #arch .node .t { font-size: 18px; font-weight: 700; } #arch .node .d { font-size: 13px; fill: var(--muted); }
   #arch .node rect.tile { fill: #ffffff; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.25)); }
+  /* The privacy filter is one stage inside the edge device, so a solid line instead of a group's dashes. */
+  #arch .zone.filter rect { stroke: rgba(191,230,247,0.55); stroke-dasharray: none; }
+  #arch .node .plus { font-size: 30px; font-weight: 700; fill: var(--eh-pale); text-anchor: middle; dominant-baseline: central;
+    transform-box: fill-box; transform-origin: center; transition: fill 0.4s, transform 0.4s; }
+  /* A box glows in the colour of the blob that reaches it: the edge device as the camera takes a frame, the privacy
+     filter while it redacts it (its plus pulses too), AWS as the pixelated frame arrives, OpenRouter while Jev decides,
+     and the end users as the new states reach them. */
+  #arch .zone rect { transition: stroke 0.4s, filter 0.4s; }
+  #arch.capturing .zone.edge rect, #arch.redacting .zone.filter rect { stroke: rgba(255,200,87,0.9); filter: drop-shadow(0 0 12px rgba(255,200,87,0.45)); }
+  #arch.redacting .node .plus { fill: var(--sun); transform: scale(1.35); }
+  #arch.ingesting .zone.aws rect { stroke: rgba(0,174,239,0.95); filter: drop-shadow(0 0 12px rgba(0,174,239,0.45)); }
+  #arch.deciding .zone.model rect { stroke: rgba(255,255,255,0.85); filter: drop-shadow(0 0 12px rgba(255,255,255,0.35)); }
+  #arch.serving .zone.users rect { stroke: rgba(43,212,111,0.9); filter: drop-shadow(0 0 12px rgba(43,212,111,0.4)); }
   #arch path.wire { fill: none; stroke: rgba(0,174,239,0.45); stroke-width: 2.5; }
   #arch .pkt { pointer-events: none; }
   #arch .zone, #arch .wires { opacity: 0; transition: opacity 0.6s; }
@@ -166,50 +179,50 @@
     </div>
   </section>
 
-  <!-- 3 · Architecture as built, clustered like documentation/diagrams: edge, AWS, the model, end users -->
+  <!-- 3 · Architecture in four groups: the edge (a camera board on an edge device), AWS, the model, end users -->
   <section class="slide" id="s3">
-    <svg id="arch" viewBox="0 0 1408 356">
+    <svg id="arch" viewBox="0 0 1494 404">
       <defs>
-        <!-- Brand icons from Simple Icons under CC0, DynamoDB from 13.21.0 and the rest from 16.30.0. The marks belong to their owners. -->
+        <filter id="glow" x="-150%" y="-150%" width="400%" height="400%"><feGaussianBlur stdDeviation="3.5" result="soft"/><feMerge><feMergeNode in="soft"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <!-- Brand icons from Simple Icons 16.30.0 under CC0, DynamoDB's classic logo from the AWS Simple Icons set (as packaged in react-aws-icons), and TypeSafe's mark from typesafe.ai. The marks belong to their owners. -->
         <symbol id="i-espressif" viewBox="0 0 24 24"><path d="M12.926 19.324a7.6 7.6 0 00-2.983-6.754 7.44 7.44 0 00-3.828-1.554.697.697 0 01-.606-.731.674.674 0 01.743-.617 8.97 8.97 0 018 9.805 7.828 7.828 0 01-.298 1.542l1.989.56a11.039 11.039 0 001.714-.651 12.159 12.159 0 00.217-2.343A12.57 12.57 0 007.212 6.171a5.53 5.53 0 00-2 0 4.354 4.354 0 00-2.16 1.337 4.274 4.274 0 001.909 6.856 9.896 9.896 0 001.074.195 4.011 4.011 0 013.337 3.954 3.965 3.965 0 01-.64 2.16l1.371.88a10.182 10.182 0 002.057.342 7.52 7.52 0 00.754-2.628m.16 4.73A13.073 13.073 0 01.001 10.983 12.982 12.982 0 013.83 1.737l.743.697a12.067 12.067 0 000 17.141 12.067 12.067 0 0017.141 0l.697.697a12.97 12.97 0 01-9.336 3.726M24 10.993A10.993 10.993 0 0012.949 0c-.389 0-.766 0-1.143.057l-.252.732a18.912 18.912 0 0111.588 11.576l.731-.263c0-.366.069-.732.069-1.143m-1.269 5.165A17.53 17.53 0 007.818 1.27a11.119 11.119 0 00-2.457 1.77v1.635A13.919 13.919 0 0119.268 18.57h1.634a11.713 11.713 0 001.771-2.446M7.92 17.884a1.691 1.691 0 11-1.69-1.691 1.691 1.691 0 011.69 1.691"/></symbol>
         <symbol id="i-yolo" viewBox="0 0 24 24"><path d="M18.25 0c-3.05 0-5.52 2.477-5.52 5.523 0 3.842-3.125 6.967-6.972 6.967-1.506 0-2.894-.46-4.03-1.26 1.105 1.98 2.765 3.6 4.759 4.67v2.51c0 3.04 2.428 5.56 5.463 5.59 3.07 0 5.58-2.46 5.58-5.52V15.9c3.64-1.96 6.16-5.8 6.23-10.208v-.165C23.76 2.477 21.28 0 18.25 0ZM5.758.0002C2.715.0002.2399 2.477.2399 5.523c0 3.044 2.4751 5.517 5.5181 5.517 3.044 0 5.512-2.473 5.512-5.517 0-3.046-2.468-5.5228-5.512-5.5228Z"/></symbol>
         <symbol id="i-paddlepaddle" viewBox="0 0 24 24"><path d="M12.17185 4.8315c-.6339 0-1.15033.51448-1.15033 1.14833s.51643 1.15033 1.15033 1.15033 1.14833-.51643 1.14833-1.15033-.51448-1.14833-1.14833-1.14833zm9.9916 0c-.6339 0-1.15033.51448-1.15033 1.14833s.51643 1.15033 1.15033 1.15033c.6339 0 1.14833-.51643 1.14833-1.15033S22.7973 4.8315 22.16345 4.8315zM6.67238 8.00711c-.0331 0-.06258.01885-.07617.04883l-1.95298 4.29274H.75286c-.05136 0-.09805.02932-.11913.07616l-.62691 1.39832c-.02155.04809.01363.10351.0664.10351h3.85327l-2.32796 5.1208c-.02545.0559.01465.12108.07617.12108h1.6561c.0331 0 .06438-.02064.07812-.05078l4.9977-10.99134c.02529-.0559-.01481-.11913-.07617-.11913zm3.4783 0c-.02484 0-.0483.01431-.0586.0371l-.58004 1.28513c-.01905.04216.01237.08984.05859.08984h1.02334c.21703-.00312.37745.01142.55466.03906.82499.12818 1.33602.73302 1.32412 1.5351-.01124.75786-.64035 1.36123-1.39832 1.36123H7.40865c-.06245 0-.11876.03691-.14452.09374l-.60935 1.33972c-.0295.0648.0188.13671.08984.13671h4.28495c1.77679 0 3.1942-1.5331 2.99592-3.2986-.1616-1.43981-1.34012-2.56875-2.81033-2.61894-.01327-.00047-.02641.0011-.03906.0039a.06152.06152 0 0 0-.02148-.0039zm6.4762 0c-.0331 0-.06438.0187-.07812.04883l-4.9977 10.99134c-.0253.0559.01676.12108.07812.12108h1.6561c.03294 0 .06259-.0208.07617-.05078l4.9997-10.99134c.02545-.0559-.01661-.11913-.07813-.11913zm3.4783 0c-.02498 0-.04633.01431-.05664.0371l-.58005 1.28513c-.01889.04216.01058.08984.05664.08984h1.02334c.21717-.00312.37744.01142.55465.03906.825.12818 1.33782.73302 1.32612 1.5351-.0114.75786-.64034 1.36123-1.39831 1.36123h-3.66778c-.06246 0-.11876.03691-.14452.09374l-.60935 1.33972c-.02934.0648.01864.13671.08984.13671h4.28494c1.7766 0 3.1961-1.5331 2.99782-3.2986-.16159-1.43981-1.34222-2.56875-2.81233-2.61894-.01343-.00047-.02642.0011-.03906.0039a.0611.0611 0 0 0-.02148-.0039z"/></symbol>
         <symbol id="i-awslambda" viewBox="0 0 24 24"><path d="M4.9855 0c-.2941.0031-.5335.2466-.534.5482L4.446 5.456c0 .1451.06.2835.159.3891a.5322.5322 0 0 0 .3806.1562h3.4282l8.197 17.6805a.5365.5365 0 0 0 .4885.3181h5.811c.2969 0 .5426-.2448.5426-.5482V18.544c0-.3035-.2392-.5482-.5425-.5482h-2.0138L12.7394.3153C12.647.124 12.4564 0 12.2452 0h-7.254Zm.5397 1.0907h6.3678l8.16 17.6804a.5365.5365 0 0 0 .4885.3181h1.8178v3.8173H17.437L9.2402 5.226a.536.536 0 0 0-.4885-.318H5.5223Zm2.0137 8.2366c-.2098.0011-.3937.1193-.4857.3096L.6002 23.2133a.5506.5506 0 0 0 .0313.5282.5334.5334 0 0 0 .4544.25h6.169a.5468.5468 0 0 0 .497-.3096l3.38-7.166a.5405.5405 0 0 0-.0029-.4686L8.036 9.637a.5468.5468 0 0 0-.4942-.3096Zm.0057 1.8036 2.488 5.1522-3.1214 6.6206H1.9465Z"/></symbol>
-        <symbol id="i-amazondynamodb" viewBox="0 0 24 24"><path d="M16.606 20.705v-2.371c-1.263 1.082-3.884 1.795-7.066 1.795-3.184 0-5.805-.714-7.068-1.797v2.369c0 1.168 2.903 2.47 7.068 2.47 4.16 0 7.06-1.3 7.066-2.466zm.001-6.765l.817-.005v.005c0 .517-.258.998-.75 1.441.601.54.75 1.071.75 1.449a1661.7 1661.7 0 0 0 0 3.87c0 1.881-3.389 3.3-7.884 3.3-4.471 0-7.846-1.404-7.88-3.27a583.119 583.119 0 0 1-.003-3.909c.001-.375.15-.9.745-1.437-.592-.538-.743-1.062-.746-1.435v-3.892c.002-.377.153-.903.747-1.438-.593-.54-.744-1.062-.747-1.435 0-1.357-.002-2.735.002-3.897C1.674 1.412 5.056 0 9.54 0c2.159 0 4.233.356 5.689.974l-.315.766c-1.36-.58-3.319-.91-5.374-.91-4.165 0-7.067 1.3-7.067 2.47 0 1.168 2.902 2.47 7.067 2.47.115 0 .222 0 .334-.005l.033.828c-.122.006-.245.006-.367.006-3.184 0-5.805-.714-7.068-1.798v2.38c.005.45.45.843.821 1.093 1.116.736 3.114 1.239 5.34 1.342l-.037.829c-2.254-.105-4.23-.59-5.5-1.332-.318.245-.623.573-.623.952 0 1.168 2.902 2.47 7.067 2.47.411 0 .812-.014 1.203-.042l.06.826c-.41.03-.833.045-1.263.045-3.184 0-5.805-.713-7.068-1.797v2.368c.005.462.449.855.821 1.104 1.275.842 3.67 1.366 6.247 1.366h.182v.83H9.54c-2.62 0-4.99-.507-6.444-1.359-.317.245-.623.574-.623.954 0 1.168 2.902 2.47 7.067 2.47 4.159 0 7.058-1.298 7.066-2.465v-.007c0-.377-.303-.705-.62-.948a5.732 5.732 0 0 1-.662.336l-.316-.764c.3-.128.56-.266.776-.412.376-.254.823-.651.823-1.1zm4.377-6.915h-2.717a.406.406 0 0 1-.332-.173.42.42 0 0 1-.055-.375l1.204-3.597h-5.403l-2.583 4.974h2.623c.128 0 .248.06.325.164a.418.418 0 0 1 .069.36l-2.249 8.365zm1.249-.128l-10.89 11.608a.408.408 0 0 1-.498.075.418.418 0 0 1-.192-.471l2.534-9.426h-2.766a.407.407 0 0 1-.349-.2.418.418 0 0 1-.012-.407l3.014-5.804a.408.408 0 0 1 .36-.222h6.22c.132 0 .256.065.332.174a.422.422 0 0 1 .055.374l-1.204 3.598h3.1c.164 0 .31.099.375.251a.422.422 0 0 1-.08.45zM3.085 20.723a8.107 8.107 0 0 0 1.72.72l.233-.794a7.32 7.32 0 0 1-1.546-.645zm1.72-5.984l.233-.795a7.262 7.262 0 0 1-1.546-.646l-.407.72a8.051 8.051 0 0 0 1.72.72zm-1.72-7.427l.407-.719c.418.244.939.462 1.546.646l-.232.794a8.046 8.046 0 0 1-1.72-.72Z"/></symbol>
+        <symbol id="i-dynamodb" viewBox="0 0 100 100"><polygon fill="#2e73b8" points="82.42 37.44 82.42 29.8 74.38 21 61.22 50 74.38 78.99 82.42 70.18 82.42 62.54 79.74 64.36 79.74 60.69 82.42 59.3 82.42 51.61 79.74 51.68 79.74 48.24 82.42 48.37 82.42 40.88 79.74 39.48 79.74 36.9 82.42 37.44"/><polygon fill="#5294cf" points="60.05 86.17 74.38 78.99 74.38 20.99 60.05 13.83 43.8 50.61 60.05 86.17"/><polygon fill="#2e73b8" points="39.95 86.17 60.05 86.17 60.05 13.83 39.95 13.83 29.57 50.61 39.95 86.17"/><polygon fill="#205b99" points="39.95 86.17 25.49 78.99 20.94 50.61 25.49 20.99 39.91 13.83 39.95 86.17"/><polygon fill="#19486f" points="79.74 60.69 74.37 63.31 60.05 66.4 50.27 66.4 39.95 66.4 25.89 63.31 25.64 63.26 25.48 63.22 25.48 52.3 39.93 53.34 50.27 53.34 60.05 53.34 74.38 52.3 82.43 51.63 79.74 51.61 79.74 48.39 82.39 48.36 74.38 47.77 60.05 47.31 50.27 47.31 40.06 47.31 25.48 47.66 25.48 36.66 25.64 36.63 40.06 33.24 50.27 33.24 60.05 33.24 74.38 36.63 79.74 39.49 79.74 37.68 82.42 37.46 74.38 31.84 60.05 27.21 50.27 27.21 40.06 27.21 25.48 32 25.48 20.99 18.45 29.8 18.45 37.45 20.46 37.68 20.46 39.52 18.45 40.72 18.45 48.37 20.46 48.39 20.46 51.61 18.45 51.64 18.45 59.25 20.46 60.45 20.46 62.32 18.43 62.55 18.45 70.17 25.48 78.98 25.48 67.97 39.94 72.43 50.27 72.43 60.05 72.43 74.38 67.99 82.42 62.54 79.74 62.32 79.74 60.69"/></symbol>
         <symbol id="i-amazonwebservices" viewBox="0 0 24 24"><path d="M6.763 10.036c0 .296.032.535.088.71.064.176.144.368.256.576.04.063.056.127.056.183 0 .08-.048.16-.152.24l-.503.335a.383.383 0 0 1-.208.072c-.08 0-.16-.04-.239-.112a2.47 2.47 0 0 1-.287-.375 6.18 6.18 0 0 1-.248-.471c-.622.734-1.405 1.101-2.347 1.101-.67 0-1.205-.191-1.596-.574-.391-.384-.59-.894-.59-1.533 0-.678.239-1.23.726-1.644.487-.415 1.133-.623 1.955-.623.272 0 .551.024.846.064.296.04.6.104.918.176v-.583c0-.607-.127-1.03-.375-1.277-.255-.248-.686-.367-1.3-.367-.28 0-.568.031-.863.103-.295.072-.583.16-.862.272a2.287 2.287 0 0 1-.28.104.488.488 0 0 1-.127.023c-.112 0-.168-.08-.168-.247v-.391c0-.128.016-.224.056-.28a.597.597 0 0 1 .224-.167c.279-.144.614-.264 1.005-.36a4.84 4.84 0 0 1 1.246-.151c.95 0 1.644.216 2.091.647.439.43.662 1.085.662 1.963v2.586zm-3.24 1.214c.263 0 .534-.048.822-.144.287-.096.543-.271.758-.51.128-.152.224-.32.272-.512.047-.191.08-.423.08-.694v-.335a6.66 6.66 0 0 0-.735-.136 6.02 6.02 0 0 0-.75-.048c-.535 0-.926.104-1.19.32-.263.215-.39.518-.39.917 0 .375.095.655.295.846.191.2.47.296.838.296zm6.41.862c-.144 0-.24-.024-.304-.08-.064-.048-.12-.16-.168-.311L7.586 5.55a1.398 1.398 0 0 1-.072-.32c0-.128.064-.2.191-.2h.783c.151 0 .255.025.31.08.065.048.113.16.16.312l1.342 5.284 1.245-5.284c.04-.16.088-.264.151-.312a.549.549 0 0 1 .32-.08h.638c.152 0 .256.025.32.08.063.048.12.16.151.312l1.261 5.348 1.381-5.348c.048-.16.104-.264.16-.312a.52.52 0 0 1 .311-.08h.743c.127 0 .2.065.2.2 0 .04-.009.08-.017.128a1.137 1.137 0 0 1-.056.2l-1.923 6.17c-.048.16-.104.263-.168.311a.51.51 0 0 1-.303.08h-.687c-.151 0-.255-.024-.32-.08-.063-.056-.119-.16-.15-.32l-1.238-5.148-1.23 5.14c-.04.16-.087.264-.15.32-.065.056-.177.08-.32.08zm10.256.215c-.415 0-.83-.048-1.229-.143-.399-.096-.71-.2-.918-.32-.128-.071-.215-.151-.247-.223a.563.563 0 0 1-.048-.224v-.407c0-.167.064-.247.183-.247.048 0 .096.008.144.024.048.016.12.048.2.08.271.12.566.215.878.279.319.064.63.096.95.096.502 0 .894-.088 1.165-.264a.86.86 0 0 0 .415-.758.777.777 0 0 0-.215-.559c-.144-.151-.416-.287-.807-.415l-1.157-.36c-.583-.183-1.014-.454-1.277-.813a1.902 1.902 0 0 1-.4-1.158c0-.335.073-.63.216-.886.144-.255.335-.479.575-.654.24-.184.51-.32.83-.415.32-.096.655-.136 1.006-.136.175 0 .359.008.535.032.183.024.35.056.518.088.16.04.312.08.455.127.144.048.256.096.336.144a.69.69 0 0 1 .24.2.43.43 0 0 1 .071.263v.375c0 .168-.064.256-.184.256a.83.83 0 0 1-.303-.096 3.652 3.652 0 0 0-1.532-.311c-.455 0-.815.071-1.062.223-.248.152-.375.383-.375.71 0 .224.08.416.24.567.159.152.454.304.877.44l1.134.358c.574.184.99.44 1.237.767.247.327.367.702.367 1.117 0 .343-.072.655-.207.926-.144.272-.336.511-.583.703-.248.2-.543.343-.886.447-.36.111-.734.167-1.142.167zM21.698 16.207c-2.626 1.94-6.442 2.969-9.722 2.969-4.598 0-8.74-1.7-11.87-4.526-.247-.223-.024-.527.272-.351 3.384 1.963 7.559 3.153 11.877 3.153 2.914 0 6.114-.607 9.06-1.852.439-.2.814.287.383.607zM22.792 14.961c-.336-.43-2.22-.207-3.074-.103-.255.032-.295-.192-.063-.36 1.5-1.053 3.967-.75 4.254-.399.287.36-.08 2.826-1.485 4.007-.215.184-.423.088-.327-.151.32-.79 1.03-2.57.695-2.994z"/></symbol>
-        <symbol id="i-openrouter" viewBox="0 0 24 24"><path d="M16.778 1.844v1.919q-.569-.026-1.138-.032-.708-.008-1.415.037c-1.93.126-4.023.728-6.149 2.237-2.911 2.066-2.731 1.95-4.14 2.75-.396.223-1.342.574-2.185.798-.841.225-1.753.333-1.751.333v4.229s.768.108 1.61.333c.842.224 1.789.575 2.185.799 1.41.798 1.228.683 4.14 2.75 2.126 1.509 4.22 2.11 6.148 2.236.88.058 1.716.041 2.555.005v1.918l7.222-4.168-7.222-4.17v2.176c-.86.038-1.611.065-2.278.021-1.364-.09-2.417-.357-3.979-1.465-2.244-1.593-2.866-2.027-3.68-2.508.889-.518 1.449-.906 3.822-2.59 1.56-1.109 2.614-1.377 3.978-1.466.667-.044 1.418-.017 2.278.02v2.176L24 6.014Z"/></symbol>
+        <symbol id="i-typesafe" viewBox="0 0 16.487 24"><path d="M 12.756 2.928 L 12.756 7.067 L 16.486 9.487 L 16.487 18.652 L 8.244 24 L 3.732 21.073 L 3.732 16.82 L 0 14.399 L 0 5.35 L 0.355 5.118 L 8.244 0 Z M 5.94 20.65 L 8.242 22.144 L 14.275 18.227 L 11.975 16.735 Z M 9.022 10.332 L 9.022 14.4 L 5.29 16.822 L 5.29 19.216 L 11.197 15.383 L 11.197 8.921 Z M 12.756 15.384 L 14.928 16.794 L 14.928 10.332 L 12.756 8.922 Z M 2.21 13.976 L 4.511 15.47 L 6.812 13.976 L 4.512 12.485 Z M 1.559 6.193 L 1.559 12.544 L 3.731 11.134 L 3.731 7.066 L 7.464 4.643 L 7.464 2.36 L 1.56 6.193 Z M 5.291 11.132 L 7.463 12.542 L 7.463 10.332 L 5.292 8.921 L 5.292 11.132 Z M 5.94 7.487 L 8.244 8.981 L 10.544 7.488 L 8.244 5.994 Z M 9.024 4.643 L 11.196 6.054 L 11.196 3.774 L 9.024 2.359 Z"/></symbol>
         <symbol id="i-apple" viewBox="0 0 24 24"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></symbol>
-        <symbol id="i-threedotjs" viewBox="0 0 24 24"><path d="M.38 0a.268.268 0 0 0-.256.332l2.894 11.716a.268.268 0 0 0 .01.04l2.89 11.708a.268.268 0 0 0 .447.128L23.802 7.15a.268.268 0 0 0-.112-.45l-5.784-1.667a.268.268 0 0 0-.123-.035L6.38 1.715a.268.268 0 0 0-.144-.04L.456.01A.268.268 0 0 0 .38 0zm.374.654L5.71 2.08 1.99 5.664zM6.61 2.34l4.864 1.4-3.65 3.515zm-.522.12l1.217 4.926-4.877-1.4zm6.28 1.538l4.878 1.404-3.662 3.53zm-.52.13l1.208 4.9-4.853-1.392zm6.3 1.534l4.947 1.424-3.715 3.574zm-.524.12l1.215 4.926-4.876-1.398zm-15.432.696l4.964 1.424-3.726 3.586zM8.047 8.15l4.877 1.4-3.66 3.527zm-.518.137l1.236 5.017-4.963-1.432zm6.274 1.535l4.965 1.425-3.73 3.586zm-.52.127l1.235 5.012-4.958-1.43zm-9.63 2.438l4.873 1.406-3.656 3.523zm5.854 1.687l4.863 1.403-3.648 3.51zm-.54.04l1.214 4.927-4.875-1.4zm-3.896 4.02l5.037 1.442-3.782 3.638z"/></symbol>
         <symbol id="i-mcp" viewBox="0 0 24 24"><path d="M13.85 0a4.16 4.16 0 0 0-2.95 1.217L1.456 10.66a.835.835 0 0 0 0 1.18.835.835 0 0 0 1.18 0l9.442-9.442a2.49 2.49 0 0 1 3.541 0 2.49 2.49 0 0 1 0 3.541L8.59 12.97l-.1.1a.835.835 0 0 0 0 1.18.835.835 0 0 0 1.18 0l.1-.098 7.03-7.034a2.49 2.49 0 0 1 3.542 0l.049.05a2.49 2.49 0 0 1 0 3.54l-8.54 8.54a1.96 1.96 0 0 0 0 2.755l1.753 1.753a.835.835 0 0 0 1.18 0 .835.835 0 0 0 0-1.18l-1.753-1.753a.266.266 0 0 1 0-.394l8.54-8.54a4.185 4.185 0 0 0 0-5.9l-.05-.05a4.16 4.16 0 0 0-2.95-1.218c-.2 0-.401.02-.6.048a4.17 4.17 0 0 0-1.17-3.552A4.16 4.16 0 0 0 13.85 0m0 3.333a.84.84 0 0 0-.59.245L6.275 10.56a4.186 4.186 0 0 0 0 5.902 4.186 4.186 0 0 0 5.902 0L19.16 9.48a.835.835 0 0 0 0-1.18.835.835 0 0 0-1.18 0l-6.985 6.984a2.49 2.49 0 0 1-3.54 0 2.49 2.49 0 0 1 0-3.54l6.983-6.985a.835.835 0 0 0 0-1.18.84.84 0 0 0-.59-.245"/></symbol>
       </defs>
-      <g class="zone"><rect x="0" y="10" width="250" height="336" rx="20"/><text x="20" y="40">EDGE</text></g>
-      <g class="zone"><rect x="290" y="10" width="860" height="228" rx="20"/></g>
-      <g class="zone"><use href="#i-amazonwebservices" x="308" y="18" width="44" height="44" fill="#ffffff"/></g>
-      <g class="zone"><rect x="290" y="258" width="308" height="88" rx="20"/><text x="310" y="305">AI MODEL</text></g>
-      <g class="zone"><rect x="1190" y="10" width="218" height="336" rx="20"/><text x="1210" y="40">END USER</text></g>
-      <g class="wires"><path class="wire" id="wE" d="M250 192 H410"/><path class="wire" id="w2" d="M578 192 H670"/><path class="wire" id="w3" d="M852 192 H940"/><path class="wire" id="w4" d="M1124 192 H1210"/><path class="wire" id="wU" d="M1210 192 V84 H1230"/><path class="wire" id="wM" d="M1210 192 H1230"/><path class="wire" id="wD" d="M1210 192 V300 H1230"/><path class="wire" id="wS" d="M700 114 V162"/><path class="wire" id="wJ" d="M440 222 V270"/></g>
-      <g class="node" style="transition-delay:0.15s"><rect class="tile" x="20" y="54" width="60" height="60" rx="14"/><use href="#i-espressif" x="31" y="65" width="38" height="38" fill="#E7352C"/>
-        <text class="t" x="94" y="81">XIAO ESP32S3</text><text class="d" x="94" y="101">camera board</text></g>
-      <g class="node" style="transition-delay:0.23s"><rect class="tile" x="20" y="162" width="60" height="60" rx="14"/><use href="#i-yolo" x="31" y="173" width="38" height="38" fill="#111F68"/>
-        <text class="t" x="94" y="189">YOLO11n</text><text class="d" x="94" y="209">finds faces</text></g>
-      <g class="node" style="transition-delay:0.31s"><rect class="tile" x="20" y="270" width="60" height="60" rx="14"/><use href="#i-paddlepaddle" x="31" y="281" width="38" height="38" fill="#0062B0"/>
-        <text class="t" x="94" y="297">PP-OCRv5</text><text class="d" x="94" y="317">finds plates</text></g>
-      <g class="node" style="transition-delay:0.39s"><rect class="tile" x="410" y="162" width="60" height="60" rx="14"/><use href="#i-awslambda" x="421" y="173" width="38" height="38" fill="#FF9900"/>
-        <text class="t" x="484" y="189">Ingest</text><text class="d" x="484" y="209">AWS Lambda</text></g>
-      <g class="node" style="transition-delay:0.47s"><rect class="tile" x="410" y="270" width="60" height="60" rx="14"/><use href="#i-openrouter" x="421" y="281" width="38" height="38" fill="#1E293B"/>
-        <text class="t" x="484" y="297">Jev 1.14</text><text class="d" x="484" y="317">via OpenRouter</text></g>
-      <g class="node" style="transition-delay:0.55s"><rect class="tile" x="670" y="54" width="60" height="60" rx="14"/><use href="#i-awslambda" x="681" y="65" width="38" height="38" fill="#FF9900"/>
-        <text class="t" x="744" y="81">Simulator</text><text class="d" x="744" y="101">slots without camera</text></g>
-      <g class="node" style="transition-delay:0.63s"><rect class="tile" x="670" y="162" width="60" height="60" rx="14"/><use href="#i-amazondynamodb" x="681" y="173" width="38" height="38" fill="#4053D6"/>
-        <text class="t" x="744" y="189">DynamoDB</text><text class="d" x="744" y="209">slot states only</text></g>
-      <g class="node" style="transition-delay:0.71s"><rect class="tile" x="940" y="162" width="60" height="60" rx="14"/><use href="#i-awslambda" x="951" y="173" width="38" height="38" fill="#FF9900"/>
-        <text class="t" x="1014" y="189">Availability</text><text class="d" x="1014" y="209">REST + MCP</text></g>
-      <g class="node" style="transition-delay:0.79s"><rect class="tile" x="1230" y="54" width="60" height="60" rx="14"/><use href="#i-apple" x="1241" y="65" width="38" height="38" fill="#111111"/>
-        <text class="t" x="1304" y="81">iOS app</text><text class="d" x="1304" y="101">SwiftUI</text></g>
-      <g class="node" style="transition-delay:0.87s"><rect class="tile" x="1230" y="162" width="60" height="60" rx="14"/><use href="#i-threedotjs" x="1241" y="173" width="38" height="38" fill="#111111"/>
-        <text class="t" x="1304" y="189">3D view</text><text class="d" x="1304" y="209">three.js</text></g>
-      <g class="node" style="transition-delay:0.95s"><rect class="tile" x="1230" y="270" width="60" height="60" rx="14"/><use href="#i-mcp" x="1241" y="281" width="38" height="38" fill="#111111"/>
-        <text class="t" x="1304" y="297">AI agents</text><text class="d" x="1304" y="317">via MCP</text></g>
+      <!-- One axis at y 142: the main flow runs straight along it, and the models and the end users sit evenly above
+           and below it. The OpenRouter box sits flush under the AWS box. Wires end at a box's edge when the box is the
+           target, so none crosses a label, and every label sits 20 px into its box. -->
+      <g class="zone edge"><rect x="0" y="10" width="530" height="248" rx="20"/><text x="20" y="40">SECURE EDGE DEVICE</text></g>
+      <g class="zone filter"><rect x="274" y="18" width="248" height="232" rx="14"/><text x="294" y="40">PRIVACY FILTER</text></g>
+      <g class="zone aws"><rect x="556" y="10" width="695" height="248" rx="20"/><use href="#i-amazonwebservices" x="576" y="18" width="36" height="36" fill="#ffffff"/></g>
+      <g class="zone model"><rect x="556" y="270" width="225" height="124" rx="20"/><text x="576" y="300">OPENROUTER</text></g>
+      <g class="zone users"><rect x="1277" y="10" width="217" height="248" rx="20"/><text x="1297" y="40">END USER</text></g>
+      <g class="wires"><path class="wire" id="wC" d="M232 142 H274"/><path class="wire" id="wE" d="M522 142 H576"/><path class="wire" id="w2" d="M767 142 H803"/><path class="wire" id="w3" d="M989 142 H1025"/><path class="wire" id="wU" d="M1245 142 H1297 V84 H1317"/><path class="wire" id="wD" d="M1297 142 V200 H1317"/><path class="wire" id="wJ" d="M606 172 V270"/></g>
+      <g class="node" style="transition-delay:0.15s"><rect class="tile" x="20" y="112" width="60" height="60" rx="14"/><use href="#i-espressif" x="31" y="123" width="38" height="38" fill="#E7352C"/>
+        <text class="t" x="94" y="139">Camera board</text><text class="d" x="94" y="159">XIAO ESP32S3</text></g>
+      <g class="node" style="transition-delay:0.23s"><rect class="tile" x="294" y="54" width="60" height="60" rx="14"/><use href="#i-yolo" x="305" y="65" width="38" height="38" fill="#111F68"/>
+        <text class="t" x="368" y="81">YOLO11n</text><text class="d" x="368" y="101">redacts faces</text></g>
+      <g class="node" style="transition-delay:0.27s"><text class="plus" x="398" y="142">+</text></g>
+      <g class="node" style="transition-delay:0.31s"><rect class="tile" x="294" y="170" width="60" height="60" rx="14"/><use href="#i-paddlepaddle" x="305" y="181" width="38" height="38" fill="#0062B0"/>
+        <text class="t" x="368" y="197">PP-OCRv5</text><text class="d" x="368" y="217">redacts licence plates</text></g>
+      <g class="node" style="transition-delay:0.39s"><rect class="tile" x="576" y="112" width="60" height="60" rx="14"/><use href="#i-awslambda" x="587" y="123" width="38" height="38" fill="#FF9900"/>
+        <text class="t" x="650" y="139">Ingest API</text><text class="d" x="650" y="159">Lambda function</text></g>
+      <g class="node" style="transition-delay:0.47s"><rect class="tile" x="576" y="314" width="60" height="60" rx="14"/><use href="#i-typesafe" x="587" y="325" width="38" height="38" fill="#111111"/>
+        <text class="t" x="650" y="341">Jev</text><text class="d" x="650" y="361">free slot detection</text></g>
+      <g class="node" style="transition-delay:0.55s"><rect class="tile" x="803" y="112" width="60" height="60" rx="14"/><use href="#i-dynamodb" x="814" y="123" width="38" height="38"/>
+        <text class="t" x="877" y="139">DynamoDB</text><text class="d" x="877" y="159">slot status</text></g>
+      <g class="node" style="transition-delay:0.63s"><rect class="tile" x="1025" y="112" width="60" height="60" rx="14"/><use href="#i-awslambda" x="1036" y="123" width="38" height="38" fill="#FF9900"/>
+        <text class="t" x="1099" y="139">Availability API</text><text class="d" x="1099" y="159">Lambda function</text></g>
+      <g class="node" style="transition-delay:0.71s"><rect class="tile" x="1317" y="54" width="60" height="60" rx="14"/><use href="#i-apple" x="1328" y="65" width="38" height="38" fill="#111111"/>
+        <text class="t" x="1391" y="81">iOS app</text><text class="d" x="1391" y="101">via REST</text></g>
+      <g class="node" style="transition-delay:0.79s"><rect class="tile" x="1317" y="170" width="60" height="60" rx="14"/><use href="#i-mcp" x="1328" y="181" width="38" height="38" fill="#111111"/>
+        <text class="t" x="1391" y="197">AI agents</text><text class="d" x="1391" y="217">via MCP</text></g>
       <g id="packets"></g>
     </svg>
   </section>
@@ -238,7 +251,7 @@ const slides = [...document.querySelectorAll('.slide')];
 const NOTES = [
   '~40 s · Innovation + impact. 7:45 at E+H: both stands look full, you circle, you are late. Easy+Hitch tells you which exact spot is free before you turn the corner. Spot-level, not just “full”, from low-cost cameras like the challenge’s ESP32 boards. Less searching, more people choosing the bike, and real occupancy data for facility planning.',
   '~80 s · Live demo on the phone, on Demo data: the blue dot on Christoph-Merian-Ring, the map with free spots per stand, the south stand, then 3D Navigation down the street, turning left to the free spot. If the live demo fails, this slide’s phone plays a recording of the same flow.',
-  '~45 s · Technical depth + fair play. Edge: a XIAO ESP32S3 camera board, YOLO11n finds faces and PP-OCRv5 finds plates, and both are pixelated before a frame leaves the edge, only when the view changed. AWS: the Ingest Lambda asks Jev 1.14, through OpenRouter, one yes-or-no question per changed slot, with no training data. DynamoDB keeps slot states only, never images, and a simulator fills the slots no camera reports. End users: the iOS app with its three.js 3D view, and AI agents through MCP. Nobody is tracked.',
+  '~45 s · Technical depth + fair play. Edge: the XIAO ESP32S3 camera board feeds a secure edge device on site over USB, a Mac in our tests. There YOLO11n redacts faces and PP-OCRv5 redacts licence plates, and a frame leaves the site only when the view changed. AWS: two Lambda functions, each behind its own function URL, no API Gateway. The Ingest API compares each slot with its last fingerprint in DynamoDB and asks Jev 1.14, TypeSafe’s decision model, through OpenRouter, one yes-or-no question per changed slot, with no training data. DynamoDB keeps slot states and fingerprints, never images, and the keys sit in SSM Parameter Store. The Availability API serves the iOS app over REST and AI agents over MCP. In the demo, a simulator fills the stations without a camera. Nobody is tracked.',
   '~10 s · Close while the hamster lands: “You ride, we find the spot. Easy+Hitch.” Thank the jury.',
 ];
 let cur = 0, started = null;
@@ -639,41 +652,48 @@ const phone = (() => {
 // ---------------------------------------------------------------- slide 3: one frame at a time through the pipeline
 const packets = (() => {
   const svg = document.getElementById('packets'), NS = 'http://www.w3.org/2000/svg';
-  // A calm relay instead of a constant stream: a pixelated frame (blue) leaves the edge for Ingest, a slot crop goes
-  // to Jev and its answer comes back (white), then slot states (green) from Ingest and the simulator meet in DynamoDB
-  // and are served to the app and the agents. At most two dots move at once.
-  // [wire, colour, start s, duration s, backwards]
-  const CYCLE = 8.5, hops = [
-    ['wE', '#00aeef', 0, 1.2], ['wJ', '#ffffff', 1.4, 0.7], ['wJ', '#ffffff', 2.2, 0.7, true],
-    ['w2', '#2bd46f', 3.1, 0.9], ['wS', '#2bd46f', 3.3, 0.7], ['w3', '#2bd46f', 4.3, 0.9],
-    ['w4', '#2bd46f', 5.5, 0.7], ['wU', '#2bd46f', 6.2, 0.8], ['wD', '#2bd46f', 6.2, 0.8],
+  // A calm relay of glowing blobs instead of a constant stream, and each box glows as a blob reaches it. The camera
+  // board's raw frame (yellow) goes over USB into the privacy filter, and only the pixelated frame (blue) leaves it for
+  // Ingest. Ingest reads the last slot states and fingerprints (green) from DynamoDB, sends the changed slots to Jev
+  // (white), and gets its answer back (white). Ingest writes the new states (green), which are served to the app and
+  // the agents. At most two blobs move at once.
+  // [wire, colour, start s, duration s, backwards, blob radius]. GLOWS: [class on the drawing, from s, to s].
+  const CYCLE = 9.2, GLOWS = [['capturing', 0, 0.6], ['redacting', 0.75, 1.45], ['ingesting', 2.0, 2.7],
+    ['deciding', 3.65, 4.35], ['serving', 7.6, 8.3]], hops = [
+    ['wC', '#ffc857', 0, 0.8, false, 9], ['wE', '#00aeef', 1.3, 0.8, false, 8], ['w2', '#2bd46f', 2.3, 0.6, true, 7],
+    ['wJ', '#ffffff', 3.1, 0.6, false, 8], ['wJ', '#ffffff', 4.2, 0.6, true, 7], ['w2', '#2bd46f', 5.0, 0.6, false, 7], ['w3', '#2bd46f', 5.9, 0.6, false, 7],
+    // The agents' branch leaves the app's wire at the junction, which the blob passes about 0.4 s in.
+    ['wU', '#2bd46f', 6.8, 0.9, false, 8], ['wD', '#2bd46f', 7.2, 0.5, false, 8],
   ];
-  const ease = (u) => u < 0.5 ? 2 * u * u : 1 - (-2 * u + 2) ** 2 / 2;
+  const arch = document.getElementById('arch'), ease = (u) => u < 0.5 ? 2 * u * u : 1 - (-2 * u + 2) ** 2 / 2;
   let raf = null, t0 = 0, dots = [];
   function frame(now) {
     const t = (now - t0) / 1000, c = t - CYCLE * Math.floor(t / CYCLE);
-    dots.forEach(({ dot, path, len, start, dur, back }) => {
+    dots.forEach(({ dot, path, len, start, dur, back, blob }) => {
       const u = t < 0 ? -1 : (c - start) / dur;
       if (u < 0 || u > 1) return dot.setAttribute('opacity', 0);
       const pt = path.getPointAtLength(len * (back ? 1 - ease(u) : ease(u)));
       dot.setAttribute('cx', pt.x); dot.setAttribute('cy', pt.y);
       dot.setAttribute('opacity', Math.min(1, u / 0.15, (1 - u) / 0.15));   // fade in and out at the ends
+      if (blob) dot.setAttribute('r', blob * (0.7 + 0.3 * Math.sin(Math.PI * u)));   // swells on the way
     });
+    GLOWS.forEach(([name, from, to]) => arch.classList.toggle(name, t >= 0 && c >= from && c < to));
     raf = requestAnimationFrame(frame);
   }
   function start() {
     if (raf || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     svg.innerHTML = '';
-    dots = hops.map(([id, color, start, dur, back]) => {
+    dots = hops.map(([id, color, start, dur, back, blob]) => {
       const path = document.getElementById(id), dot = document.createElementNS(NS, 'circle');
-      dot.setAttribute('r', 5); dot.setAttribute('fill', color); dot.setAttribute('class', 'pkt'); dot.setAttribute('opacity', 0);
+      dot.setAttribute('r', blob ?? 5); dot.setAttribute('fill', color); dot.setAttribute('class', 'pkt'); dot.setAttribute('opacity', 0);
+      if (blob) dot.setAttribute('filter', 'url(#glow)');
       svg.appendChild(dot);
-      return { dot, path, len: path.getTotalLength(), start, dur, back };
+      return { dot, path, len: path.getTotalLength(), start, dur, back, blob };
     });
     t0 = performance.now() + 1000;   // the first frame leaves once the boxes have faded in
     raf = requestAnimationFrame(frame);
   }
-  return { start, stop() { cancelAnimationFrame(raf); raf = null; svg.innerHTML = ''; } };
+  return { start, stop() { cancelAnimationFrame(raf); raf = null; svg.innerHTML = ''; GLOWS.forEach(([name]) => arch.classList.remove(name)); } };
 })();
 
 // ---------------------------------------------------------------- easter eggs
