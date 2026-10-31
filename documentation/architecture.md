@@ -123,7 +123,8 @@ app does not ask for the phone's location. It ships sample stations in
 `code/ios/BikeSlot/Demo/demo-stations.json`, a snapshot of the live pipeline
 taken with `code/ios/refresh-demo.sh` (a station no camera covers gets fixed
 sample states there), and in demo mode a random slot changes
-every four seconds, so the interface can be shown and developed without a
+every eight seconds, never a station's last free one, so the interface can be
+shown and developed without a
 backend. Turn it on with the **Demo data** switch in
 the app's settings, or launch with `-demoMode YES` (in Xcode, as an argument
 of the scheme's Run action). The backend client and the demo both implement

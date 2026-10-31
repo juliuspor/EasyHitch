@@ -1,9 +1,10 @@
 import Foundation
 
-/// Built-in sample stations so the app runs without a backend. Every few seconds a random
-/// slot is taken or freed, so the UI has live changes to show; slots no camera saw in the
-/// sample stay unknown, and a station's last free slot stays free, so the demo rider always
-/// has a spot to navigate to. Refresh the data with code/ios/refresh-demo.sh.
+/// Built-in sample stations so the app runs without a backend. Every eight seconds a random
+/// slot is taken or freed, so the UI has live changes to show, slowly enough to follow; slots
+/// no camera saw in the sample stay unknown. Every station keeps at least one free slot, also
+/// when the sample caught it full, so the demo rider always has a spot to navigate to.
+/// Refresh the data with code/ios/refresh-demo.sh.
 actor DemoService: StationService {
     static let shared = DemoService()
     /// A rider on Christoph-Merian-Ring, just past the corner with Kägenstrasse, cycling east in
@@ -12,13 +13,13 @@ actor DemoService: StationService {
 
     private var details: [StationDetail]
     private var lastStep = Date()
-    private static let stepSeconds = 4.0
+    private static let stepSeconds = 8.0
 
     init() {
         let url = Bundle.main.url(forResource: "demo-stations", withExtension: "json")
         let data = url.flatMap { try? Data(contentsOf: $0) } ?? Data("[]".utf8)
         let loaded = (try? APIClient.decoder.decode([StationDetail].self, from: data)) ?? []
-        details = loaded.map { $0.with(slots: $0.slots, at: Date()) }
+        details = loaded.map { $0.with(slots: $0.slotsWithOneFree, at: Date()) }
     }
 
     func stations() async throws -> [Station] {
@@ -50,6 +51,16 @@ actor DemoService: StationService {
 }
 
 private extension StationDetail {
+    /// The slots, with the first taken one freed if none is free.
+    var slotsWithOneFree: [Slot] {
+        guard !slots.contains(where: { $0.state == .free }),
+              let index = slots.firstIndex(where: { $0.state == .taken }) else { return slots }
+        var slots = self.slots
+        let slot = slots[index]
+        slots[index] = Slot(number: slot.number, state: .free, location: slot.location, changedAt: slot.changedAt)
+        return slots
+    }
+
     /// The same station with new slot states, counted as the backend counts them.
     func with(slots: [Slot], at date: Date) -> StationDetail {
         let old = station
