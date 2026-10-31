@@ -17,7 +17,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).parents[2]
 OSM = ROOT / "assets/campus-map/source.osm"
-AREAS = ROOT / "code/backend/data/areas.json"
+STATIONS = ROOT / "code/backend/data/stations.json"
 OUT = ROOT / "code/ios/BikeSlot/Spot/site.js"
 
 ORIGIN = (47.48776, 7.59908)  # middle of the block, same as Site.center in the app
@@ -74,7 +74,7 @@ def main():
         elif tags.get("amenity") == "parking" and points[0] == points[-1]:
             parking.append(ring)
 
-    spots = [local(*area["center"]) for area in json.loads(AREAS.read_text())]
+    spots = [local(s["location"]["lat"], s["location"]["lon"]) for s in json.loads(STATIONS.read_text())["stations"]]
     random = Random(7)  # fixed seed: the same world on every build
 
     def free(p, clearance, others=(), gap=0):
