@@ -100,7 +100,7 @@ the 3D scenes are built in parallel ([architecture.md](architecture.md)):
 | [`OccupancyClassifier`](../code/backend/classification/classifier.py#L27-L28) | [`JevCropClassifier`](../code/backend/classification/jev.py#L34-L64) and [`StaticClassifier`](../code/backend/classification/static.py#L25-L57) |
 | [`OccupancyRepository`](../code/backend/occupancy/repository.py#L15-L21) | [`InMemoryOccupancyRepository`](../code/backend/occupancy/repository.py#L24-L44) and [`DynamoOccupancyRepository`](../code/backend/occupancy/dynamodb.py#L22-L58) |
 | [`FingerprintStore`](../code/backend/ingest/fingerprints.py#L11-L14) | [`InMemoryFingerprintStore`](../code/backend/ingest/fingerprints.py#L17-L28) and [`DynamoFingerprintStore`](../code/backend/ingest/dynamodb.py#L9-L22) |
-| [`FrameSource`](../code/edge/sources.py#L14-L15), [`PIIDetector`](../code/edge/pii.py#L27-L28), [`FrameUploader`](../code/edge/upload.py#L17-L19) on the camera | A camera with YOLO11n, PP-OCRv5 and HTTP, or recorded frames with marked regions and a dry run |
+| [`FrameSource`](../code/edge/sources.py#L25-L26), [`PIIDetector`](../code/edge/pii.py#L27-L28), [`FrameUploader`](../code/edge/upload.py#L17-L19) on the camera | A webcam or a XIAO board on USB with YOLO11n, PP-OCRv5 and HTTP, or recorded frames with marked regions and a dry run |
 | [`StationService`](../code/ios/BikeSlot/APIClient.swift#L5-L8) in the app | [`APIClient`](../code/ios/BikeSlot/APIClient.swift#L19-L69) and [`DemoService`](../code/ios/BikeSlot/Demo/DemoService.swift#L6-L45) |
 
 One place picks the implementations from the environment
@@ -263,9 +263,11 @@ Three ways to show it:
    [`DemoService`](../code/ios/BikeSlot/Demo/DemoService.swift#L6-L45)).
 3. **The deck.** The phone screen on slide 2 plays the app on its own.
 
-A camera board uses the same route as the recorded cameras
-([`IngestClient`](../code/edge/upload.py#L22-L58)), with a calibration in
-`data/cameras/<camera_id>.json` for its view of the station.
+A XIAO camera board on the USB cable of an edge computer
+([`SerialFrameSource`](../code/edge/sources.py#L91-L128),
+[camera board](camera-firmware.md)) uses the same route as the recorded
+cameras ([`IngestClient`](../code/edge/upload.py#L22-L58)), with a
+calibration in `data/cameras/<camera_id>.json` for its view of the station.
 
 ## What we checked
 
@@ -284,3 +286,4 @@ On 31 October 2026, on macOS with Python 3.13.16:
 | PP-OCRv5 | `TextPIIDetector` and `pixelate` on the seven recorded frames, sidecars ignored, each result checked by eye | The five readable plates in `cam-north-1`, `cam-north-2` and `cam-south-a` come out unreadable, the two yellow e-bike plates and a tilted motorbike plate among them. 2% of a frame is pixelated on average, 6% at most, in 0.1 s per frame |
 | iOS app | Built for iOS 18, run in the iPhone 17 Pro simulator against the local backend with the recorded cameras, then in demo mode | All four stations on the map. North: 26 of 45 free, 10 not seen by a camera, grey in 3D. South: slots 1 to 10 and 11 to 20 as two racks on two sides of the building, and the 3D view flies between them. The bike garage and the Kägenstrasse shelter have no camera, so they read unknown. With `BACKEND_SIMULATION=on` and no cameras, all four stations change every few seconds. In demo mode the camera-less ones get fixed sample states, and counts change every four seconds |
 | Simulation | `pytest` in `code/backend`, then the local backend with `BACKEND_SIMULATION=on` polled three times, six seconds apart | 5 tests pass: every slot of a camera-less station filled, the share taken follows the time of day, a slot a camera reports left alone and taken over once stale. All 126 slots known, and the counts changed between polls |
+| XIAO camera | `pytest` in `code/edge` with a pseudo-terminal answering like the firmware, and the firmware compiled with `arduino-cli` for `XIAO_ESP32S3` | 2 tests pass: a photo read and scaled to the calibrated size, a silent board times out. The firmware builds, 10% of the flash. Not yet run against the board itself |

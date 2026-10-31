@@ -63,6 +63,13 @@ A live camera, with YOLO11n finding people and PP-OCRv5 finding text:
 .venv/bin/python main.py --source webcam --camera-id cam-south-a --pii yolo --upload dry-run
 ```
 
+A XIAO ESP32S3 Sense on the USB cable, running `code/firmware/camera` (see
+[camera board](../../documentation/camera-firmware.md)):
+
+```bash
+.venv/bin/python main.py --source serial --camera-id cam-xiao-1 --size 640x480 --pii yolo --upload dry-run
+```
+
 The camera's frames must match its calibration in the backend (`--size`,
 1280x960 by default), and `--upload http` needs the camera's token. The
 weights of YOLO11n and PP-OCRv5 download on first use. PP-OCRv5's file is

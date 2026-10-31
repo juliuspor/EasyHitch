@@ -41,7 +41,7 @@ The same interfaces serve a live camera and recorded frames:
 
 | Interface | With a camera | With recorded frames |
 |---|---|---|
-| [`FrameSource`](../code/edge/sources.py#L14-L15) | `WebcamFrameSource` | [`FolderFrameSource`](../code/edge/sources.py#L18-L45) |
+| [`FrameSource`](../code/edge/sources.py#L25-L26) | `WebcamFrameSource`, or [`SerialFrameSource`](../code/edge/sources.py#L91-L128) for a XIAO board on USB ([camera board](camera-firmware.md)) | [`FolderFrameSource`](../code/edge/sources.py#L29-L56) |
 | [`PIIDetector`](../code/edge/pii.py#L27-L28) | [`YoloPIIDetector`](../code/edge/pii.py#L57-L69) for faces and [`TextPIIDetector`](../code/edge/text.py#L32-L52) for plates, merged by [`CombinedPIIDetector`](../code/edge/pii.py#L72-L81) | [`SidecarPIIDetector`](../code/edge/pii.py#L36-L54) |
 | [`FrameUploader`](../code/edge/upload.py#L17-L19) | [`IngestClient`](../code/edge/upload.py#L22-L58) | [`DryRunUploader`](../code/edge/upload.py#L61-L67) |
 

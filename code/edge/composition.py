@@ -8,7 +8,7 @@ import httpx
 
 from pii import CombinedPIIDetector, PIIDetector, SidecarPIIDetector, YoloPIIDetector
 from pipeline import EdgePipeline
-from sources import FolderFrameSource, FrameSource, WebcamFrameSource
+from sources import FolderFrameSource, FrameSource, SerialFrameSource, WebcamFrameSource
 from text import TextPIIDetector
 from upload import DryRunUploader, FrameUploader, IngestClient
 
@@ -21,12 +21,15 @@ def build_pipeline(options: argparse.Namespace) -> EdgePipeline:
 
 
 def _source(options: argparse.Namespace) -> tuple[FrameSource, list[str]]:
-    if options.source == "webcam":
+    if options.source in ("webcam", "serial"):
         if not options.camera_id:
-            raise SystemExit("--source webcam needs --camera-id")
+            raise SystemExit(f"--source {options.source} needs --camera-id")
         if options.pii == "sidecar":
-            raise SystemExit("--pii sidecar needs recorded frames. Use --pii yolo with a webcam")
-        source = WebcamFrameSource(options.camera_id, options.device, options.size, options.interval)
+            raise SystemExit("--pii sidecar needs recorded frames. Use --pii yolo with a live camera")
+        if options.source == "serial":
+            source = SerialFrameSource(options.camera_id, options.port, options.size, options.interval)
+        else:
+            source = WebcamFrameSource(options.camera_id, options.device, options.size, options.interval)
         return source, [options.camera_id]
     folder = FolderFrameSource(Path(options.source), options.interval, options.rounds)
     return folder, folder.camera_ids
