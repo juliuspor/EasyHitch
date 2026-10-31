@@ -13,7 +13,7 @@ For each frame the pipeline:
 2. finds people and the regions to hide: each person's face and any readable
    text, licence plates of every format among it, or for a recorded frame the
    regions its sidecar lists,
-3. pixelates those regions in 8x8 blocks,
+3. pixelates those regions in 16x16 blocks,
 4. uploads the JPEG with the person boxes, so the backend skips the slots
    behind people,
 5. makes the frame the new baseline only once the backend accepted it, so a

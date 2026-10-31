@@ -6,7 +6,7 @@ from PIL import Image
 
 from frame import Box
 
-BLOCK = 8  # pixels per block side
+BLOCK = 16  # pixels per block side: a face 80 pixels wide becomes five blocks
 
 
 def pixelate(image: Image.Image, regions: Iterable[Box], block: int = BLOCK) -> Image.Image:
