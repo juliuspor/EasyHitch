@@ -238,8 +238,7 @@ connection. Each slide has speaker notes
 ([`NOTES`](../assets/pitch/index.html#L324-L329), press N). Press T for a
 three-minute timer that turns yellow at 2:30 and red at 3:00
 ([`setInterval`](../assets/pitch/index.html#L353-L357)). The
-[script](../assets/pitch/script.md) gives every line, who says it and when,
-with fallbacks and answers for the jury.
+[script](../assets/pitch/script.md) gives every line, who says it and when.
 
 | Time | Slide | Focus |
 |---|---|---|
