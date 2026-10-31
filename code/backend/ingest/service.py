@@ -75,6 +75,10 @@ class IngestService:
         updated = {}
         for slot in visible:
             state = current.slot(slot.number)
+            if state.simulated:
+                # The camera takes the slot over. The simulator's guess is no reading, so start
+                # from unknown: an unsure first reading then waits for a second, not on the guess.
+                state = SlotOccupancy(slot.number)
             if slot.number in readings:
                 state = decide(state, readings[slot.number], now)
             updated[slot.number] = state.reported(now)

@@ -1,14 +1,19 @@
 """The simulator fills the slots no camera reports, follows the time of day, never overrides a camera,
 and runs the same way as a scheduled Lambda function."""
 
+import io
 import random
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 
 import pytest
+from PIL import Image
 
 import composition
-from ingest.service import _needs_reading
+from cameras.camera import Camera, SlotView
+from classification.classifier import Reading
+from ingest.fingerprints import InMemoryFingerprintStore
+from ingest.service import IngestService, _needs_reading
 from occupancy.dynamodb import _item, _occupancy, _slot
 from occupancy.model import SlotOccupancy, SlotState, StationOccupancy
 from occupancy.repository import InMemoryOccupancyRepository
@@ -83,6 +88,30 @@ def test_a_camera_reads_a_simulated_slot_instead_of_trusting_it():
     simulated = SlotOccupancy(number=1, state=SlotState.FREE, reported_at=NOW, simulated=True)
     assert _needs_reading(simulated, known_print=7, new_print=7)
     assert not _needs_reading(replace(simulated, simulated=False), known_print=7, new_print=7)
+
+
+class UnsureClassifier:
+    """Never sure, so every reading waits for a second one that agrees."""
+
+    def classify(self, frame: Image.Image, slots: list[SlotView]) -> dict[int, Reading]:
+        return {slot.number: Reading(taken=False, confidence=0.6) for slot in slots}
+
+
+def test_a_camera_that_takes_over_a_simulated_slot_starts_from_unknown():
+    guess = SlotOccupancy(number=1, state=SlotState.TAKEN, reported_at=NOW, simulated=True)
+    repository = InMemoryOccupancyRepository()
+    repository.save(StationOccupancy("garage", {1: guess}))
+    camera = Camera(id="cam", station_id="garage", frame_size=(64, 48),
+                    slots=(SlotView(station_id="garage", number=1, box=(0, 0, 32, 48)),))
+    photo = io.BytesIO()
+    Image.new("RGB", camera.frame_size, (120, 120, 120)).save(photo, "JPEG")
+
+    IngestService(UnsureClassifier(), repository, InMemoryFingerprintStore()).ingest(camera, photo.getvalue(), [])
+
+    slot = repository.get("garage").slot(1)
+    assert slot.state is SlotState.UNKNOWN  # not the simulator's "taken"
+    assert slot.pending_taken is False
+    assert not slot.simulated
 
 
 def test_dynamodb_keeps_who_reported_a_slot():
