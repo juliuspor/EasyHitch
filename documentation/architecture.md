@@ -113,7 +113,8 @@ every taken slot. Given the rider's position, it navigates instead: it finds
 the shortest way along the OpenStreetMap streets, swoops down from straight
 above the rider into the bike lane, rides it without stopping and turns to
 face the rack as it slows down, with low-poly street details only along that
-way. Only the demo has a rider, on Christoph-Merian-Ring
+way. The controls are Liquid Glass on iOS 26 and materials on iOS 18. Only the
+demo has a rider, on Christoph-Merian-Ring
 ([`Backend.rider`](../code/ios/BikeSlot/APIClient.swift#L17-L21)); the live
 app does not ask for the phone's location. It ships sample stations in
 `code/ios/BikeSlot/Demo/demo-stations.json`, a snapshot of the live pipeline

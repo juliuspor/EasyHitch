@@ -64,7 +64,7 @@ the app opens the closest shelter that still has room
 ([`go`](../code/ios/BikeSlot/MapScreen.swift#L100-L110)).
 
 **3D Navigation to the free spot.** In demo mode the map shows the rider as a
-blue dot ([`RiderDot`](../code/ios/BikeSlot/MapScreen.swift#L369-L397)).
+blue dot ([`RiderDot`](../code/ios/BikeSlot/MapScreen.swift#L373-L401)).
 **3D Navigation** starts straight above it, swoops down into the bike lane
 and rides on to the station without stopping, turning to face the rack as it
 slows down ([`navigationFlight`](../code/ios/BikeSlot/Spot/spot.js#L383-L434)),
@@ -140,8 +140,11 @@ in [`template.yaml`](../code/backend/template.yaml).
   ([`create_router`](../code/backend/ingest/api.py#L33-L80)).
 - A broken configuration stops the backend at start with a clear message
   ([`Settings`](../code/backend/settings.py#L34-L91)).
-- The app runs from iOS 18 and uses Liquid Glass on iOS 26 or later
-  ([`glassBackground`](../code/ios/BikeSlot/Glass.swift#L3-L31)).
+- The app runs from iOS 18 and uses Liquid Glass on iOS 26 or later for its
+  search field, pins tinted by availability, cards and buttons, over the map
+  and over the 3D view
+  ([`glassBackground`](../code/ios/BikeSlot/Glass.swift#L3-L35),
+  [`GlassGroup`](../code/ios/BikeSlot/Glass.swift#L39-L50)).
 
 ## AI code review
 

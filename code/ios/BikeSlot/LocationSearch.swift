@@ -114,7 +114,7 @@ struct SearchOverlay: View {
                     .padding(14)
             }
         }
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .glassBackground(in: RoundedRectangle(cornerRadius: 20, style: .continuous))
     }
 
     private func row(icon: String, tint: Color, title: String, subtitle: String,

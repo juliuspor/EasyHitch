@@ -155,9 +155,8 @@ private struct StationPin: View {
         .foregroundStyle(.white)
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
-        .background(station.availability.color.gradient, in: Capsule())
-        .overlay(Capsule().stroke(.white, lineWidth: selected ? 3 : 2))
-        .shadow(color: .black.opacity(selected ? 0.35 : 0.2), radius: selected ? 8 : 4, y: 2)
+        .glassBackground(in: Capsule(), tint: station.availability.color, interactive: true)
+        .contentShape(Capsule())
         .scaleEffect(selected ? 1.25 : 1, anchor: .bottom)
         .animation(.snappy, value: station.free)
         .animation(.snappy, value: selected)
@@ -172,43 +171,48 @@ private struct StatusBar: View {
     let settings: () -> Void
 
     var body: some View {
-        HStack(spacing: 8) {
+        GlassGroup {
             HStack(spacing: 8) {
-                if let error = store.errorMessage {
-                    Label(error, systemImage: "wifi.exclamationmark")
-                        .foregroundStyle(.orange)
-                        .lineLimit(1)
-                } else if let destination {
-                    Label(destination.name, systemImage: "building.2.fill")
-                        .foregroundStyle(Brand.blue)
-                        .lineLimit(1)
-                    Button(action: clearDestination) { Image(systemName: "xmark.circle.fill") }
-                        .buttonStyle(.plain)
+                status
+                Spacer()
+                Button(action: settings) {
+                    Image(systemName: "gearshape.fill")
+                        .font(.body.weight(.semibold))
                         .foregroundStyle(.secondary)
-                        .accessibilityLabel("Clear destination")
-                } else {
-                    Label("\(store.totalFree) free spots", systemImage: "bicycle")
-                        .contentTransition(.numericText())
-                        .animation(.snappy, value: store.totalFree)
+                        .frame(width: 44, height: 44)
+                        .glassBackground(in: Circle(), interactive: true)
+                        .contentShape(Circle())
                 }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Settings")
             }
-            .font(.subheadline.weight(.semibold))
-            .padding(.horizontal, 14)
-            .frame(height: 44)
-            .glassBackground(in: Capsule())
-
-            Spacer()
-
-            Button(action: settings) {
-                Image(systemName: "gearshape.fill")
-                    .font(.body.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .frame(width: 44, height: 44)
-                    .glassBackground(in: Circle())
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Settings")
         }
+    }
+
+    private var status: some View {
+        HStack(spacing: 8) {
+            if let error = store.errorMessage {
+                Label(error, systemImage: "wifi.exclamationmark")
+                    .foregroundStyle(.orange)
+                    .lineLimit(1)
+            } else if let destination {
+                Label(destination.name, systemImage: "building.2.fill")
+                    .foregroundStyle(Brand.blue)
+                    .lineLimit(1)
+                Button(action: clearDestination) { Image(systemName: "xmark.circle.fill") }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.secondary)
+                    .accessibilityLabel("Clear destination")
+            } else {
+                Label("\(store.totalFree) free spots", systemImage: "bicycle")
+                    .contentTransition(.numericText())
+                    .animation(.snappy, value: store.totalFree)
+            }
+        }
+        .font(.subheadline.weight(.semibold))
+        .padding(.horizontal, 14)
+        .frame(height: 44)
+        .glassBackground(in: Capsule())
     }
 }
 
@@ -440,7 +444,15 @@ private struct SettingsSheet: View {
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar { Button("Done") { dismiss() } }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    if #available(iOS 26, *) {
+                        Button(role: .close) { dismiss() }
+                    } else {
+                        Button("Done") { dismiss() }
+                    }
+                }
+            }
         }
         .presentationDetents([.medium])
     }

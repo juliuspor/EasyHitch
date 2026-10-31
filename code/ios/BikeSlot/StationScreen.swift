@@ -74,6 +74,6 @@ private struct StatusCard: View {
 
         }
         .padding(16)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .glassBackground(in: RoundedRectangle(cornerRadius: 28, style: .continuous))
     }
 }
