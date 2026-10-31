@@ -27,6 +27,7 @@ if TYPE_CHECKING:
     from classification.classifier import OccupancyClassifier
     from ingest.fingerprints import FingerprintStore
     from ingest.service import IngestService
+    from simulation.simulator import OccupancySimulator
 
 JEV_TIMEOUT_SECONDS = 20  # leaves room within the Ingest function's 30 s timeout
 
@@ -109,6 +110,12 @@ def availability_service() -> "AvailabilityService":
     from availability.service import AvailabilityService
     return AvailabilityService(station_catalog(), occupancy_repository(), settings().stale_after,
                                settings().data_dir / "models")
+
+
+@cache
+def simulator() -> "OccupancySimulator":
+    from simulation.simulator import OccupancySimulator
+    return OccupancySimulator(station_catalog(), occupancy_repository(), settings().stale_after)
 
 
 @cache

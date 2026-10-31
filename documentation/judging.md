@@ -104,7 +104,7 @@ the 3D scenes are built in parallel ([architecture.md](architecture.md)):
 | [`StationService`](../code/ios/BikeSlot/APIClient.swift#L5-L8) in the app | [`APIClient`](../code/ios/BikeSlot/APIClient.swift#L19-L69) and [`DemoService`](../code/ios/BikeSlot/Demo/DemoService.swift#L6-L45) |
 
 One place picks the implementations from the environment
-([`classifier`](../code/backend/composition.py#L84-L98)), so the same code runs
+([`classifier`](../code/backend/composition.py#L85-L99)), so the same code runs
 on a laptop with nothing installed and on AWS Lambda with DynamoDB, as defined
 in [`template.yaml`](../code/backend/template.yaml).
 
@@ -127,7 +127,7 @@ in [`template.yaml`](../code/backend/template.yaml).
   415, too large 413, wrong frame size or headers 422
   ([`create_router`](../code/backend/ingest/api.py#L33-L80)).
 - A broken configuration stops the backend at start with a clear message
-  ([`Settings`](../code/backend/settings.py#L33-L88)).
+  ([`Settings`](../code/backend/settings.py#L34-L91)).
 - The app runs from iOS 18 and uses Liquid Glass on iOS 26 or later
   ([`glassBackground`](../code/ios/BikeSlot/Glass.swift#L3-L31)).
 
@@ -162,7 +162,7 @@ All but the second print nothing.
   every Lambda invocation gets a fresh app
   ([`handler`](../code/backend/availability/handler.py#L16-L20)).
 - Keys come from the environment or AWS Systems Manager only
-  ([`Settings`](../code/backend/settings.py#L33-L88)), and each Lambda
+  ([`Settings`](../code/backend/settings.py#L34-L91)), and each Lambda
   function imports only the code its own service needs.
 - Generated files stay out of git: the Python virtual environments and caches,
   SAM build output, YOLO and PP-OCRv5 weights, the scene generator's `out/`,
@@ -254,6 +254,9 @@ Three ways to show it:
    ([backend README](../code/backend/README.md#run-locally),
    [edge README](../code/edge/README.md#run)), then watch the stations fill in
    at `/v1/stations`, or ask an AI agent through the MCP server where to park.
+   With `BACKEND_SIMULATION=on`, the slots no camera reports, the bike garage
+   and the Kägenstrasse shelter among them, fill and empty over a simulated
+   day ([`OccupancySimulator`](../code/backend/simulation/simulator.py#L29-L108)).
 2. **The app.** With the **Demo data** setting, or launched with
    `-demoMode YES`, built-in stations change every four seconds without a
    backend ([`Backend`](../code/ios/BikeSlot/APIClient.swift#L10-L16),
@@ -279,4 +282,5 @@ On 31 October 2026, on macOS with Python 3.13.16:
 | Jev request | `JevCropClassifier` against a stand-in for the Decisions API | Request as documented, crops within Jev's size limits, errors become `502` |
 | YOLO11n | `YoloPIIDetector` on `IMG_20261029_084104` | Finds the person at the right edge |
 | PP-OCRv5 | `TextPIIDetector` and `pixelate` on the seven recorded frames, sidecars ignored, each result checked by eye | The five readable plates in `cam-north-1`, `cam-north-2` and `cam-south-a` come out unreadable, the two yellow e-bike plates and a tilted motorbike plate among them. 2% of a frame is pixelated on average, 6% at most, in 0.1 s per frame |
-| iOS app | Built for iOS 18, run in the iPhone 17 Pro simulator against the local backend with the recorded cameras, then in demo mode | All four stations on the map. North: 26 of 45 free, 10 not seen by a camera, grey in 3D. South: slots 1 to 10 and 11 to 20 as two racks on two sides of the building, and the 3D view flies between them. The bike garage and the Kägenstrasse shelter have no camera, so they read unknown. In demo mode they get fixed sample states, and counts change every four seconds |
+| iOS app | Built for iOS 18, run in the iPhone 17 Pro simulator against the local backend with the recorded cameras, then in demo mode | All four stations on the map. North: 26 of 45 free, 10 not seen by a camera, grey in 3D. South: slots 1 to 10 and 11 to 20 as two racks on two sides of the building, and the 3D view flies between them. The bike garage and the Kägenstrasse shelter have no camera, so they read unknown. With `BACKEND_SIMULATION=on` and no cameras, all four stations change every few seconds. In demo mode the camera-less ones get fixed sample states, and counts change every four seconds |
+| Simulation | `pytest` in `code/backend`, then the local backend with `BACKEND_SIMULATION=on` polled three times, six seconds apart | 5 tests pass: every slot of a camera-less station filled, the share taken follows the time of day, a slot a camera reports left alone and taken over once stale. All 126 slots known, and the counts changed between polls |

@@ -3,7 +3,8 @@
 A profile picks a complete set of implementations: `local` runs on a laptop
 with nothing but this folder, `aws` uses DynamoDB, SSM and Jev. A single
 setting overrides one choice, so the real classifier can run locally while
-everything else stays local.
+everything else stays local. BACKEND_SIMULATION=on lets the local server
+simulate the slots no camera reports (simulation/simulator.py).
 """
 
 import os
@@ -18,10 +19,11 @@ CHOICES = {
     "classifier": ("static", "jev"),
     "storage": ("memory", "dynamodb"),
     "cameras": ("file", "ssm"),
+    "simulation": ("off", "on"),
 }
 PROFILES = {
-    "local": {"classifier": "static", "storage": "memory", "cameras": "file"},
-    "aws": {"classifier": "jev", "storage": "dynamodb", "cameras": "ssm"},
+    "local": {"classifier": "static", "storage": "memory", "cameras": "file", "simulation": "off"},
+    "aws": {"classifier": "jev", "storage": "dynamodb", "cameras": "ssm", "simulation": "off"},
 }
 
 
@@ -35,6 +37,7 @@ class Settings:
     classifier: str
     storage: str
     cameras: str
+    simulation: str
     stale_after: timedelta
     jev_model: str
     decisions_url: str

@@ -29,6 +29,8 @@ other as `from occupancy.decider import decide`.
 | `classification/` | The classifier interface, `JevCropClassifier` and `StaticClassifier` |
 | `ingest/` | Frame decoding, slot fingerprints, `IngestService`, the ingest route and its Lambda handler |
 | `availability/` | `AvailabilityService`, its routes, the MCP server and its Lambda handler |
+| `simulation/` | `OccupancySimulator`, which fills the slots no camera reports over a simulated day |
+| `tests/` | Tests, run with `.venv/bin/pip install -r requirements-dev.txt` and `.venv/bin/python -m pytest` |
 | `data/` | Bundled data: stations, camera calibrations, fixed readings, development tokens |
 | `composition.py` | The one place that picks implementations from the environment |
 
@@ -62,6 +64,14 @@ with Jev instead:
 OPENROUTER_API_KEY=<key> BACKEND_CLASSIFIER=jev .venv/bin/uvicorn local:app --port 8000
 ```
 
+For a demo, or for stations without a camera yet, simulate the slots no camera
+reports. A working day takes ten minutes, and a slot a camera reports stays
+the camera's:
+
+```bash
+BACKEND_SIMULATION=on .venv/bin/uvicorn local:app --port 8000
+```
+
 ## Configuration
 
 | Variable | Local default | AWS default | Meaning |
@@ -70,6 +80,7 @@ OPENROUTER_API_KEY=<key> BACKEND_CLASSIFIER=jev .venv/bin/uvicorn local:app --po
 | `BACKEND_CLASSIFIER` | `static` | `jev` | `static` answers from `data/static-readings.json` |
 | `BACKEND_STORAGE` | `memory` | `dynamodb` | Where slot states and fingerprints live |
 | `BACKEND_CAMERAS` | `file` | `ssm` | Where camera token hashes come from |
+| `BACKEND_SIMULATION` | `off` | `off` | `on` simulates the slots no camera reports, in the local server |
 | `OPENROUTER_API_KEY` | | | The key itself, for `jev` on a laptop |
 | `OPENROUTER_API_KEY_PARAMETER` | | `/easyhitch/openrouter-api-key` | SSM parameter with the key, on AWS |
 | `CAMERA_TOKENS_PARAMETER` | | `/easyhitch/camera-tokens` | SSM parameter with the token hashes |

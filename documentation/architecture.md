@@ -58,7 +58,7 @@ How it looks at the frame is its own strategy:
   answers from `data/static-readings.json` and needs no network access.
 
 A new classifier is a class with `classify(frame, slots)`, picked in
-[`classifier`](../code/backend/composition.py#L84-L98).
+[`classifier`](../code/backend/composition.py#L85-L99).
 
 ## State: `OccupancyRepository` and `FingerprintStore`
 
@@ -71,6 +71,21 @@ A new classifier is a class with `classify(frame, slots)`, picked in
 
 Both have an in-memory version for a laptop and a DynamoDB version for AWS.
 Only [`composition.py`](../code/backend/composition.py) picks implementations.
+
+## Simulated occupancy
+
+For the demo, and for stations without a camera, the local server simulates
+the slots no camera reports
+([`OccupancySimulator`](../code/backend/simulation/simulator.py#L29-L108)).
+It writes through the same `OccupancyRepository` and state rule as the Ingest
+API, so the Availability API, the MCP server and the app read a simulated slot
+like a reported one. A working day takes ten minutes: the racks fill in the
+morning and empty in the evening, each station a little ahead of the last
+([`target`](../code/backend/simulation/simulator.py#L40-L46)). A slot that a
+camera reported within `STALE_AFTER_SECONDS` belongs to the camera
+([`_is_simulated`](../code/backend/simulation/simulator.py#L102-L105)), so a
+new camera takes over its slots without any change to the simulation. It runs
+with `BACKEND_SIMULATION=on`, in the local server only.
 
 ## Backend and clients: the Availability API and MCP
 

@@ -39,6 +39,13 @@ photos of the north and south stations:
 cd code/edge && python3.13 -m venv .venv && .venv/bin/pip install -r requirements.txt && .venv/bin/python main.py --source ../../assets/camera-frames --pii sidecar --upload http --url http://localhost:8000 --tokens dev-tokens.json
 ```
 
+For a demo in which every station keeps changing, start the backend with
+simulated occupancy instead, and leave the recorded cameras off:
+
+```bash
+cd code/backend && BACKEND_SIMULATION=on .venv/bin/uvicorn local:app --port 8000
+```
+
 Then open `http://localhost:8000/v1/stations`, or let an AI agent such as
 Claude Code ask where to park:
 
