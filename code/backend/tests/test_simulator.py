@@ -1,5 +1,5 @@
-"""The simulator fills the slots no camera reports, follows the time of day, never overrides a camera,
-and runs the same way as a scheduled Lambda function."""
+"""The simulator fills the slots no camera reports, follows the time of day, always leaves a slot free,
+never overrides a camera, and runs the same way as a scheduled Lambda function."""
 
 import io
 import random
@@ -57,6 +57,15 @@ def test_follows_the_time_of_day():
         simulator.step(busiest)
     taken = [slot for slot in repository.get("garage").slots.values() if slot.state is SlotState.TAKEN]
     assert len(taken) == round(BUSY * 40)
+
+
+def test_always_leaves_a_slot_free():
+    simulator, repository = simulate(3)
+    busiest = NOW + DAY / 2  # 90% of three slots would round to all three
+    for _ in range(20):
+        simulator.step(busiest)
+        states = [slot.state for slot in repository.get("garage").slots.values()]
+        assert SlotState.FREE in states
 
 
 def test_leaves_a_slot_a_camera_reports_alone():
@@ -131,11 +140,11 @@ def test_a_scheduled_run_steps_until_shortly_before_its_timeout(monkeypatch):
         remaining = 60_000
 
         def get_remaining_time_in_millis(self) -> int:
-            self.remaining -= 3_000
+            self.remaining -= STEP.total_seconds() * 1000
             return self.remaining
 
     result = handler.handler({}, Context())
-    assert result["steps"] == 17
+    assert result["steps"] == 5  # at 52, 44, 36, 28 and 20 s left; at 12 s a step could run into the timeout
     assert repository.get("garage").slot(1).simulated
 
 

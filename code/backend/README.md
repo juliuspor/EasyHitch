@@ -66,8 +66,9 @@ OPENROUTER_API_KEY=<key> BACKEND_CLASSIFIER=jev .venv/bin/uvicorn local:app --po
 ```
 
 For a demo, or for stations without a camera yet, simulate the slots no camera
-reports. A working day takes ten minutes, and a slot a camera reports stays
-the camera's:
+reports. A working day takes ten minutes, each station moves one slot every
+eight seconds and always keeps one free, and a slot a camera reports stays the
+camera's:
 
 ```bash
 BACKEND_SIMULATION=on .venv/bin/uvicorn local:app --port 8000

@@ -4,7 +4,8 @@ For the demo, and for stations that have no camera yet. The simulator writes
 through the same OccupancyRepository and decide() rule as the Ingest API, so
 the Availability API, the MCP server and the app read a simulated slot like a
 reported one. A slot that a camera has reported within stale_after belongs to
-the camera, and the simulator leaves it alone until it goes stale. Each slot
+the camera, and the simulator leaves it alone until it goes stale. It always
+leaves one of a station's slots free, so no station it fills reads full. Each slot
 stores whether the simulator reported it last, so the simulator keeps no state
 of its own and can run as a fresh Lambda invocation every minute.
 """
@@ -23,7 +24,7 @@ from occupancy.repository import ConcurrentUpdate, OccupancyRepository
 from stations.catalog import Station, StationCatalog
 
 DAY = timedelta(minutes=10)  # one simulated working day, so a demo sees the racks fill and empty
-STEP = timedelta(seconds=3)
+STEP = timedelta(seconds=8)  # slow enough to follow each change on the map
 QUIET, BUSY = 0.15, 0.9  # share of slots taken at night and at the busiest time of the day
 CHURN = 0.3  # chance per step that one rider leaves while another arrives
 
@@ -81,7 +82,7 @@ class OccupancySimulator:
             # A slot new to the simulation starts as the time of day suggests.
             if slots[number].state is SlotState.UNKNOWN and self._rng.random() < target:
                 taken.add(number)
-        wanted = round(target * len(simulated))
+        wanted = min(round(target * len(simulated)), len(simulated) - 1)
         if len(taken) < wanted:
             taken.add(self._pick([n for n in simulated if n not in taken]))
         elif len(taken) > wanted:
