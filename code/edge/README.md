@@ -70,8 +70,8 @@ pinned by its SHA-256, and any other file is refused.
 
 ## Recorded frames
 
-`assets/camera-frames/<camera_id>/` holds the hosts' photos of the two
-stations, one photo per camera, upright and scaled to 1280x960. Each frame has
+`assets/camera-frames/<camera_id>/` holds the hosts' photos of the north
+and south stations, one photo per camera, upright and scaled to 1280x960. Each frame has
 a sidecar JSON file listing `people` and `pii_regions`: faces, readable
 plates, and plates on parked cars.
 

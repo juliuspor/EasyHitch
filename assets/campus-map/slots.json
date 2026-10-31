@@ -1,5 +1,5 @@
 {
- "source": "Slot positions measured from OSM way 1463536691, satellite imagery, and the 29 Oct 2026 site photos; occupancy is illustrative",
+ "source": "Slot positions measured from OSM way 1463536691, satellite imagery, and the 29 Oct 2026 site photos; occupancy is illustrative. The bike garage and the Kägenstrasse shelter are placed from the team's site markings and have no camera yet, so their status is a placeholder; their x and y are converted from longitude and latitude",
  "slots": [
   {
    "zone_id": "CMR_NORTH_01",
@@ -585,6 +585,555 @@
    "y": -94.25,
    "lon": 7.6002019,
    "lat": 47.4870019
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 1,
+   "status": "free",
+   "x": 15.5,
+   "y": 85.24,
+   "lon": 7.5984396,
+   "lat": 47.488617
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 2,
+   "status": "free",
+   "x": 14.95,
+   "y": 85.24,
+   "lon": 7.5984323,
+   "lat": 47.488617
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 3,
+   "status": "free",
+   "x": 14.4,
+   "y": 85.24,
+   "lon": 7.598425,
+   "lat": 47.488617
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 4,
+   "status": "free",
+   "x": 13.85,
+   "y": 85.24,
+   "lon": 7.5984176,
+   "lat": 47.488617
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 5,
+   "status": "free",
+   "x": 13.3,
+   "y": 85.24,
+   "lon": 7.5984103,
+   "lat": 47.488617
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 6,
+   "status": "free",
+   "x": 12.75,
+   "y": 85.24,
+   "lon": 7.598403,
+   "lat": 47.488617
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 7,
+   "status": "free",
+   "x": 12.2,
+   "y": 85.24,
+   "lon": 7.5983957,
+   "lat": 47.488617
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 8,
+   "status": "free",
+   "x": 11.65,
+   "y": 85.24,
+   "lon": 7.5983884,
+   "lat": 47.488617
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 9,
+   "status": "free",
+   "x": 11.1,
+   "y": 85.24,
+   "lon": 7.5983811,
+   "lat": 47.488617
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 10,
+   "status": "free",
+   "x": 10.55,
+   "y": 85.24,
+   "lon": 7.5983738,
+   "lat": 47.488617
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 11,
+   "status": "free",
+   "x": 10.0,
+   "y": 85.24,
+   "lon": 7.5983665,
+   "lat": 47.488617
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 12,
+   "status": "free",
+   "x": 9.45,
+   "y": 85.24,
+   "lon": 7.5983592,
+   "lat": 47.488617
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 13,
+   "status": "free",
+   "x": 9.45,
+   "y": 84.64,
+   "lon": 7.5983592,
+   "lat": 47.4886116
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 14,
+   "status": "free",
+   "x": 10.0,
+   "y": 84.64,
+   "lon": 7.5983665,
+   "lat": 47.4886116
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 15,
+   "status": "free",
+   "x": 10.55,
+   "y": 84.64,
+   "lon": 7.5983738,
+   "lat": 47.4886116
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 16,
+   "status": "free",
+   "x": 11.1,
+   "y": 84.64,
+   "lon": 7.5983811,
+   "lat": 47.4886116
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 17,
+   "status": "free",
+   "x": 11.65,
+   "y": 84.64,
+   "lon": 7.5983884,
+   "lat": 47.4886116
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 18,
+   "status": "free",
+   "x": 12.2,
+   "y": 84.64,
+   "lon": 7.5983957,
+   "lat": 47.4886116
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 19,
+   "status": "free",
+   "x": 12.75,
+   "y": 84.64,
+   "lon": 7.598403,
+   "lat": 47.4886116
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 20,
+   "status": "free",
+   "x": 13.3,
+   "y": 84.64,
+   "lon": 7.5984103,
+   "lat": 47.4886116
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 21,
+   "status": "free",
+   "x": 13.85,
+   "y": 84.64,
+   "lon": 7.5984176,
+   "lat": 47.4886116
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 22,
+   "status": "free",
+   "x": 14.4,
+   "y": 84.64,
+   "lon": 7.598425,
+   "lat": 47.4886116
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 23,
+   "status": "free",
+   "x": 14.95,
+   "y": 84.64,
+   "lon": 7.5984323,
+   "lat": 47.4886116
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 24,
+   "status": "free",
+   "x": 15.5,
+   "y": 84.64,
+   "lon": 7.5984396,
+   "lat": 47.4886116
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 25,
+   "status": "free",
+   "x": 15.5,
+   "y": 82.34,
+   "lon": 7.5984396,
+   "lat": 47.4885909
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 26,
+   "status": "free",
+   "x": 14.95,
+   "y": 82.34,
+   "lon": 7.5984323,
+   "lat": 47.4885909
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 27,
+   "status": "free",
+   "x": 14.4,
+   "y": 82.34,
+   "lon": 7.598425,
+   "lat": 47.4885909
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 28,
+   "status": "free",
+   "x": 13.85,
+   "y": 82.34,
+   "lon": 7.5984176,
+   "lat": 47.4885909
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 29,
+   "status": "free",
+   "x": 13.3,
+   "y": 82.34,
+   "lon": 7.5984103,
+   "lat": 47.4885909
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 30,
+   "status": "free",
+   "x": 12.75,
+   "y": 82.34,
+   "lon": 7.598403,
+   "lat": 47.4885909
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 31,
+   "status": "free",
+   "x": 12.2,
+   "y": 82.34,
+   "lon": 7.5983957,
+   "lat": 47.4885909
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 32,
+   "status": "free",
+   "x": 11.65,
+   "y": 82.34,
+   "lon": 7.5983884,
+   "lat": 47.4885909
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 33,
+   "status": "free",
+   "x": 11.1,
+   "y": 82.34,
+   "lon": 7.5983811,
+   "lat": 47.4885909
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 34,
+   "status": "free",
+   "x": 10.55,
+   "y": 82.34,
+   "lon": 7.5983738,
+   "lat": 47.4885909
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 35,
+   "status": "free",
+   "x": 10.0,
+   "y": 82.34,
+   "lon": 7.5983665,
+   "lat": 47.4885909
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 36,
+   "status": "free",
+   "x": 9.45,
+   "y": 82.34,
+   "lon": 7.5983592,
+   "lat": 47.4885909
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 37,
+   "status": "free",
+   "x": 9.45,
+   "y": 81.74,
+   "lon": 7.5983592,
+   "lat": 47.4885855
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 38,
+   "status": "free",
+   "x": 10.0,
+   "y": 81.74,
+   "lon": 7.5983665,
+   "lat": 47.4885855
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 39,
+   "status": "free",
+   "x": 10.55,
+   "y": 81.74,
+   "lon": 7.5983738,
+   "lat": 47.4885855
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 40,
+   "status": "free",
+   "x": 11.1,
+   "y": 81.74,
+   "lon": 7.5983811,
+   "lat": 47.4885855
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 41,
+   "status": "free",
+   "x": 11.65,
+   "y": 81.74,
+   "lon": 7.5983884,
+   "lat": 47.4885855
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 42,
+   "status": "free",
+   "x": 12.2,
+   "y": 81.74,
+   "lon": 7.5983957,
+   "lat": 47.4885855
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 43,
+   "status": "free",
+   "x": 12.75,
+   "y": 81.74,
+   "lon": 7.598403,
+   "lat": 47.4885855
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 44,
+   "status": "free",
+   "x": 13.3,
+   "y": 81.74,
+   "lon": 7.5984103,
+   "lat": 47.4885855
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 45,
+   "status": "free",
+   "x": 13.85,
+   "y": 81.74,
+   "lon": 7.5984176,
+   "lat": 47.4885855
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 46,
+   "status": "free",
+   "x": 14.4,
+   "y": 81.74,
+   "lon": 7.598425,
+   "lat": 47.4885855
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 47,
+   "status": "free",
+   "x": 14.95,
+   "y": 81.74,
+   "lon": 7.5984323,
+   "lat": 47.4885855
+  },
+  {
+   "zone_id": "CMR_GARAGE_03",
+   "slot": 48,
+   "status": "free",
+   "x": 15.5,
+   "y": 81.74,
+   "lon": 7.5984396,
+   "lat": 47.4885855
+  },
+  {
+   "zone_id": "KAEGEN_WEST_04",
+   "slot": 1,
+   "status": "free",
+   "x": -25.13,
+   "y": -58.52,
+   "lon": 7.5978995,
+   "lat": 47.4873234
+  },
+  {
+   "zone_id": "KAEGEN_WEST_04",
+   "slot": 2,
+   "status": "free",
+   "x": -25.13,
+   "y": -58.02,
+   "lon": 7.5978995,
+   "lat": 47.4873279
+  },
+  {
+   "zone_id": "KAEGEN_WEST_04",
+   "slot": 3,
+   "status": "free",
+   "x": -25.13,
+   "y": -57.52,
+   "lon": 7.5978995,
+   "lat": 47.4873324
+  },
+  {
+   "zone_id": "KAEGEN_WEST_04",
+   "slot": 4,
+   "status": "free",
+   "x": -25.13,
+   "y": -57.02,
+   "lon": 7.5978995,
+   "lat": 47.4873369
+  },
+  {
+   "zone_id": "KAEGEN_WEST_04",
+   "slot": 5,
+   "status": "free",
+   "x": -25.13,
+   "y": -56.52,
+   "lon": 7.5978995,
+   "lat": 47.4873414
+  },
+  {
+   "zone_id": "KAEGEN_WEST_04",
+   "slot": 6,
+   "status": "free",
+   "x": -25.13,
+   "y": -56.02,
+   "lon": 7.5978995,
+   "lat": 47.4873459
+  },
+  {
+   "zone_id": "KAEGEN_WEST_04",
+   "slot": 7,
+   "status": "free",
+   "x": -25.13,
+   "y": -55.52,
+   "lon": 7.5978995,
+   "lat": 47.4873504
+  },
+  {
+   "zone_id": "KAEGEN_WEST_04",
+   "slot": 8,
+   "status": "free",
+   "x": -25.13,
+   "y": -55.02,
+   "lon": 7.5978995,
+   "lat": 47.4873549
+  },
+  {
+   "zone_id": "KAEGEN_WEST_04",
+   "slot": 9,
+   "status": "free",
+   "x": -25.13,
+   "y": -54.52,
+   "lon": 7.5978995,
+   "lat": 47.4873594
+  },
+  {
+   "zone_id": "KAEGEN_WEST_04",
+   "slot": 10,
+   "status": "free",
+   "x": -25.13,
+   "y": -54.03,
+   "lon": 7.5978995,
+   "lat": 47.4873638
+  },
+  {
+   "zone_id": "KAEGEN_WEST_04",
+   "slot": 11,
+   "status": "free",
+   "x": -25.13,
+   "y": -53.53,
+   "lon": 7.5978995,
+   "lat": 47.4873683
+  },
+  {
+   "zone_id": "KAEGEN_WEST_04",
+   "slot": 12,
+   "status": "free",
+   "x": -25.13,
+   "y": -53.03,
+   "lon": 7.5978995,
+   "lat": 47.4873728
+  },
+  {
+   "zone_id": "KAEGEN_WEST_04",
+   "slot": 13,
+   "status": "free",
+   "x": -25.13,
+   "y": -52.53,
+   "lon": 7.5978995,
+   "lat": 47.4873773
   }
  ]
 }

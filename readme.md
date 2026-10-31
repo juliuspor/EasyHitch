@@ -33,7 +33,7 @@ cd code/backend && python3.13 -m venv .venv && .venv/bin/pip install -r requirem
 ```
 
 In a second terminal, start the recorded cameras, which replay the hosts'
-photos of both stations:
+photos of the north and south stations:
 
 ```bash
 cd code/edge && python3.13 -m venv .venv && .venv/bin/pip install -r requirements.txt && .venv/bin/python main.py --source ../../assets/camera-frames --pii sidecar --upload http --url http://localhost:8000 --tokens dev-tokens.json
@@ -72,7 +72,7 @@ described in the [backend](code/backend/README.md) and
 
 - **Map data.** The slot positions in `assets/campus-map/slots.json`, and the
   station catalog built from them, are mapped from OpenStreetMap, satellite
-  imagery and the site photos. OpenStreetMap data © OpenStreetMap
+  imagery, the site photos and the team's site markings. OpenStreetMap data © OpenStreetMap
   contributors, available under the Open Database License. Keep this
   attribution wherever the data, or anything derived from it, is shown.
 - **Photos.** The site photos in `assets/challenge-site-photos/` and the

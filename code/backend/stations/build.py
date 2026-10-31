@@ -14,6 +14,8 @@ from pathlib import Path
 DISPLAY_NAMES = {
     "CMR_NORTH_01": "Christoph-Merian-Ring North",
     "CMR_SOUTH_02": "Christoph-Merian-Ring South",
+    "CMR_GARAGE_03": "Christoph-Merian-Ring Bike Garage",
+    "KAEGEN_WEST_04": "Kägenstrasse",
 }
 
 
