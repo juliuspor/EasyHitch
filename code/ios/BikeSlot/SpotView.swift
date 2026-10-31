@@ -1,16 +1,18 @@
 import SwiftUI
 import WebKit
 
-/// The 3D view of one bike spot: Spot/spot.html (three.js) flies down into a model of the
-/// Endress+Hauser block and lands in front of the rack, with a blue pad on every free slot and
-/// a bike on every taken one. Once landed you look around it like in Google Maps 3D (drag,
-/// pinch, twist); the page handles those gestures, so the web view must not scroll or zoom,
-/// and a sideways drag must not pop the screen.
+/// The 3D view of one station: Spot/spot.html (three.js) flies down into a model of the
+/// Endress+Hauser block and lands in front of one of the station's racks, with a green pad on
+/// every free slot, a bike on every taken one, and a grey pad where no camera has looked
+/// recently. Once landed you look around it like in Google Maps 3D (drag, pinch, twist); the
+/// page handles those gestures, so the web view must not scroll or zoom, and a sideways drag
+/// must not pop the screen.
 struct SpotView: UIViewRepresentable {
-    let area: AreaSummary
-    let slots: [Slot]
-    /// False until a camera has reported; the pads then stay grey instead of showing "free".
-    let known: Bool
+    let stationID: String
+    /// The station's slots by rack, as `StationDetail.racks` groups them.
+    let racks: [[Slot]]
+    /// The rack to stand in front of; changing it flies over to that rack.
+    let rack: Int
 
     func makeCoordinator() -> Coordinator { Coordinator() }
 
@@ -31,39 +33,36 @@ struct SpotView: UIViewRepresentable {
     }
 
     func updateUIView(_ web: WKWebView, context: Context) {
-        context.coordinator.state = (area, slots, known)
+        context.coordinator.state = (stationID, racks, rack)
         context.coordinator.flush(web)
     }
 
     @MainActor
     final class Coordinator: NSObject, WKNavigationDelegate {
-        var state: (area: AreaSummary, slots: [Slot], known: Bool)?
+        var state: (stationID: String, racks: [[Slot]], rack: Int)?
         private var loaded = false
-        private var shownSlots: Int?
-        private var sent: (slots: [Slot], known: Bool)?
+        private var sent: (slots: [Slot], rack: Int)?
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             loaded = true
             flush(webView)
         }
 
-        /// The model is built once the slot count is known; later changes only update the slots.
+        /// The racks are built once; later changes only update the slots or fly to another rack.
         func flush(_ web: WKWebView) {
-            guard loaded, let state, !state.slots.isEmpty else { return }
-            if let sent, sent.slots == state.slots, sent.known == state.known { return }
-            let slots = Self.json(state.slots)
-            let script: String
-            if shownSlots == nil {
-                let area = state.area
-                script = "BikeSpot.show({id: \(Self.json(area.id)), kind: \(Self.json(area.kind)), "
-                    + "center: \(Self.json(area.center)), polygon: \(Self.json(area.polygon)), "
-                    + "known: \(state.known), slots: \(slots)})"
-                shownSlots = state.slots.count
+            guard loaded, let state, !state.racks.isEmpty else { return }
+            let slots = state.racks.flatMap { $0 }
+            var script = ""
+            if let sent {
+                if sent.slots != slots { script += "BikeSpot.update(\(Self.json(slots)));" }
+                if sent.rack != state.rack { script += "BikeSpot.focus(\(state.rack));" }
             } else {
-                script = "BikeSpot.update(\(slots), \(state.known))"
+                let numbers = state.racks.map { $0.map(\.number) }
+                script = "BikeSpot.show({id: \(Self.json(state.stationID)), slots: \(Self.json(slots)), "
+                    + "racks: \(Self.json(numbers)), rack: \(state.rack)});"
             }
-            sent = (state.slots, state.known)
-            web.evaluateJavaScript(script)
+            sent = (slots, state.rack)
+            if !script.isEmpty { web.evaluateJavaScript(script) }
         }
 
         /// JSON text of a value, safe to paste into a script.

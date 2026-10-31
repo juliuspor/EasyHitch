@@ -11,9 +11,9 @@ struct Destination: Equatable {
             && a.coordinate.longitude == b.coordinate.longitude
     }
 
-    func distance(to area: AreaSummary) -> CLLocationDistance {
+    func distance(to station: Station) -> CLLocationDistance {
         CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
-            .distance(from: CLLocation(latitude: area.center[0], longitude: area.center[1]))
+            .distance(from: CLLocation(latitude: station.location.lat, longitude: station.location.lon))
     }
 }
 
@@ -57,16 +57,16 @@ final class LocationSearch: NSObject, MKLocalSearchCompleterDelegate {
     }
 }
 
-/// Floating search field with shelter and place suggestions underneath.
+/// Floating search field with station and place suggestions underneath.
 struct SearchOverlay: View {
     @Bindable var search: LocationSearch
     var focused: FocusState<Bool>.Binding
-    let areas: [AreaSummary]
-    let openArea: (AreaSummary) -> Void
+    let stations: [Station]
+    let openStation: (Station) -> Void
     let choose: (MKLocalSearchCompletion) -> Void
 
-    private var matchingAreas: [AreaSummary] {
-        areas.filter { $0.name.localizedCaseInsensitiveContains(search.query) }
+    private var matchingStations: [Station] {
+        stations.filter { $0.name.localizedCaseInsensitiveContains(search.query) }
     }
 
     var body: some View {
@@ -99,15 +99,15 @@ struct SearchOverlay: View {
 
     private var results: some View {
         VStack(alignment: .leading, spacing: 0) {
-            ForEach(matchingAreas) { area in
-                row(icon: "bicycle", tint: area.availability.color, title: area.name,
-                    subtitle: "\(area.free) of \(area.capacity) spots free") { openArea(area) }
+            ForEach(matchingStations) { station in
+                row(icon: "bicycle", tint: station.availability.color, title: station.name,
+                    subtitle: "\(station.free) of \(station.capacity) spots free") { openStation(station) }
             }
             ForEach(search.completions, id: \.self) { completion in
                 row(icon: "mappin.circle.fill", tint: Brand.blue, title: completion.title,
                     subtitle: completion.subtitle) { choose(completion) }
             }
-            if matchingAreas.isEmpty && search.completions.isEmpty {
+            if matchingStations.isEmpty && search.completions.isEmpty {
                 Text("No results")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)

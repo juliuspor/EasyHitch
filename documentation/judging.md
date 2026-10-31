@@ -34,10 +34,12 @@ we ran and their results. The sponsor's brief is summarised in
 **Spot level, not "the stand is full".** The API reports every slot, not just
 a count ([`SlotDetail`](../code/backend/availability/views.py#L34-L38),
 [`StationDetail`](../code/backend/availability/views.py#L41-L51)). The app
-shows each spot in a 3D model of the block with a bike on every taken slot
-([`SpotView`](../code/ios/BikeSlot/SpotView.swift#L9-L74)), above a card with
+shows each station in a 3D model of the block, with every slot where the
+station catalog measured it, a bike on every taken slot, and a grey pad where
+no camera looked recently
+([`SpotView`](../code/ios/BikeSlot/SpotView.swift#L10-L73)), above a card with
 the free count
-([`StatusCard`](../code/ios/BikeSlot/AreaDetailScreen.swift#L53-L86)).
+([`StatusCard`](../code/ios/BikeSlot/StationScreen.swift#L56-L98)).
 
 **No training data.** The backend crops every slot and asks Jev 1.14, a
 decision model, one yes or no question per crop
@@ -59,14 +61,14 @@ ever looks at slot crops.
 
 **Found before you arrive.** Search for the building you are cycling to, and
 the app opens the closest shelter that still has room
-([`go`](../code/ios/BikeSlot/MapScreen.swift#L93-L103)).
+([`go`](../code/ios/BikeSlot/MapScreen.swift#L90-L100)).
 
 ## Impact
 
 - **Social.** Riders stop circling full shelters at 7:45, which makes cycling
-  to work easier to choose. Free and full are blue and red, which stay
-  distinguishable with red-green colour blindness
-  ([`Brand`](../code/ios/BikeSlot/Theme.swift#L3-L13)). Nobody is watched: the
+  to work easier to choose. Free and taken are green and red, and never by
+  colour alone: pins and cards carry the free count, and in 3D a taken slot
+  holds a bike ([`Brand`](../code/ios/BikeSlot/Theme.swift#L4-L16)). Nobody is watched: the
   backend keeps slot states only (see [Fair play](#fair-play)).
 - **Economic.** The camera pipeline is designed for the low-cost ESP32 boards
   the challenge provides. A camera uploads only when its view changed
@@ -99,7 +101,7 @@ the 3D scenes are built in parallel ([architecture.md](architecture.md)):
 | [`OccupancyRepository`](../code/backend/occupancy/repository.py#L15-L21) | [`InMemoryOccupancyRepository`](../code/backend/occupancy/repository.py#L24-L44) and [`DynamoOccupancyRepository`](../code/backend/occupancy/dynamodb.py#L22-L58) |
 | [`FingerprintStore`](../code/backend/ingest/fingerprints.py#L11-L14) | [`InMemoryFingerprintStore`](../code/backend/ingest/fingerprints.py#L17-L28) and [`DynamoFingerprintStore`](../code/backend/ingest/dynamodb.py#L9-L22) |
 | [`FrameSource`](../code/edge/sources.py#L14-L15), [`PIIDetector`](../code/edge/pii.py#L27-L28), [`FrameUploader`](../code/edge/upload.py#L17-L19) on the camera | A camera with YOLO11n, PP-OCRv5 and HTTP, or recorded frames with marked regions and a dry run |
-| [`AreaService`](../code/ios/BikeSlot/APIClient.swift#L5-L8) in the app | [`APIClient`](../code/ios/BikeSlot/APIClient.swift#L19-L62) and [`DemoService`](../code/ios/BikeSlot/Demo/DemoService.swift#L3-L52) |
+| [`StationService`](../code/ios/BikeSlot/APIClient.swift#L5-L8) in the app | [`APIClient`](../code/ios/BikeSlot/APIClient.swift#L19-L69) and [`DemoService`](../code/ios/BikeSlot/Demo/DemoService.swift#L6-L45) |
 
 One place picks the implementations from the environment
 ([`classifier`](../code/backend/composition.py#L84-L98)), so the same code runs
@@ -253,9 +255,9 @@ Three ways to show it:
    [edge README](../code/edge/README.md#run)), then watch the stations fill in
    at `/v1/stations`, or ask an AI agent through the MCP server where to park.
 2. **The app.** With the **Demo data** setting, or launched with
-   `-demoMode YES`, built-in shelters change every four seconds without a
+   `-demoMode YES`, built-in stations change every four seconds without a
    backend ([`Backend`](../code/ios/BikeSlot/APIClient.swift#L10-L16),
-   [`DemoService`](../code/ios/BikeSlot/Demo/DemoService.swift#L3-L52)).
+   [`DemoService`](../code/ios/BikeSlot/Demo/DemoService.swift#L6-L45)).
 3. **The deck.** The phone screen on slide 2 plays the app on its own.
 
 A camera board uses the same route as the recorded cameras
@@ -277,3 +279,4 @@ On 31 October 2026, on macOS with Python 3.13.16:
 | Jev request | `JevCropClassifier` against a stand-in for the Decisions API | Request as documented, crops within Jev's size limits, errors become `502` |
 | YOLO11n | `YoloPIIDetector` on `IMG_20261029_084104` | Finds the person at the right edge |
 | PP-OCRv5 | `TextPIIDetector` and `pixelate` on the seven recorded frames, sidecars ignored, each result checked by eye | The five readable plates in `cam-north-1`, `cam-north-2` and `cam-south-a` come out unreadable, the two yellow e-bike plates and a tilted motorbike plate among them. 2% of a frame is pixelated on average, 6% at most, in 0.1 s per frame |
+| iOS app | Built for iOS 18, run in the iPhone 17 Pro simulator against the local backend with the recorded cameras, then in demo mode | Both stations on the map. North: 26 of 45 free, 10 not seen by a camera, grey in 3D. South: slots 1 to 10 and 11 to 20 as two racks on two sides of the building, and the 3D view flies between them. Demo counts change every four seconds |

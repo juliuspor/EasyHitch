@@ -11,13 +11,13 @@
 		0AAB02A580E72E6C284B1FD4 /* DemoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AF70BEF5BEAB583C2626EF6 /* DemoService.swift */; };
 		5916335985ACAACC792D95FE /* BikeSlotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E1D93A46E6B2D981B36F9B5 /* BikeSlotApp.swift */; };
 		60B967919A522D22F942B942 /* Glass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 194C028748FF3D48AFE832EB /* Glass.swift */; };
-		7370237E8A83AF407D853653 /* demo-areas.json in Resources */ = {isa = PBXBuildFile; fileRef = D54B5CFD9A92B76051F50A58 /* demo-areas.json */; };
-		81A229D9F68C6733FD3FAB95 /* AreaDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FD68C0F2D2B50F3B8D5135A /* AreaDetailScreen.swift */; };
 		A25F819556F02353B05C74CC /* MapScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DA5BE1C26A8F65605D2871 /* MapScreen.swift */; };
 		A94DAE1026EEE3AA50FDFEFC /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F1D847DCB2CFEB86F74D37F /* Models.swift */; };
-		A9AA37345AF5A145CB73A858 /* AreaStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F702622BDB15F9640BF27CB /* AreaStore.swift */; };
+		B0076952CD67734CB1C5C0D7 /* StationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D840D3F7AD28D980FFC87037 /* StationStore.swift */; };
 		B8A918A673DF9189B72862A5 /* Spot in Resources */ = {isa = PBXBuildFile; fileRef = 8C7B23A95758A64547214D79 /* Spot */; };
 		BDC8B737E3A2A76046AB7499 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75445123237505DA937E8C4 /* Theme.swift */; };
+		BE9AC8C3FBE0041D43FC128F /* demo-stations.json in Resources */ = {isa = PBXBuildFile; fileRef = 717F5CE3777BFCED0F5CEA4A /* demo-stations.json */; };
+		EC9A703F508C9CD9D95EF724 /* StationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D41B9797E21B125106C2D69B /* StationScreen.swift */; };
 		ED87FD01BED32BCC22ECC995 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D513B4AAB57A88D9CD3184FA /* APIClient.swift */; };
 		F36B79420AEFB2CD24C7D784 /* SpotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29376DADC81B5A3F8BF6F2EA /* SpotView.swift */; };
 /* End PBXBuildFile section */
@@ -27,16 +27,16 @@
 		194C028748FF3D48AFE832EB /* Glass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Glass.swift; sourceTree = "<group>"; };
 		29376DADC81B5A3F8BF6F2EA /* SpotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotView.swift; sourceTree = "<group>"; };
 		6E1D93A46E6B2D981B36F9B5 /* BikeSlotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BikeSlotApp.swift; sourceTree = "<group>"; };
-		6F702622BDB15F9640BF27CB /* AreaStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AreaStore.swift; sourceTree = "<group>"; };
+		717F5CE3777BFCED0F5CEA4A /* demo-stations.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "demo-stations.json"; sourceTree = "<group>"; };
 		7AF70BEF5BEAB583C2626EF6 /* DemoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoService.swift; sourceTree = "<group>"; };
 		88BEF5E4055FCC756AF762F1 /* BikeSlot.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BikeSlot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C7B23A95758A64547214D79 /* Spot */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Spot; path = BikeSlot/Spot; sourceTree = SOURCE_ROOT; };
 		8F1D847DCB2CFEB86F74D37F /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
-		8FD68C0F2D2B50F3B8D5135A /* AreaDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AreaDetailScreen.swift; sourceTree = "<group>"; };
 		A4C991959AFECC1AB9A4EBFD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		CB38E27D822D22D55527FBB7 /* LocationSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSearch.swift; sourceTree = "<group>"; };
+		D41B9797E21B125106C2D69B /* StationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationScreen.swift; sourceTree = "<group>"; };
 		D513B4AAB57A88D9CD3184FA /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
-		D54B5CFD9A92B76051F50A58 /* demo-areas.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "demo-areas.json"; sourceTree = "<group>"; };
+		D840D3F7AD28D980FFC87037 /* StationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationStore.swift; sourceTree = "<group>"; };
 		F75445123237505DA937E8C4 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -53,7 +53,7 @@
 		5CACA9FF2EE0E1E31BC9B33E /* Demo */ = {
 			isa = PBXGroup;
 			children = (
-				D54B5CFD9A92B76051F50A58 /* demo-areas.json */,
+				717F5CE3777BFCED0F5CEA4A /* demo-stations.json */,
 				7AF70BEF5BEAB583C2626EF6 /* DemoService.swift */,
 			);
 			path = Demo;
@@ -63,8 +63,6 @@
 			isa = PBXGroup;
 			children = (
 				D513B4AAB57A88D9CD3184FA /* APIClient.swift */,
-				8FD68C0F2D2B50F3B8D5135A /* AreaDetailScreen.swift */,
-				6F702622BDB15F9640BF27CB /* AreaStore.swift */,
 				6E1D93A46E6B2D981B36F9B5 /* BikeSlotApp.swift */,
 				194C028748FF3D48AFE832EB /* Glass.swift */,
 				A4C991959AFECC1AB9A4EBFD /* Info.plist */,
@@ -72,6 +70,8 @@
 				18DA5BE1C26A8F65605D2871 /* MapScreen.swift */,
 				8F1D847DCB2CFEB86F74D37F /* Models.swift */,
 				29376DADC81B5A3F8BF6F2EA /* SpotView.swift */,
+				D41B9797E21B125106C2D69B /* StationScreen.swift */,
+				D840D3F7AD28D980FFC87037 /* StationStore.swift */,
 				F75445123237505DA937E8C4 /* Theme.swift */,
 				5CACA9FF2EE0E1E31BC9B33E /* Demo */,
 			);
@@ -144,7 +144,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B8A918A673DF9189B72862A5 /* Spot in Resources */,
-				7370237E8A83AF407D853653 /* demo-areas.json in Resources */,
+				BE9AC8C3FBE0041D43FC128F /* demo-stations.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -178,8 +178,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED87FD01BED32BCC22ECC995 /* APIClient.swift in Sources */,
-				81A229D9F68C6733FD3FAB95 /* AreaDetailScreen.swift in Sources */,
-				A9AA37345AF5A145CB73A858 /* AreaStore.swift in Sources */,
 				5916335985ACAACC792D95FE /* BikeSlotApp.swift in Sources */,
 				0AAB02A580E72E6C284B1FD4 /* DemoService.swift in Sources */,
 				60B967919A522D22F942B942 /* Glass.swift in Sources */,
@@ -187,6 +185,8 @@
 				A25F819556F02353B05C74CC /* MapScreen.swift in Sources */,
 				A94DAE1026EEE3AA50FDFEFC /* Models.swift in Sources */,
 				F36B79420AEFB2CD24C7D784 /* SpotView.swift in Sources */,
+				EC9A703F508C9CD9D95EF724 /* StationScreen.swift in Sources */,
+				B0076952CD67734CB1C5C0D7 /* StationStore.swift in Sources */,
 				BDC8B737E3A2A76046AB7499 /* Theme.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

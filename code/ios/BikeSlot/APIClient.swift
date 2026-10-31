@@ -1,22 +1,22 @@
 import Foundation
 
-/// Everything the app needs from a backend. The contract is documented in
-/// documentation/api/ (generated from code/backend/schemas.py).
-protocol AreaService: Sendable {
-    func areas() async throws -> [AreaSummary]
-    func area(_ id: String) async throws -> AreaDetail
+/// Everything the app needs from a backend: the Availability API, documented in
+/// documentation/api/availability.openapi.json (generated from code/backend/availability).
+protocol StationService: Sendable {
+    func stations() async throws -> [Station]
+    func station(_ id: String) async throws -> StationDetail
 }
 
 enum Backend {
     /// The live backend, or the built-in demo data when `demoMode` is on
     /// (Settings, or the launch argument `-demoMode YES`).
-    static var current: any AreaService {
+    static var current: any StationService {
         UserDefaults.standard.bool(forKey: "demoMode") ? DemoService.shared : APIClient()
     }
 }
 
-/// Talks to the Find my Bike Slot backend. The base URL can be changed in the app.
-struct APIClient: AreaService {
+/// Talks to the Availability API. The base URL can be changed in the app.
+struct APIClient: StationService {
     /// Debug builds carry the address of the Mac that built them (set in project.yml),
     /// so a phone finds the backend on that Mac without typing an IP.
     static let defaultURL = Bundle.main.url(forResource: "backend-url", withExtension: "txt")
@@ -31,25 +31,32 @@ struct APIClient: AreaService {
     static let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
+        // ISO 8601 times, with or without fractions of a second.
+        decoder.dateDecodingStrategy = .custom { decoder in
+            let text = try decoder.singleValueContainer().decode(String.self)
+            for style in [Date.ISO8601FormatStyle(), Date.ISO8601FormatStyle(includingFractionalSeconds: true)] {
+                if let date = try? style.parse(text) { return date }
+            }
+            throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "not ISO 8601: \(text)"))
+        }
         return decoder
     }()
 
-    func areas() async throws -> [AreaSummary] {
-        try await get("/areas")
+    private struct StationList: Decodable {
+        let stations: [Station]
     }
 
-    func area(_ id: String) async throws -> AreaDetail {
-        try await get("/areas/\(id)")
+    func stations() async throws -> [Station] {
+        let list: StationList = try await get("/v1/stations")
+        return list.stations
     }
 
-    /// Server paths are relative to the backend; absolute URLs (e.g. a CDN) are used as they are.
-    private static func url(_ path: String) -> URL {
-        if let url = URL(string: path), url.scheme != nil { return url }
-        return baseURL.appendingPathComponent(path)
+    func station(_ id: String) async throws -> StationDetail {
+        try await get("/v1/stations/\(id)")
     }
 
     private func get<T: Decodable>(_ path: String) async throws -> T {
-        let (data, response) = try await URLSession.shared.data(from: Self.url(path))
+        let (data, response) = try await URLSession.shared.data(from: Self.baseURL.appendingPathComponent(path))
         try Self.check(response)
         return try Self.decoder.decode(T.self, from: data)
     }

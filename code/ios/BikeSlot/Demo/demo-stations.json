@@ -1,0 +1,619 @@
+[
+  {
+    "id": "cmr-north-01",
+    "name": "Christoph-Merian-Ring North",
+    "location": {
+      "lat": 47.4880825,
+      "lon": 7.6001723
+    },
+    "capacity": 45,
+    "free": 26,
+    "taken": 9,
+    "unknown": 10,
+    "updated_at": "2026-10-31T15:50:36Z",
+    "model_url": null,
+    "slots": [
+      {
+        "number": 1,
+        "state": "taken",
+        "location": {
+          "lat": 47.4878522,
+          "lon": 7.6001752
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 2,
+        "state": "free",
+        "location": {
+          "lat": 47.4878612,
+          "lon": 7.6001751
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 3,
+        "state": "free",
+        "location": {
+          "lat": 47.4878702,
+          "lon": 7.600175
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 4,
+        "state": "taken",
+        "location": {
+          "lat": 47.4878792,
+          "lon": 7.6001749
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 5,
+        "state": "taken",
+        "location": {
+          "lat": 47.4878882,
+          "lon": 7.6001748
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 6,
+        "state": "free",
+        "location": {
+          "lat": 47.4879053,
+          "lon": 7.6001746
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 7,
+        "state": "free",
+        "location": {
+          "lat": 47.4879143,
+          "lon": 7.6001744
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 8,
+        "state": "taken",
+        "location": {
+          "lat": 47.4879233,
+          "lon": 7.6001743
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 9,
+        "state": "taken",
+        "location": {
+          "lat": 47.4879323,
+          "lon": 7.6001742
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 10,
+        "state": "taken",
+        "location": {
+          "lat": 47.4879413,
+          "lon": 7.6001741
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 11,
+        "state": "free",
+        "location": {
+          "lat": 47.4879583,
+          "lon": 7.6001739
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 12,
+        "state": "free",
+        "location": {
+          "lat": 47.4879673,
+          "lon": 7.6001738
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 13,
+        "state": "free",
+        "location": {
+          "lat": 47.4879763,
+          "lon": 7.6001736
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 14,
+        "state": "free",
+        "location": {
+          "lat": 47.4879853,
+          "lon": 7.6001735
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 15,
+        "state": "free",
+        "location": {
+          "lat": 47.4879943,
+          "lon": 7.6001734
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 16,
+        "state": "free",
+        "location": {
+          "lat": 47.4880114,
+          "lon": 7.6001732
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 17,
+        "state": "taken",
+        "location": {
+          "lat": 47.4880204,
+          "lon": 7.6001731
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 18,
+        "state": "taken",
+        "location": {
+          "lat": 47.4880294,
+          "lon": 7.600173
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 19,
+        "state": "taken",
+        "location": {
+          "lat": 47.4880384,
+          "lon": 7.6001728
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 20,
+        "state": "free",
+        "location": {
+          "lat": 47.4880474,
+          "lon": 7.6001727
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 21,
+        "state": "free",
+        "location": {
+          "lat": 47.4880645,
+          "lon": 7.6001725
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 22,
+        "state": "free",
+        "location": {
+          "lat": 47.4880735,
+          "lon": 7.6001724
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 23,
+        "state": "free",
+        "location": {
+          "lat": 47.4880825,
+          "lon": 7.6001723
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 24,
+        "state": "free",
+        "location": {
+          "lat": 47.4880915,
+          "lon": 7.6001722
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 25,
+        "state": "free",
+        "location": {
+          "lat": 47.4881005,
+          "lon": 7.600172
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 26,
+        "state": "free",
+        "location": {
+          "lat": 47.4881176,
+          "lon": 7.6001718
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 27,
+        "state": "free",
+        "location": {
+          "lat": 47.4881266,
+          "lon": 7.6001717
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 28,
+        "state": "free",
+        "location": {
+          "lat": 47.4881356,
+          "lon": 7.6001716
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 29,
+        "state": "free",
+        "location": {
+          "lat": 47.4881446,
+          "lon": 7.6001715
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 30,
+        "state": "free",
+        "location": {
+          "lat": 47.4881536,
+          "lon": 7.6001714
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 31,
+        "state": "free",
+        "location": {
+          "lat": 47.4881706,
+          "lon": 7.6001711
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 32,
+        "state": "free",
+        "location": {
+          "lat": 47.4881796,
+          "lon": 7.600171
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 33,
+        "state": "free",
+        "location": {
+          "lat": 47.4881886,
+          "lon": 7.6001709
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 34,
+        "state": "free",
+        "location": {
+          "lat": 47.4881976,
+          "lon": 7.6001708
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 35,
+        "state": "free",
+        "location": {
+          "lat": 47.4882066,
+          "lon": 7.6001707
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 36,
+        "state": "unknown",
+        "location": {
+          "lat": 47.4882237,
+          "lon": 7.6001705
+        },
+        "changed_at": null
+      },
+      {
+        "number": 37,
+        "state": "unknown",
+        "location": {
+          "lat": 47.4882327,
+          "lon": 7.6001703
+        },
+        "changed_at": null
+      },
+      {
+        "number": 38,
+        "state": "unknown",
+        "location": {
+          "lat": 47.4882417,
+          "lon": 7.6001702
+        },
+        "changed_at": null
+      },
+      {
+        "number": 39,
+        "state": "unknown",
+        "location": {
+          "lat": 47.4882507,
+          "lon": 7.6001701
+        },
+        "changed_at": null
+      },
+      {
+        "number": 40,
+        "state": "unknown",
+        "location": {
+          "lat": 47.4882597,
+          "lon": 7.60017
+        },
+        "changed_at": null
+      },
+      {
+        "number": 41,
+        "state": "unknown",
+        "location": {
+          "lat": 47.4882768,
+          "lon": 7.6001698
+        },
+        "changed_at": null
+      },
+      {
+        "number": 42,
+        "state": "unknown",
+        "location": {
+          "lat": 47.4882858,
+          "lon": 7.6001697
+        },
+        "changed_at": null
+      },
+      {
+        "number": 43,
+        "state": "unknown",
+        "location": {
+          "lat": 47.4882948,
+          "lon": 7.6001695
+        },
+        "changed_at": null
+      },
+      {
+        "number": 44,
+        "state": "unknown",
+        "location": {
+          "lat": 47.4883038,
+          "lon": 7.6001694
+        },
+        "changed_at": null
+      },
+      {
+        "number": 45,
+        "state": "unknown",
+        "location": {
+          "lat": 47.4883128,
+          "lon": 7.6001693
+        },
+        "changed_at": null
+      }
+    ]
+  },
+  {
+    "id": "cmr-south-02",
+    "name": "Christoph-Merian-Ring South",
+    "location": {
+      "lat": 47.4869208,
+      "lon": 7.6000761
+    },
+    "capacity": 20,
+    "free": 10,
+    "taken": 10,
+    "unknown": 0,
+    "updated_at": "2026-10-31T15:50:36Z",
+    "model_url": null,
+    "slots": [
+      {
+        "number": 1,
+        "state": "taken",
+        "location": {
+          "lat": 47.4868599,
+          "lon": 7.5999203
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 2,
+        "state": "taken",
+        "location": {
+          "lat": 47.4868599,
+          "lon": 7.599927
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 3,
+        "state": "taken",
+        "location": {
+          "lat": 47.4868599,
+          "lon": 7.5999336
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 4,
+        "state": "taken",
+        "location": {
+          "lat": 47.4868599,
+          "lon": 7.5999403
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 5,
+        "state": "taken",
+        "location": {
+          "lat": 47.4868599,
+          "lon": 7.5999469
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 6,
+        "state": "free",
+        "location": {
+          "lat": 47.4868599,
+          "lon": 7.5999536
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 7,
+        "state": "taken",
+        "location": {
+          "lat": 47.4868599,
+          "lon": 7.5999602
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 8,
+        "state": "taken",
+        "location": {
+          "lat": 47.4868599,
+          "lon": 7.5999669
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 9,
+        "state": "taken",
+        "location": {
+          "lat": 47.4868599,
+          "lon": 7.5999735
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 10,
+        "state": "taken",
+        "location": {
+          "lat": 47.4868599,
+          "lon": 7.5999802
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 11,
+        "state": "free",
+        "location": {
+          "lat": 47.4869614,
+          "lon": 7.6002019
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 12,
+        "state": "free",
+        "location": {
+          "lat": 47.4869659,
+          "lon": 7.6002019
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 13,
+        "state": "free",
+        "location": {
+          "lat": 47.4869704,
+          "lon": 7.6002019
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 14,
+        "state": "free",
+        "location": {
+          "lat": 47.4869749,
+          "lon": 7.6002019
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 15,
+        "state": "free",
+        "location": {
+          "lat": 47.4869794,
+          "lon": 7.6002019
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 16,
+        "state": "free",
+        "location": {
+          "lat": 47.4869839,
+          "lon": 7.6002019
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 17,
+        "state": "free",
+        "location": {
+          "lat": 47.4869884,
+          "lon": 7.6002019
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 18,
+        "state": "taken",
+        "location": {
+          "lat": 47.4869929,
+          "lon": 7.6002019
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 19,
+        "state": "free",
+        "location": {
+          "lat": 47.4869974,
+          "lon": 7.6002019
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      },
+      {
+        "number": 20,
+        "state": "free",
+        "location": {
+          "lat": 47.4870019,
+          "lon": 7.6002019
+        },
+        "changed_at": "2026-10-31T15:44:10Z"
+      }
+    ]
+  }
+]

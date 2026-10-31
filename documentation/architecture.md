@@ -23,7 +23,7 @@ One frame takes this path:
 |---|---|---|
 | Camera pipeline | `code/edge` | The Ingest API request: JPEG, token, person boxes |
 | Backend | `code/backend` | Both API contracts, `OccupancyClassifier`, `OccupancyRepository`, `FingerprintStore` |
-| iOS app | `code/ios` | `AreaService`, with a backend client and built-in sample data |
+| iOS app | `code/ios` | `StationService`, with a client of the Availability API and built-in sample data |
 | 3D scenes | `code/scene-generator` | Shelter models with one node per slot |
 
 ## Camera and backend: the Ingest API
@@ -85,18 +85,24 @@ cheap polling.
 ## iOS app
 
 The app shows the site map with a pin per station, a card with the free count
-and cycling directions, and a 3D view with a bike on every taken slot. It
-ships sample spots in `code/ios/BikeSlot/Demo/demo-areas.json`, and in demo
-mode a random slot changes every four seconds, so the interface can be shown
-and developed without a backend. Turn it on with the **Demo data** switch in
+and cycling directions, and a 3D view of the station. The 3D view is three.js
+in a web view (`code/ios/BikeSlot/Spot`): it builds each rack from the slot
+positions in the station detail, stands in front of one rack at a time, and
+shows a bike on every taken slot. It ships sample stations in
+`code/ios/BikeSlot/Demo/demo-stations.json`, a snapshot of the live pipeline
+taken with `code/ios/refresh-demo.sh`, and in demo mode a random slot changes
+every four seconds, so the interface can be shown and developed without a
+backend. Turn it on with the **Demo data** switch in
 the app's settings, or launch with `-demoMode YES` (in Xcode, as an argument
 of the scheme's Run action). The backend client and the demo both implement
-[`AreaService`](../code/ios/BikeSlot/APIClient.swift#L5-L8), and
+[`StationService`](../code/ios/BikeSlot/APIClient.swift#L5-L8), and
 `Backend.current` picks one.
 
 ## 3D scenes and station models
 
 The Availability API serves `data/models/<station_id>.usdz`. A station model
-has one node per slot, named `slot_<number>`, so the app can place a bike on
+has one node per slot, named `slot_<number>`, so a client can place a bike on
 every taken slot and match it with the slot states. The scene generator in
-`code/scene-generator` builds shelter models from layout files in Blender.
+`code/scene-generator` builds shelter models from layout files in Blender. The
+app does not load these models yet (planned): its 3D view builds the racks
+itself, from the slot positions.

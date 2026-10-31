@@ -2,12 +2,12 @@ import MapKit
 import SwiftUI
 
 struct MapScreen: View {
-    @Environment(AreaStore.self) private var store
-    @State private var path: [AreaSummary] = []
+    @Environment(StationStore.self) private var store
+    @State private var path: [Station] = []
     @State private var showSettings = false
     @State private var search = LocationSearch()
     @State private var destination: Destination?
-    @State private var selectedID: AreaSummary.ID?
+    @State private var selectedID: Station.ID?
     @FocusState private var searchFocused: Bool
     @State private var position = Self.camera(at: Site.center, distance: 900)
 
@@ -15,18 +15,15 @@ struct MapScreen: View {
         .camera(MapCamera(centerCoordinate: center, distance: distance, heading: 0, pitch: 0))
     }
 
-    private var selected: AreaSummary? { store.areas.first { $0.id == selectedID } }
+    private var selected: Station? { store.stations.first { $0.id == selectedID } }
 
     var body: some View {
         NavigationStack(path: $path) {
             // Flat, north-up and pan/zoom only, like a mobility app map.
             Map(position: $position, interactionModes: [.pan, .zoom]) {
-                ForEach(store.areas) { area in
-                    MapPolygon(coordinates: area.outline)
-                        .foregroundStyle(area.availability.color.opacity(0.3))
-                        .stroke(area.availability.color, lineWidth: 2)
-                    Annotation(area.name, coordinate: area.coordinate, anchor: .bottom) {
-                        Button { select(area) } label: { AreaPin(area: area, selected: area.id == selectedID) }
+                ForEach(store.stations) { station in
+                    Annotation(station.name, coordinate: station.coordinate, anchor: .bottom) {
+                        Button { select(station) } label: { StationPin(station: station, selected: station.id == selectedID) }
                             .buttonStyle(.plain)
                     }
                     .annotationTitles(.hidden)
@@ -39,10 +36,10 @@ struct MapScreen: View {
             .mapStyle(.standard(elevation: .flat, emphasis: .muted, pointsOfInterest: .excludingAll))
             .mapControls {}
             .safeAreaInset(edge: .top) {
-                SearchOverlay(search: search, focused: $searchFocused, areas: store.areas,
-                              openArea: { area in
+                SearchOverlay(search: search, focused: $searchFocused, stations: store.stations,
+                              openStation: { station in
                                   searchFocused = false
-                                  select(area)
+                                  select(station)
                               },
                               choose: { completion in Task { await go(to: completion) } })
                     .padding(.horizontal, 12)
@@ -50,7 +47,7 @@ struct MapScreen: View {
             .safeAreaInset(edge: .bottom) {
                 Group {
                     if let selected {
-                        AreaCard(area: selected, distance: destination?.distance(to: selected),
+                        StationCard(station: selected, distance: destination?.distance(to: selected),
                                  dismiss: { selectedID = nil },
                                  open: { path.append(selected) })
                             .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -67,26 +64,26 @@ struct MapScreen: View {
             }
             // The keyboard covers the bottom controls instead of pushing them, and the map, upwards.
             .ignoresSafeArea(.keyboard)
-            .navigationDestination(for: AreaSummary.self) { AreaDetailScreen(area: $0) }
+            .navigationDestination(for: Station.self) { StationScreen(station: $0) }
             .toolbar(.hidden, for: .navigationBar)
             .sheet(isPresented: $showSettings) { SettingsSheet() }
         }
-        // bikeslot://area/<id> opens an area directly, e.g. from a notification.
+        // bikeslot://station/<id> opens a station directly, e.g. from a notification.
         .onOpenURL { url in
-            if url.host == "area" { linkedArea = url.lastPathComponent }
+            if url.host == "station" { linkedStation = url.lastPathComponent }
         }
-        // Launch argument `-openArea <id>` does the same without a confirmation prompt.
-        .task { linkedArea = UserDefaults.standard.string(forKey: "openArea") }
-        .onChange(of: store.areas) { openLinkedArea() }
-        .onChange(of: linkedArea) { openLinkedArea() }
+        // Launch argument `-openStation <id>` does the same without a confirmation prompt.
+        .task { linkedStation = UserDefaults.standard.string(forKey: "openStation") }
+        .onChange(of: store.stations) { openLinkedStation() }
+        .onChange(of: linkedStation) { openLinkedStation() }
     }
 
-    @State private var linkedArea: String?
+    @State private var linkedStation: String?
 
-    private func select(_ area: AreaSummary) {
+    private func select(_ station: Station) {
         withAnimation(.snappy) {
-            selectedID = area.id
-            position = Self.camera(at: area.coordinate, distance: 700)
+            selectedID = station.id
+            position = Self.camera(at: station.coordinate, distance: 700)
         }
     }
 
@@ -96,15 +93,15 @@ struct MapScreen: View {
         search.query = ""
         destination = place
         withAnimation(.snappy) {
-            // Suggest the closest shelter that still has room.
-            selectedID = store.areas.filter { $0.free > 0 }.min { place.distance(to: $0) < place.distance(to: $1) }?.id
+            // Suggest the closest station that still has room.
+            selectedID = store.stations.filter { $0.free > 0 }.min { place.distance(to: $0) < place.distance(to: $1) }?.id
             position = framing(place)
         }
     }
 
-    /// Shows the destination together with the shelters within 3 km of it.
+    /// Shows the destination together with the stations within 3 km of it.
     private func framing(_ place: Destination) -> MapCameraPosition {
-        let points = [place.coordinate] + store.areas.filter { place.distance(to: $0) < 3000 }.map(\.coordinate)
+        let points = [place.coordinate] + store.stations.filter { place.distance(to: $0) < 3000 }.map(\.coordinate)
         guard points.count > 1 else { return Self.camera(at: place.coordinate, distance: 700) }
         let lats = points.map(\.latitude), lons = points.map(\.longitude)
         let center = CLLocationCoordinate2D(latitude: (lats.min()! + lats.max()!) / 2,
@@ -121,40 +118,40 @@ struct MapScreen: View {
         }
     }
 
-    private func openLinkedArea() {
-        guard let id = linkedArea, let area = store.areas.first(where: { $0.id == id }) else { return }
-        linkedArea = nil
-        path = [area]
+    private func openLinkedStation() {
+        guard let id = linkedStation, let station = store.stations.first(where: { $0.id == id }) else { return }
+        linkedStation = nil
+        path = [station]
     }
 }
 
-private struct AreaPin: View {
-    let area: AreaSummary
+private struct StationPin: View {
+    let station: Station
     let selected: Bool
 
     var body: some View {
         HStack(spacing: 5) {
             Image(systemName: "bicycle")
                 .font(.caption.weight(.bold))
-            Text(area.updatedAt == nil ? "–" : "\(area.free)")
+            Text(station.reporting ? "\(station.free)" : "–")
                 .font(.subheadline.weight(.bold).monospacedDigit())
                 .contentTransition(.numericText())
         }
         .foregroundStyle(.white)
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
-        .background(area.availability.color.gradient, in: Capsule())
+        .background(station.availability.color.gradient, in: Capsule())
         .overlay(Capsule().stroke(.white, lineWidth: selected ? 3 : 2))
         .shadow(color: .black.opacity(selected ? 0.35 : 0.2), radius: selected ? 8 : 4, y: 2)
         .scaleEffect(selected ? 1.25 : 1, anchor: .bottom)
-        .animation(.snappy, value: area.free)
+        .animation(.snappy, value: station.free)
         .animation(.snappy, value: selected)
     }
 }
 
-/// Small floating bar shown while no shelter is selected.
+/// Small floating bar shown while no station is selected.
 private struct StatusBar: View {
-    @Environment(AreaStore.self) private var store
+    @Environment(StationStore.self) private var store
     let destination: Destination?
     let clearDestination: () -> Void
     let settings: () -> Void
@@ -200,9 +197,9 @@ private struct StatusBar: View {
     }
 }
 
-/// Card for the tapped shelter. Pulling it down shrinks it; pulling the small card down dismisses it.
-private struct AreaCard: View {
-    let area: AreaSummary
+/// Card for the tapped station. Pulling it down shrinks it; pulling the small card down dismisses it.
+private struct StationCard: View {
+    let station: Station
     var distance: CLLocationDistance?
     let dismiss: () -> Void
     let open: () -> Void
@@ -214,7 +211,7 @@ private struct AreaCard: View {
     private static let spring = Animation.bouncy(duration: 0.45, extraBounce: 0.12)
     private static let shape = RoundedRectangle(cornerRadius: 34, style: .continuous)
 
-    private var free: String { area.updatedAt == nil ? "–" : "\(area.free)" }
+    private var free: String { station.reporting ? "\(station.free)" : "–" }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -252,18 +249,18 @@ private struct AreaCard: View {
         .onTapGesture {
             if !expanded { withAnimation(Self.spring) { expanded = true } }
         }
-        .onChange(of: area.id) { withAnimation(Self.spring) { expanded = true } }
+        .onChange(of: station.id) { withAnimation(Self.spring) { expanded = true } }
         .sensoryFeedback(.impact(weight: .light), trigger: expanded)
     }
 
     private var compact: some View {
         HStack(spacing: 12) {
-            ShelterIcon(area: area, size: 40)
+            StationIcon(station: station, size: 40)
             VStack(alignment: .leading, spacing: 1) {
-                Text(area.name)
+                Text(station.name)
                     .font(.headline)
                     .lineLimit(1)
-                Text("\(free) of \(area.capacity) free")
+                Text("\(free) of \(station.capacity) free")
                     .font(.subheadline.monospacedDigit())
                     .foregroundStyle(.secondary)
                     .contentTransition(.numericText())
@@ -284,8 +281,8 @@ private struct AreaCard: View {
     private var details: some View {
         VStack(alignment: .leading, spacing: 18) {
             HStack(spacing: 12) {
-                ShelterIcon(area: area, size: 44)
-                Text(area.name)
+                StationIcon(station: station, size: 44)
+                Text(station.name)
                     .font(.title3.weight(.bold))
                     .lineLimit(1)
                 Spacer(minLength: 0)
@@ -294,9 +291,9 @@ private struct AreaCard: View {
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 Text(free)
                     .font(.system(size: 34, weight: .bold, design: .rounded).monospacedDigit())
-                    .foregroundStyle(area.availability.color)
+                    .foregroundStyle(station.availability.color)
                     .contentTransition(.numericText())
-                Text("of \(area.capacity) spots free")
+                Text("of \(station.capacity) spots free")
                     .font(.headline)
                     .foregroundStyle(.secondary)
                 Spacer(minLength: 0)
@@ -308,7 +305,7 @@ private struct AreaCard: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            .animation(.snappy, value: area.free)
+            .animation(.snappy, value: station.free)
 
             HStack(spacing: 10) {
                 Button(action: open) {
@@ -330,15 +327,15 @@ private struct AreaCard: View {
 
     /// Cycling directions in Apple Maps.
     private func directions() {
-        let c = area.coordinate
+        let c = station.coordinate
         if let url = URL(string: "https://maps.apple.com/directions?destination=\(c.latitude),\(c.longitude)&mode=cycling") {
             openURL(url)
         }
     }
 }
 
-private struct ShelterIcon: View {
-    let area: AreaSummary
+private struct StationIcon: View {
+    let station: Station
     let size: CGFloat
 
     var body: some View {
@@ -346,7 +343,7 @@ private struct ShelterIcon: View {
             .font(.system(size: size * 0.42, weight: .semibold))
             .foregroundStyle(.white)
             .frame(width: size, height: size)
-            .background(area.availability.color.gradient, in: Circle())
+            .background(station.availability.color.gradient, in: Circle())
     }
 }
 
@@ -361,7 +358,7 @@ private struct SettingsSheet: View {
                 Section {
                     Toggle("Demo data", isOn: $demoMode)
                 } footer: {
-                    Text("Built-in sample shelters that change every few seconds. No backend needed.")
+                    Text("Built-in sample stations that change every few seconds. No backend needed.")
                 }
                 Section {
                     TextField("Backend URL", text: $backendURL)

@@ -1,18 +1,19 @@
-// One bike spot in a 3D model of the Endress+Hauser block. The view starts high above the
-// block and flies down, like Google Earth, until you stand right in front of the rack: a
-// blue glowing pad on every free slot and a parked bike on every taken one. Once landed you
-// can look around the rack like in Google Maps 3D: drag to orbit and tilt, pinch to zoom,
-// twist to rotate, double-tap to return to the front view. The rack stays the focus.
+// One bike station in a 3D model of the Endress+Hauser block. The view starts high above the
+// block and flies down, like Google Earth, until you stand right in front of one of its racks:
+// a green glowing pad on every free slot, a parked bike on every taken one, and a grey pad on
+// every slot no camera has seen recently. Once landed you can look around the rack like in
+// Google Maps 3D: drag to orbit and tilt, pinch to zoom, twist to rotate, double-tap to return
+// to the front view. The rack stays the focus.
 //
 // The world comes from site.js (OpenStreetMap buildings, streets and car parks, with street
 // trees, bushes, lamps and parked cars; written by code/scene-generator/site_world.py) and
 // models.js (Kenney CC0 models from the three.js prototype in assets/, written by
-// code/scene-generator/kenney_models.py). The app calls
-// BikeSpot.show({id, kind, center, polygon, known, slots}) once and
-// BikeSpot.update(slots, known) on every change, with slots as [{id, label, occupied}] and
-// center/polygon as [lat, lon] from the API. While `known` is false (no camera has reported
-// yet) the pads stay grey instead of claiming the spot is empty. Opened in a browser on its
-// own (spot.html?kind=curved_shelter&slots=10&lat=47.48683&lon=7.59919) it runs a demo.
+// code/scene-generator/kenney_models.py). The app calls BikeSpot.show({id, slots, racks, rack})
+// once, BikeSpot.update(slots) on every change and BikeSpot.focus(rack) to fly to another
+// rack, with slots as the Availability API sends them ({number, state, location: {lat, lon}})
+// and racks as lists of slot numbers. Every slot stands where the station catalog measured it.
+// Opened in a browser on its own
+// (spot.html?station=cmr-south-02&slots=10&lat=47.48686&lon=7.59992&heading=0) it runs a demo.
 
 (function () {
   "use strict";
@@ -23,9 +24,10 @@
 
   const GREEN = 0x19c25a; // Brand.free in the app: free
   const RED = 0xd50c2f; // Brand.red: taken
-  const MIST = 0xa4b3bc; // Brand.mist: not known yet
+  const MIST = 0xa4b3bc; // Brand.mist: no camera has seen the slot recently
   const HORIZON = 0xe2ebf1; // fog colour, matches the bottom of the CSS sky
-  const FLIGHT_SECONDS = 3.6;
+  const FLIGHT_SECONDS = 3.6; // from high above the block down to the first rack
+  const HOP_SECONDS = 2.2; // over the roofs to another rack of the same station
   const EYE_HEIGHT = 1.7;
 
   const STEEL = new THREE.MeshStandardMaterial({ color: 0x6f7980, metalness: 0.7, roughness: 0.35 });
@@ -35,16 +37,20 @@
   const CONCRETE = new THREE.MeshStandardMaterial({ color: 0xc9c7c2, roughness: 0.95 });
   const BIKE_COLOURS = [0x24282c, 0x2f3c4f, 0xb3262e, 0x3f4a3c, 0xd9dcdf, 0x1d1f22, 0x7a2f8c, 0x2a5f8f];
 
-  // Per kind of rack: slot pitch, how to build it, and how much of it to keep in view.
+  // The shelter at each station, from the site photos: the API has the slots but no shelter
+  // type. Any other station gets wheel holders in a painted box.
+  const SHELTERS = { "cmr-north-01": "long_shelter", "cmr-south-02": "curved_shelter" };
+  // Per kind of rack: how to build it, and at most how many metres of it to fit on screen.
   const KINDS = {
-    curved_shelter: { pitch: 0.5, build: curvedShelter },
-    open_stand: { pitch: 0.6, build: openStand },
-    long_shelter: { pitch: 0.6, build: longShelter, view: 10 },
-    bike_garage: { pitch: 0.55, build: bikeGarage },
+    curved_shelter: { build: curvedShelter },
+    open_stand: { build: openStand },
+    long_shelter: { build: longShelter, view: 10 },
   };
+  const PITCH = 0.6; // slot spacing of a rack with a single slot, where none can be measured
 
   let renderer, scene, camera, sun;
-  let flight = null; // {start, eye: [P0..P3], target: [from, to]}
+  let flight = null; // {start, seconds, eye: [P0..P3], target: [from, to], fade}
+  const look = new THREE.Vector3(); // where the camera looks, so a hop can start from there
   // After landing the camera orbits the rack: `goal` follows the fingers, `now` eases after
   // it, `spin` keeps a flick turning for a moment. Angles as in THREE.Spherical.
   const orbit = { active: false, focus: null, home: null, now: null, goal: null, lift: 0,
@@ -53,8 +59,8 @@
   // out you zoom the more you look down, so the buildings never hide the rack.
   const LIMITS = { minRadius: 4, maxRadius: 70, minPhi: 0.12, maxPhi: 1.5, farPhi: 1.0, turn: 1.75,
     minHeight: 1.2 };
-  let slots = []; // {pad, beam, bike, occupied, shown}
-  let known = true;
+  let racks = []; // {holder, front, distance, eye, target}
+  const slots = new Map(); // slot number to {pad, beam, bike, state, shown, phase}
   const FOV = 72; // vertical, close to a phone camera held upright
   const MAX_DISTANCE = 18; // far enough back to see a whole rack on a narrow screen
   const clock = new THREE.Clock();
@@ -185,66 +191,92 @@
   // ---- The spot ------------------------------------------------------------------------
 
   function show(config) {
-    const kind = KINDS[config.kind] ? config.kind : "curved_shelter";
-    const spec = KINDS[kind];
     const site = window.SITE;
-    const local = (ll) => [(ll[1] - site.origin[1]) * 111320 * Math.cos(site.origin[0] * Math.PI / 180),
-      (ll[0] - site.origin[0]) * 111320];
-    const centre = local(config.center);
-    // The outline's first edge runs along the rack (backend `footprint`).
-    let heading = 0;
-    if (config.polygon && config.polygon.length > 1) {
-      const a = local(config.polygon[0]), b = local(config.polygon[1]);
-      heading = Math.atan2(b[1] - a[1], b[0] - a[0]);
-    }
-
-    const holder = new THREE.Group();
-    holder.position.copy(toScene(centre));
-    holder.rotation.y = heading;
-    scene.add(holder);
-    holder.updateMatrixWorld(true); // localToWorld below needs it before the first frame
-
-    const built = spec.build(holder, config.slots.length, spec.pitch);
-    slots = built.places.map((place, i) => makeSlot(place, spec.pitch, i));
-    update(config.slots, config.known !== false, true);
-    holder.traverse((o) => { if (o.isMesh) o.castShadow = true; });
-
-    // Land straight in front of the rack, at eye height, far enough back to see it whole
-    // on this screen. Looking a little below the rack keeps it above the app's card.
+    const local = (l) => [(l.lon - site.origin[1]) * 111320 * Math.cos(site.origin[0] * Math.PI / 180),
+      (l.lat - site.origin[0]) * 111320];
+    const spec = KINDS[SHELTERS[config.id]] || KINDS.open_stand;
+    const where = new Map(config.slots.map((slot) => [slot.number, local(slot.location)]));
     const across = 2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(FOV / 2)) * camera.aspect);
-    const visible = Math.min(built.width, spec.view || Infinity);
-    let distance = Math.min((visible / 2 + 0.8) / Math.tan(across / 2), MAX_DISTANCE);
-    // Step closer if that spot would be inside a building.
-    const eyeAt = (d) => holder.localToWorld(new THREE.Vector3(0, EYE_HEIGHT, d));
-    while (distance > 3 && site.buildings.some((b) => inside([eyeAt(distance).x, -eyeAt(distance).z], b.outline))) {
-      distance -= 0.5;
-    }
-    const eye = eyeAt(distance);
-    const target = holder.localToWorld(new THREE.Vector3(0, built.lookHeight ?? 0.35, -0.4));
-    const front = holder.localToWorld(new THREE.Vector3(0, 0, 1)).sub(holder.position).normalize();
-    aimSun(holder.position);
 
-    const start = camera.position.clone();
+    racks = config.racks.map((numbers) => {
+      const a = where.get(numbers[0]), b = where.get(numbers[numbers.length - 1]);
+      const length = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      const middle = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+      // The rack runs from its first slot to its last. Its open front faces the nearer street,
+      // where riders come from, so turn it round if that street is on its left.
+      let heading = numbers.length > 1 ? Math.atan2(b[1] - a[1], b[0] - a[0]) : 0;
+      const street = (side) => Math.min(...site.roads.filter((r) => r.kind === "road").map((r) => distanceToLine(
+        [middle[0] + side * 6 * Math.sin(heading), middle[1] - side * 6 * Math.cos(heading)], r.line)));
+      const order = street(-1) < street(1) ? [...numbers].reverse() : numbers;
+      if (order !== numbers) heading += Math.PI;
+
+      const holder = new THREE.Group();
+      holder.position.copy(toScene(middle));
+      holder.rotation.y = heading;
+      scene.add(holder);
+      holder.updateMatrixWorld(true); // localToWorld below needs it before the first frame
+
+      const pitch = numbers.length > 1 ? length / (numbers.length - 1) : PITCH;
+      const built = spec.build(holder, numbers.length, pitch);
+      built.places.forEach((place, i) => slots.set(order[i], makeSlot(place, pitch, order[i])));
+      holder.traverse((o) => { if (o.isMesh) o.castShadow = true; });
+
+      // Land straight in front of the rack, at eye height, far enough back to see it whole
+      // on this screen. Looking a little below the rack keeps it above the app's card.
+      const visible = Math.min(built.width, spec.view || Infinity);
+      let distance = Math.min((visible / 2 + 0.8) / Math.tan(across / 2), MAX_DISTANCE);
+      // Step closer if that spot would be inside a building.
+      const eyeAt = (d) => holder.localToWorld(new THREE.Vector3(0, EYE_HEIGHT, d));
+      while (distance > 3 && site.buildings.some((b) => inside([eyeAt(distance).x, -eyeAt(distance).z], b.outline))) {
+        distance -= 0.5;
+      }
+      return { holder, distance, eye: eyeAt(distance),
+        target: holder.localToWorld(new THREE.Vector3(0, built.lookHeight ?? 0.35, -0.4)),
+        front: holder.localToWorld(new THREE.Vector3(0, 0, 1)).sub(holder.position).normalize() };
+    });
+    update(config.slots, true);
+
+    // OpenStreetMap places street trees and lamps by rule, not by survey, so clear the ground
+    // the station stands on and the view of each rack.
+    const sight = racks.map((r) => [[r.eye.x, -r.eye.z], [r.holder.position.x, -r.holder.position.z]]);
+    clearProps((p) => [...where.values()].some((q) => Math.hypot(p[0] - q[0], p[1] - q[1]) < 4)
+      || sight.some((line) => distanceToLine(p, line) < 3));
+    focus(config.rack || 0);
+  }
+
+  // Fly to one of the station's racks: on the way in from high above the block, between racks
+  // in a short hop over the roofs.
+  function focus(index) {
+    const rack = racks[THREE.MathUtils.clamp(index, 0, racks.length - 1)];
+    if (!rack) return;
+    const first = !flight, start = camera.position.clone(), centre = rack.holder.position;
+    const away = start.clone().sub(look).setY(0).normalize();
+    orbit.active = false;
+    aimSun(centre);
     flight = {
       start: clock.elapsedTime,
-      eye: [start, holder.position.clone().addScaledVector(front, 110).setY(170),
-        holder.position.clone().addScaledVector(front, distance + 22).setY(16), eye],
-      target: [new THREE.Vector3(0, 0, 0), target],
+      seconds: first ? FLIGHT_SECONDS : HOP_SECONDS,
+      eye: first
+        ? [start, centre.clone().addScaledVector(rack.front, 110).setY(170),
+          centre.clone().addScaledVector(rack.front, rack.distance + 22).setY(16), rack.eye]
+        : [start, start.clone().addScaledVector(away, 10).setY(start.y + 20),
+          rack.eye.clone().addScaledVector(rack.front, 10).setY(rack.eye.y + 20), rack.eye],
+      target: [look.clone(), rack.target],
+      fade: first, // the pads light up as you arrive, once
     };
   }
 
-  function update(list, isKnown, instant) {
-    known = isKnown;
-    list.forEach((slot, i) => {
-      const s = slots[i];
-      if (!s) return;
-      s.occupied = slot.occupied;
-      if (instant) s.shown = s.occupied ? 1 : 0;
-    });
+  function update(list, instant) {
+    for (const slot of list) {
+      const s = slots.get(slot.number);
+      if (!s) continue;
+      s.state = slot.state;
+      if (instant) s.shown = slot.state === "taken" ? 1 : 0;
+    }
   }
 
   // A slot: pad on the ground, a light beam while it is free, a bike while it is taken.
-  function makeSlot(place, pitch, index) {
+  function makeSlot(place, pitch, number) {
     const pad = new THREE.Mesh(roundedRect(pitch * 0.82, 1.5, 0.12),
       new THREE.MeshBasicMaterial({ color: GREEN, transparent: true, opacity: 0.75, depthWrite: false, toneMapped: false }));
     pad.rotation.x = -Math.PI / 2;
@@ -257,40 +289,41 @@
     beam.position.set(0, 0.75, 0.35);
     place.add(beam);
 
-    const bike = makeBike(BIKE_COLOURS[(index * 5 + 3) % BIKE_COLOURS.length]);
+    const bike = makeBike(BIKE_COLOURS[(number * 5 + 3) % BIKE_COLOURS.length]);
     bike.position.set(0, 0, 0.2);
     place.add(bike);
-    return { pad, beam, bike, occupied: false, shown: 0, phase: index * 0.7 };
+    return { pad, beam, bike, state: "unknown", shown: 0, phase: number * 0.7 };
   }
 
   function render() {
     const dt = Math.min(clock.getDelta(), 0.05);
     const t = clock.elapsedTime;
 
-    let arrived = 0;
+    let arrived = 1;
     if (flight) {
-      const k = Math.min((t - flight.start) / FLIGHT_SECONDS, 1);
+      const k = Math.min((t - flight.start) / flight.seconds, 1);
       if (orbit.active) {
         stepOrbit(dt);
       } else {
         const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; // ease in and out
         camera.position.copy(bezier(flight.eye, e));
-        camera.lookAt(flight.target[0].clone().lerp(flight.target[1], Math.min(1, e * 1.25)));
+        camera.lookAt(look.copy(flight.target[0]).lerp(flight.target[1], Math.min(1, e * 1.25)));
         if (k === 1) startOrbit(flight.eye[3], flight.target[1]);
       }
-      arrived = THREE.MathUtils.clamp((k - 0.75) / 0.25, 0, 1);
+      if (flight.fade) arrived = THREE.MathUtils.clamp((k - 0.75) / 0.25, 0, 1);
     }
 
-    for (const s of slots) {
-      s.shown += ((s.occupied ? 1 : 0) - s.shown) * Math.min(dt * 6, 1);
+    for (const s of slots.values()) {
+      const seen = s.state !== "unknown";
+      s.shown += ((s.state === "taken" ? 1 : 0) - s.shown) * Math.min(dt * 6, 1);
       const free = 1 - s.shown;
-      s.bike.visible = known && s.shown > 0.02;
+      s.bike.visible = s.shown > 0.02;
       s.bike.scale.setScalar(0.6 + 0.4 * s.shown);
       s.bike.position.y = (1 - s.shown) * 0.3;
-      s.pad.material.color.setHex(!known ? MIST : s.shown > 0.5 ? RED : GREEN);
+      s.pad.material.color.setHex(!seen ? MIST : s.shown > 0.5 ? RED : GREEN);
       const pulse = 0.5 + 0.5 * Math.sin(t * 2.2 + s.phase);
-      s.pad.material.opacity = (s.shown > 0.5 ? 0.85 : 0.6 + 0.3 * pulse) * (0.35 + 0.65 * arrived);
-      s.beam.visible = known && free > 0.02 && arrived > 0;
+      s.pad.material.opacity = (s.shown > 0.5 || !seen ? 0.85 : 0.6 + 0.3 * pulse) * (0.35 + 0.65 * arrived);
+      s.beam.visible = seen && free > 0.02 && arrived > 0;
       s.beam.material.opacity = free * arrived * (0.45 + 0.2 * Math.sin(t * 2.2 + s.phase));
       const p = s.beam.getWorldPosition(new THREE.Vector3());
       s.beam.lookAt(camera.position.x, p.y, camera.position.z);
@@ -341,7 +374,7 @@
     orbit.lift += (roof - orbit.lift) * ease;
     position.y = Math.max(position.y, orbit.lift);
     camera.position.copy(position);
-    camera.lookAt(orbit.focus);
+    camera.lookAt(look.copy(orbit.focus));
   }
 
   window.addEventListener("pointerdown", (e) => {
@@ -399,6 +432,17 @@
     return hit;
   }
 
+  // Shortest distance in metres from a point to a polyline, all in local metres.
+  function distanceToLine([x, y], line) {
+    let best = Infinity;
+    for (let i = 1; i < line.length; i++) {
+      const [x1, y1] = line[i - 1], [x2, y2] = line[i], dx = x2 - x1, dy = y2 - y1;
+      const t = THREE.MathUtils.clamp(((x - x1) * dx + (y - y1) * dy) / (dx * dx + dy * dy || 1), 0, 1);
+      best = Math.min(best, Math.hypot(x - x1 - t * dx, y - y1 - t * dy));
+    }
+    return best;
+  }
+
   function bezier([a, b, c, d], t) {
     const u = 1 - t;
     return a.clone().multiplyScalar(u * u * u).addScaledVector(b, 3 * u * u * t)
@@ -407,6 +451,7 @@
 
   // One instanced mesh of a Kenney model; `place(item, i)` gives [x, y, yaw, scale].
   const geometries = {};
+  const props = []; // {mesh, at: [[x, y], ...]}, so a station can clear the ground it stands on
   const KENNEY = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8, flatShading: true });
   function instances(name, items, place) {
     if (!items.length) return;
@@ -419,6 +464,16 @@
     });
     mesh.castShadow = mesh.receiveShadow = true;
     scene.add(mesh);
+    props.push({ mesh, at: items.map((item, i) => place(item, i).slice(0, 2)) });
+  }
+
+  // Hides every tree, bush, lamp and car standing where `blocked([x, y])` is true.
+  function clearProps(blocked) {
+    const gone = new THREE.Matrix4().makeScale(0, 0, 0);
+    for (const { mesh, at } of props) {
+      at.forEach((p, i) => { if (blocked(p)) mesh.setMatrixAt(i, gone); });
+      mesh.instanceMatrix.needsUpdate = true;
+    }
   }
 
   function kenney(name) {
@@ -528,50 +583,6 @@
     }
     rack(parent, n, pitch, -depth / 2 + 0.35);
     return { places: row(parent, n, pitch, -0.2), width: length };
-  }
-
-  // The bike garage: a concrete hall against the facade, open to the street, with rows of
-  // double-sided floor racks.
-  function bikeGarage(parent, n, pitch) {
-    const rows = 2, perSide = Math.ceil(n / rows / 2), width = perSide * pitch + 2.4, depth = 6.4, height = 3.2;
-    const walls = new THREE.MeshStandardMaterial({ color: 0xd3d1cc, roughness: 0.95, side: THREE.DoubleSide });
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(width, depth), new THREE.MeshStandardMaterial({ color: 0xe4e6e6, roughness: 0.8 }));
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.set(0, 0.04, -depth / 2);
-    floor.receiveShadow = true;
-    parent.add(floor);
-    for (const [w, h, x, y, z, ry] of [[width, height, 0, height / 2, -depth, 0], [depth, height, -width / 2, height / 2, -depth / 2, Math.PI / 2],
-      [depth, height, width / 2, height / 2, -depth / 2, Math.PI / 2], [width, depth, 0, height, -depth / 2, 0]]) {
-      const panel = new THREE.Mesh(new THREE.PlaneGeometry(w, h), walls);
-      panel.position.set(x, y, z);
-      if (w === width && h === depth) panel.rotation.x = Math.PI / 2; else panel.rotation.y = ry;
-      panel.receiveShadow = true;
-      parent.add(panel);
-    }
-    const strip = new THREE.MeshBasicMaterial({ color: 0xfdfdf6 });
-    for (let i = 0; i < 3; i++) {
-      const light = new THREE.Mesh(new THREE.PlaneGeometry(0.25, depth - 1), strip);
-      light.rotation.x = Math.PI / 2;
-      light.position.set(-width / 3 + i * width / 3, height - 0.02, -depth / 2);
-      parent.add(light);
-    }
-    const lamp = new THREE.PointLight(0xffffff, 0.8, 18);
-    lamp.position.set(0, height - 0.4, -depth / 2);
-    parent.add(lamp);
-    const places = [];
-    for (let r = 0; r < rows; r++) {
-      const holder = new THREE.Group();
-      holder.position.z = -1.7 - r * 2.9;
-      parent.add(holder);
-      for (const side of [1, -1]) {
-        const half = new THREE.Group();
-        half.rotation.y = side === 1 ? 0 : Math.PI;
-        holder.add(half);
-        rack(half, perSide, pitch, -0.05);
-        places.push(...row(half, perSide, pitch, 0.3));
-      }
-    }
-    return { places: places.slice(0, n), width, lookHeight: 0.9 };
   }
 
   // Front-wheel holders: a vertical loop per slot on a rail along x.
@@ -801,22 +812,25 @@
   }
 
   setup();
-  window.BikeSpot = { show, update: (list, isKnown) => update(list, isKnown !== false, false) };
+  window.BikeSpot = { show, focus, update: (list) => update(list, false) };
 
-  // Standalone preview with made-up occupancy that keeps changing.
+  // Standalone preview: one straight rack with made-up states that keep changing.
   const params = new URLSearchParams(location.search);
-  if (params.has("kind")) {
+  if (params.has("station")) {
     const count = Number(params.get("slots") || 10);
-    const demo = Array.from({ length: count }, (_, i) => ({ id: String(i + 1), label: i + 1, occupied: Math.random() < 0.55 }));
-    const lat = Number(params.get("lat") || 47.48683), lon = Number(params.get("lon") || 7.59919);
-    const heading = Number(params.get("heading") || 0) * Math.PI / 180;
-    // An outline whose first edge points along the rack, like the backend's.
-    const dLat = -Math.sin(heading) / 111320, dLon = Math.cos(heading) / (111320 * Math.cos(lat * Math.PI / 180));
-    show({ kind: params.get("kind"), center: [lat, lon], polygon: [[lat, lon], [lat + dLat, lon + dLon]], slots: demo });
+    const lat = Number(params.get("lat") || 47.48686), lon = Number(params.get("lon") || 7.59992);
+    const heading = Number(params.get("heading") || 0) * Math.PI / 180, pitch = 0.5;
+    const demo = Array.from({ length: count }, (_, i) => {
+      const along = (i - (count - 1) / 2) * pitch;
+      return { number: i + 1, state: Math.random() < 0.55 ? "taken" : "free", location: {
+        lat: lat + along * Math.sin(heading) / 111320,
+        lon: lon + along * Math.cos(heading) / (111320 * Math.cos(lat * Math.PI / 180)) } };
+    });
+    show({ id: params.get("station"), slots: demo, racks: [demo.map((slot) => slot.number)] });
     setInterval(() => {
       const slot = demo[Math.floor(Math.random() * demo.length)];
-      slot.occupied = !slot.occupied;
-      update(demo, true, false);
+      slot.state = slot.state === "taken" ? "free" : "taken";
+      update(demo, false);
     }, 2500);
   }
 })();

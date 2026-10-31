@@ -31,7 +31,7 @@ true:
 - Keep the code reviewable. Use the existing seams (`OccupancyClassifier`,
   `OccupancyRepository`, `FingerprintStore`, the edge's `FrameSource`,
   `PIIDetector` and `FrameUploader`, the API contracts in
-  `documentation/api/`, and `AreaService` in the app), write comments
+  `documentation/api/`, and `StationService` in the app), write comments
   that explain why, read keys from the environment, and commit no secrets and
   no generated files such as `out/`, `.venv/`, or build folders.
 - Play fair. Respect the challenge's no-gos: never write camera frames to
