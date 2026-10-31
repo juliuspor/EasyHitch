@@ -228,7 +228,7 @@ All but the second print nothing.
   architecture slide uses brand icons from Simple Icons under CC0. The marks
   belong to their owners. The campus map data comes from OpenStreetMap under
   the ODbL, attributed in the
-  [readme](../readme.md#credits). The recorded frames are the hosts' photos.
+  [README](../README.md#credits). The recorded frames are the hosts' photos.
   The Endress+Hauser symbol comes from endress.com and is used for the
   sponsor's own challenge. The diagrams are rendered with archify 3.2.0.
 - **Sponsor resources.** The CHF 100 AI budget pays for Jev through

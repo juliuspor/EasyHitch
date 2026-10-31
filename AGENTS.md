@@ -26,7 +26,7 @@ true:
   documentation of the running system, and never present something that is
   not in the code as built.
 - Keep the demo working. Do not push a change that breaks the run steps in
-  the root `readme.md` and the backend and edge READMEs, or the app's demo
+  the root `README.md` and the backend and edge READMEs, or the app's demo
   mode.
 - Keep the code reviewable. Use the existing seams (`OccupancyClassifier`,
   `OccupancyRepository`, `FingerprintStore`, the edge's `FrameSource`,

@@ -93,4 +93,4 @@ described in the [backend](code/backend/README.md) and
 
 ## Licence
 
-MIT, see [license.txt](license.txt).
+MIT, see [LICENSE.txt](LICENSE.txt).
