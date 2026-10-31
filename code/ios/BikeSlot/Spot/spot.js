@@ -1,10 +1,11 @@
 // One bike station in a 3D model of the Endress+Hauser block. The view starts high above the
 // block and flies down, like Google Earth, until you stand right in front of its rack: a green
 // glowing pad on every free slot, a parked bike on every taken one, and a grey pad on every
-// slot no camera has seen recently. Given the rider's position, it navigates instead: down
-// to the rider's blue dot, along the streets behind it, and round to face the rack. Once
-// landed you can look around the rack like in Google Maps 3D: drag to orbit and tilt, pinch
-// to zoom, twist to rotate, double-tap to return to the front view. The rack stays the focus.
+// slot no camera has seen recently. Given the rider's position, it navigates instead: from
+// straight above the rider down to street level, along the streets as the rider sees them,
+// and round to face the rack. Once landed you can look around the rack like in Google Maps
+// 3D: drag to orbit and tilt, pinch to zoom, twist to rotate, double-tap to return to the
+// front view. The rack stays the focus.
 //
 // The world comes from site.js (OpenStreetMap buildings, streets and car parks, with street
 // trees, bushes, lamps and parked cars; written by code/scene-generator/site_world.py) and
@@ -81,6 +82,9 @@
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.setClearColor(0x000000, 0);
     document.body.appendChild(renderer.domElement);
+    // Hidden until show(), so the first frame is where the way in starts, not the default view.
+    renderer.domElement.style.opacity = "0";
+    renderer.domElement.style.transition = "opacity 0.3s ease";
 
     scene = new THREE.Scene();
     scene.fog = new THREE.Fog(HORIZON, 420, 1600);
@@ -274,6 +278,8 @@
     flight = config.from ? navigationFlight(rack, local(config.from), clear) : aerialFlight(rack);
     flight.start = clock.elapsedTime;
   }
+    flight.step(0);
+    renderer.domElement.style.opacity = "1";
 
   // From high above the block down to the front of the rack.
   function aerialFlight(rack) {
@@ -353,19 +359,22 @@
     renderer.render(scene, camera);
   }
 
-  // ---- Navigating from the rider's blue dot along the streets -----------------------------
+  // ---- Navigating from the rider along the streets ---------------------------------------
 
-  // Like a navigation app: down from above the block to the rider's blue dot, behind it along
-  // the street, then round to face the rack, landing in the same view as the flight from above.
+  // Like a navigation app: from straight above the rider, where the map showed the blue dot,
+  // down to street level, then along the street as the rider sees it. Over the last stretch
+  // the view turns towards the rack while still rolling, and comes to rest in the same view
+  // as the flight from above.
   const NAV = {
-    intro: 2.8, // seconds from above the block down behind the dot
-    speed: 20, // metres a second along the street: faster than a bike, so a demo stays short
-    minRide: 3,
-    maxRide: 9,
-    turn: 3.2, // seconds to turn towards the rack and land
+    above: 120, // metres above the rider where the view starts, like the map zoomed in on the dot
+    intro: 3.2, // seconds from there down to street level
+    speed: 20, // speed along the street, metres a second: faster than a bike, so a demo stays short
+    slowDown: 0.3, // share of the ride spent slowing down to a stop at the rack
+    turnIn: 30, // metres before the rack where the view starts turning towards it
+    minRide: 4,
+    maxRide: 11,
     bikeLane: 0.8, // a rider keeps this far left of the street's right edge, in the bike lane
-    behind: 11, // the camera follows this far behind the dot
-    height: 4.5, // and this high
+    height: 3, // the view rides this high, just above a rider's head
     ahead: 18, // looking at the street this far ahead
   };
   const ROUTE_BLUE = 0x007aff; // Brand.location in the app: the location dot of Apple Maps
@@ -374,55 +383,66 @@
     const route = planRoute(from, [rack.eye.x, -rack.eye.z]);
     if (!route) return aerialFlight(rack);
     streetDetails(route, clear);
-    const path = measure(keepRight(route));
-    const marker = routeMarker(path);
-    const ride = THREE.MathUtils.clamp(path.length / NAV.speed, NAV.minRide, NAV.maxRide);
-    const rideEnd = NAV.intro + ride;
-    // Behind the dot, looking down the street; over the last stretch the gaze already starts
-    // to turn towards the rack, as a navigation camera does before a turn.
-    const follow = (d) => ({ position: toScene(at(path, d - NAV.behind).point, NAV.height),
-      look: toScene(at(path, d + NAV.ahead).point, 0.8)
-        .lerp(rack.target, 0.3 * THREE.MathUtils.smoothstep(d / path.length, 0.7, 1)) });
-    const first = follow(0), last = follow(path.length), dot = toScene(at(path, 0).point);
-    const backwards = toScene(at(path, -1).point).sub(dot).normalize();
-    const intro = [camera.position.clone(), dot.clone().setY(110),
-      first.position.clone().addScaledVector(backwards, 25).setY(28), first.position];
-    const introLook = [new THREE.Vector3(), dot, first.look];
-    const forwards = toScene(at(path, path.length + 1).point).sub(toScene(at(path, path.length).point)).normalize();
-    // At the rack, keep rolling a little and come down to eye height while turning to face it.
-    const turn = [last.position, last.position.clone().addScaledVector(forwards, 6).setY(NAV.height - 1.2),
-      rack.eye.clone().addScaledVector(forwards, -2.5).setY(EYE_HEIGHT + 0.4), rack.eye];
+    const street = measure(keepRight(route)), path = measure([...street.points, [rack.eye.x, -rack.eye.z]]);
+    const line = routeLine(street);
+    const share = covered(1); // of the way full speed all along would cover in the same time
+    const ride = THREE.MathUtils.clamp(path.length / (NAV.speed * share), NAV.minRide, NAV.maxRide);
+    const speed = path.length / (share * ride); // NAV.speed, unless the ride was clamped
+    // The rider's view down the street. Over the last stretch it turns towards the rack and
+    // comes down to eye height, still rolling, so turning and stopping are one curve.
+    const view = (d) => {
+      const turning = THREE.MathUtils.smoothstep(d, path.length - NAV.turnIn, path.length);
+      return { position: toScene(at(path, d).point, THREE.MathUtils.lerp(NAV.height, EYE_HEIGHT, turning)),
+        look: toScene(at(street, d + NAV.ahead).point, 1).lerp(rack.target, turning) };
+    };
+    const first = view(0), rider = toScene(at(street, 0).point);
+    const heading = toScene(at(path, 1).point).sub(rider).normalize();
+    // Straight down at first, north up as on the map, then swooping down onto the rider's
+    // position. The view turns to the street's heading while still high and tilts up to look
+    // down the street as it comes down, by yaw and pitch alone, so it never spins or rolls.
+    // The swoop speeds up along e = t², which ends at e' = 2 / NAV.intro, and a cubic Bézier
+    // then moves at 3 (P3 - P2) e': with P2 behind the start, the camera reaches the street at
+    // the ride's own speed and heading, and the descent runs into the ride without stopping.
+    const run = speed * NAV.intro;
+    const intro = [rider.clone().setY(NAV.above), rider.clone().addScaledVector(heading, -14).setY(40),
+      first.position.clone().addScaledVector(heading, -run / 6), first.position];
+    const towards = first.look.clone().sub(first.position);
+    const aim = { yaw: Math.atan2(-towards.x, -towards.z), pitch: Math.atan2(towards.y, Math.hypot(towards.x, towards.z)) };
     return {
-      duration: rideEnd + NAV.turn, eye: rack.eye, focus: rack.target,
+      duration: NAV.intro + ride, eye: rack.eye, focus: rack.target,
       step(seconds) {
         if (seconds < NAV.intro) {
-          const e = easeInOut(seconds / NAV.intro);
-          camera.position.copy(bezier(intro, e));
-          camera.lookAt(quadratic(introLook, e));
-          marker.place(0, 1);
-          aimSun(dot);
+          const k = seconds / NAV.intro;
+          camera.position.copy(bezier(intro, k * k));
+          camera.quaternion.setFromEuler(new THREE.Euler(
+            THREE.MathUtils.lerp(-Math.PI / 2, aim.pitch, THREE.MathUtils.smoothstep(k, 0.3, 1)),
+            aim.yaw * THREE.MathUtils.smoothstep(k, 0, 0.7), 0, "YXZ"));
+          line.place(0, 1);
+          aimSun(rider);
           return 0;
         }
-        if (seconds < rideEnd) {
-          const d = path.length * (1 - Math.cos(Math.PI * (seconds - NAV.intro) / ride)) / 2;
-          const pose = follow(d);
-          camera.position.copy(pose.position);
-          camera.lookAt(pose.look);
-          marker.place(d, 1);
-          aimSun(toScene(at(path, d).point));
-          return 0;
-        }
-        const u = (seconds - rideEnd) / NAV.turn, e = (1 - Math.cos(Math.PI * u)) / 2;
-        camera.position.copy(bezier(turn, e));
-        camera.lookAt(last.look.clone().lerp(rack.target, e));
-        marker.place(path.length, 1 - THREE.MathUtils.smoothstep(u, 0, 0.35));
-        aimSun(rack.holder.position.clone().lerp(toScene(at(path, path.length).point), 1 - e));
-        return THREE.MathUtils.clamp((u - 0.4) / 0.6, 0, 1);
+        const d = path.length * covered((seconds - NAV.intro) / ride) / share;
+        const pose = view(d);
+        camera.position.copy(pose.position);
+        camera.lookAt(pose.look);
+        line.place(Math.min(d, street.length), 1 - THREE.MathUtils.smoothstep(d, path.length - 12, path.length - 2));
+        aimSun(toScene(at(path, d).point));
+        return THREE.MathUtils.smoothstep(d, path.length - 15, path.length);
       },
     };
   }
 
   // The shortest way along the streets (not footpaths) from `from` to `to`, both joined to the
+  // How much of the way is covered after share `u` of the ride's time: full speed from the
+  // start, where the descent hands over, then slowing down over the last NAV.slowDown of it:
+  // the integral of a speed that holds at 1 and eases smoothly down to 0.
+  function covered(u) {
+    const b = NAV.slowDown;
+    if (u <= 1 - b) return u;
+    const w = u - (1 - b);
+    return 1 - b + w / 2 + b / (2 * Math.PI) * Math.sin(Math.PI * w / b);
+  }
+
   // nearest street: {points: centre line [x, y], widths: street width per stretch, lead, trail},
   // or null. lead and trail carry on straight past the start and the end, up to 25 m, in the
   // same form, so the street dressing does not stop where the ride does.
@@ -534,10 +554,9 @@
     });
   }
 
-  // The rider's blue dot and the route ahead of it as a blue band on the road, which the dot
-  // eats up as it goes, like the line in a navigation app. Seen from high above, the band
-  // widens and the dot grows, so both stay as visible as on the map.
-  function routeMarker(path) {
+  // The route ahead as a blue band on the road, eaten up as the ride goes, like the line in a
+  // navigation app. Seen from high above, a wider band takes over, as visible as on the map.
+  function routeLine(path) {
     const step = 0.5, count = Math.max(1, Math.ceil(path.length / step));
     const band = (width, y) => {
       const positions = [], index = [];
@@ -559,35 +578,14 @@
       return mesh;
     };
     const near = band(0.9, 0.08), far = band(5, 0.081);
-
-    const dot = new THREE.Group();
-    const disc = (radius, color, opacity, y) => {
-      const mesh = new THREE.Mesh(new THREE.CircleGeometry(radius, 32), new THREE.MeshBasicMaterial({ color,
-        transparent: true, opacity, depthWrite: false, toneMapped: false }));
-      mesh.rotation.x = -Math.PI / 2;
-      mesh.position.y = y;
-      mesh.userData.opacity = opacity;
-      dot.add(mesh);
-      return mesh;
-    };
-    const halo = disc(1.9, ROUTE_BLUE, 0.22, 0.09);
-    disc(0.9, 0xffffff, 1, 0.1);
-    disc(0.66, ROUTE_BLUE, 1, 0.11);
-    scene.add(dot);
-
     return {
       place(d, opacity) {
-        dot.position.copy(toScene(at(path, d).point));
         const above = THREE.MathUtils.smoothstep(camera.position.y, 15, 70);
-        dot.scale.setScalar(1 + above * camera.position.y / 14);
-        halo.scale.setScalar(0.8 + 0.2 * Math.sin(clock.elapsedTime * 3));
         for (const [mesh, strength] of [[near, 0.8 * (1 - above)], [far, 0.7 * above]]) {
           mesh.geometry.setDrawRange(Math.floor(d / step) * 6, Infinity);
           mesh.material.opacity = strength * opacity;
           mesh.visible = strength * opacity > 0.01;
         }
-        for (const mesh of dot.children) mesh.material.opacity = mesh.userData.opacity * opacity;
-        dot.visible = opacity > 0.01;
       },
     };
   }
@@ -695,10 +693,6 @@
     const dx = b[0] - a[0], dy = b[1] - a[1];
     const t = THREE.MathUtils.clamp(((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / (dx * dx + dy * dy || 1), 0, 1);
     return [a[0] + t * dx, a[1] + t * dy];
-  }
-
-  function quadratic([a, b, c], t) {
-    return a.clone().multiplyScalar((1 - t) * (1 - t)).addScaledVector(b, 2 * t * (1 - t)).addScaledVector(c, t * t);
   }
 
   // ---- Looking around after landing, like Google Maps in 3D -----------------------------
