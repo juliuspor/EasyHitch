@@ -67,12 +67,12 @@ the app opens the closest shelter that still has room
 blue dot ([`RiderDot`](../code/ios/BikeSlot/MapScreen.swift#L369-L397)).
 **3D Navigation** starts straight above it, swoops down into the bike lane
 and rides on to the station without stopping, turning to face the rack as it
-slows down ([`navigationFlight`](../code/ios/BikeSlot/Spot/spot.js#L382-L433)),
+slows down ([`navigationFlight`](../code/ios/BikeSlot/Spot/spot.js#L383-L434)),
 on the shortest way along the OpenStreetMap streets
-([`planRoute`](../code/ios/BikeSlot/Spot/spot.js#L449-L525)). Low-poly curbs,
-gutters, bike-lane markings, hedges and parked cars dress only the streets on
-that way, after Apple's Look Around imagery of Christoph-Merian-Ring
-([`streetDetails`](../code/ios/BikeSlot/Spot/spot.js#L597-L683)).
+([`planRoute`](../code/ios/BikeSlot/Spot/spot.js#L450-L526)). Low-poly curbs,
+gutters, bike-lane markings, hedges, flower beds and parked cars dress only
+the streets on that way, after Apple's Look Around imagery of
+Christoph-Merian-Ring ([`streetDetails`](../code/ios/BikeSlot/Spot/spot.js#L599-L694)).
 
 ## Impact
 

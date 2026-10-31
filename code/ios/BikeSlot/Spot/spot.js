@@ -87,7 +87,7 @@
     renderer.domElement.style.transition = "opacity 0.3s ease";
 
     scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(HORIZON, 420, 1600);
+    scene.fog = new THREE.Fog(HORIZON, 300, 1500);
     scene.add(new THREE.HemisphereLight(0xe3f0ff, 0x8f8e86, 0.8));
     sun = new THREE.DirectionalLight(0xfff6e8, 2.0);
     sun.castShadow = true;
@@ -125,8 +125,9 @@
   const toScene = (p, y = 0) => new THREE.Vector3(p[0], y, -p[1]);
 
   function buildWorld(site) {
+    // Lawn wherever no street, car park or building covers the ground.
     const ground = new THREE.Mesh(new THREE.PlaneGeometry(3000, 3000),
-      new THREE.MeshStandardMaterial({ color: 0xc4c9c0, roughness: 1 }));
+      new THREE.MeshStandardMaterial({ color: 0xb3c39b, roughness: 1 }));
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
     scene.add(ground);
@@ -156,13 +157,13 @@
     }
 
     const endress = [new THREE.MeshStandardMaterial({ map: solarTexture(), roughness: 0.6, metalness: 0.2 }),
-      new THREE.MeshStandardMaterial({ map: facadeTexture("#cfd5da", "#3b4b59", 0.42), roughness: 0.55, metalness: 0.25 })];
+      new THREE.MeshStandardMaterial({ map: claddingTexture(), roughness: 0.5, metalness: 0.3 })];
     // The other offices in the colours along Christoph-Merian-Ring: warm and cool whites, sand
     // and a little terracotta, under gravel or green roofs.
     const offices = [["#f1ede4", "#566470"], ["#e6dccb", "#4e5c67"], ["#dfe5e8", "#41576a"], ["#ece4d6", "#5a5f63"],
       ["#e3c6b3", "#4f5a62"]].map(([wall, glass], i) => [
       new THREE.MeshStandardMaterial({ color: [0xa9aba7, 0x8f948f, 0x7f9a62][i % 3], roughness: 0.95 }),
-      new THREE.MeshStandardMaterial({ map: facadeTexture(wall, glass, 0.36), roughness: 0.85 })]);
+      new THREE.MeshStandardMaterial({ map: officeTexture(wall, glass), roughness: 0.85 })]);
     site.buildings.forEach((building, i) => {
       const shape = new THREE.Shape(building.outline.map((p) => new THREE.Vector2(p[0], p[1])));
       const geometry = new THREE.ExtrudeGeometry(shape, { depth: building.height, bevelEnabled: false });
@@ -277,9 +278,9 @@
     const clear = (p) => [...where.values()].some((q) => Math.hypot(p[0] - q[0], p[1] - q[1]) < 7);
     flight = config.from ? navigationFlight(rack, local(config.from), clear) : aerialFlight(rack);
     flight.start = clock.elapsedTime;
-  }
     flight.step(0);
     renderer.domElement.style.opacity = "1";
+  }
 
   // From high above the block down to the front of the rack.
   function aerialFlight(rack) {
@@ -432,7 +433,6 @@
     };
   }
 
-  // The shortest way along the streets (not footpaths) from `from` to `to`, both joined to the
   // How much of the way is covered after share `u` of the ride's time: full speed from the
   // start, where the descent hands over, then slowing down over the last NAV.slowDown of it:
   // the integral of a speed that holds at 1 and eases smoothly down to 0.
@@ -443,6 +443,7 @@
     return 1 - b + w / 2 + b / (2 * Math.PI) * Math.sin(Math.PI * w / b);
   }
 
+  // The shortest way along the streets (not footpaths) from `from` to `to`, both joined to the
   // nearest street: {points: centre line [x, y], widths: street width per stretch, lead, trail},
   // or null. lead and trail carry on straight past the start and the end, up to 25 m, in the
   // same form, so the street dressing does not stop where the ride does.
@@ -593,7 +594,8 @@
   // Low-poly street dressing along the route only, where the ride passes, after Apple's Look
   // Around of Christoph-Merian-Ring: cobbled gutters and yellow bike-lane dashes on the road;
   // on the left a curb, a sidewalk and cars parked nose-in between the trees; on the right a
-  // curb, a verge and a hedge. Side streets, buildings and the station's own ground stay clear.
+  // curb, a verge with clumps of flowers, and a hedge. Side streets, buildings and the
+  // station's own ground stay clear.
   function streetDetails(route, clear) {
     const site = window.SITE;
     const lead = route.lead || { points: [route.points[0]], widths: [] };
@@ -610,8 +612,8 @@
     const things = [...site.trees, ...site.bushes, ...site.lamps];
     const nearThing = (q, r) => things.some((t) => Math.hypot(t[0] - q[0], t[1] - q[1]) < r);
 
-    const parts = { setts: [], dashes: [], curb: [], walk: [], verge: [], hedge: [] };
-    const cars = [];
+    const parts = { setts: [], dashes: [], curb: [], walk: [], verge: [], hedge: [], hedgeLight: [] };
+    const cars = [], flowers = [];
     let bay = 0;
     dressed.points.slice(1).forEach((b, i) => {
       const a = dressed.points[i], half = dressed.widths[i] / 2, length = Math.hypot(b[0] - a[0], b[1] - a[1]);
@@ -639,11 +641,18 @@
             band(parts.verge, s, e, side, half + 0.22, half + 1.6, 0.06);
             const shrub = point(s + 0.5, side, half + 2.05);
             if (!building(point(s + 0.5, side, half + 2.6)) && !sideStreet(shrub) && !nearThing(shrub, 1.8)) {
-              const box = new THREE.BoxGeometry(1.02, 1 + ((s * 7) % 3) * 0.08, 0.9).toNonIndexed();
-              box.rotateY(Math.atan2(u[1], u[0]));
-              box.translate(shrub[0], 0.55, -shrub[1]);
-              parts.hedge.push(...vectors(box));
+              // Two overlapping shrubs every metre, in two greens, for a hedge with a soft, uneven top.
+              for (const k of [0, 0.5]) {
+                const centre = point(s + 0.25 + k, side, half + 2.05), lift = ((s * 7 + k * 6) % 3) * 0.09;
+                const blob = new THREE.IcosahedronGeometry(0.62, 0).toNonIndexed();
+                blob.scale(1.05, 0.9 + lift, 0.8);
+                blob.rotateY(Math.atan2(u[1], u[0]) + s * 1.7 + k);
+                blob.translate(centre[0], 0.58 + lift / 2, -centre[1]);
+                (k ? parts.hedgeLight : parts.hedge).push(...vectors(blob));
+              }
             }
+            const bed = point(s + 0.5, side, half + 1);
+            if (s % 3 === 1 && !sideStreet(bed) && !nearThing(bed, 1.2)) flowers.push(bed);
           }
         }
       }
@@ -663,6 +672,7 @@
       walk: new THREE.MeshStandardMaterial({ color: 0x8c9095, map: grainTexture(), roughness: 0.95 }),
       verge: new THREE.MeshStandardMaterial({ color: 0x7aa457, roughness: 1 }),
       hedge: new THREE.MeshStandardMaterial({ color: 0x3f6b3a, roughness: 1, flatShading: true }),
+      hedgeLight: new THREE.MeshStandardMaterial({ color: 0x55813f, roughness: 1, flatShading: true }),
     };
     for (const [name, list] of Object.entries(parts)) {
       if (!list.length) continue;
@@ -675,11 +685,37 @@
       material.side = THREE.DoubleSide;
       const mesh = new THREE.Mesh(geometry, material);
       mesh.receiveShadow = true;
-      mesh.castShadow = name === "hedge" || name === "curb";
+      mesh.castShadow = ["hedge", "hedgeLight", "curb"].includes(name);
       scene.add(mesh);
     }
     ["sedan", "suv", "hatchback-sports", "van"].forEach((name, kind) => instances(name,
       cars.filter((c) => c[4] === kind), (c) => [c[0], c[1], Math.atan2(c[2], -c[3]), 1.75]));
+    flowerBeds(flowers);
+  }
+
+  // Low clumps of leaves, each with a few blossoms in lavender, yellow, white, pink or red.
+  function flowerBeds(beds) {
+    if (!beds.length) return;
+    const blooms = [0x9b7fd1, 0xf3cd3b, 0xf7f4ec, 0xe78fb4, 0xd9534f];
+    const leaves = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.34, 0),
+      new THREE.MeshStandardMaterial({ color: 0x4f7d3c, roughness: 1, flatShading: true }), beds.length);
+    const petals = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.11, 0),
+      new THREE.MeshStandardMaterial({ roughness: 0.8, flatShading: true }), beds.length * 5);
+    const m = new THREE.Matrix4(), q = new THREE.Quaternion(), colour = new THREE.Color();
+    beds.forEach(([x, y], i) => {
+      m.compose(new THREE.Vector3(x, 0.16, -y), q, new THREE.Vector3(1.3, 0.55, 1.1));
+      leaves.setMatrixAt(i, m);
+      colour.setHex(blooms[i % blooms.length]);
+      for (let k = 0; k < 5; k++) {
+        const angle = k * 1.26 + i, r = 0.12 + (k % 2) * 0.14;
+        m.compose(new THREE.Vector3(x + Math.cos(angle) * r, 0.3 + (k % 3) * 0.04, -y + Math.sin(angle) * r * 0.8), q,
+          new THREE.Vector3(1, 1, 1));
+        petals.setMatrixAt(i * 5 + k, m);
+        petals.setColorAt(i * 5 + k, colour);
+      }
+    });
+    leaves.castShadow = leaves.receiveShadow = petals.receiveShadow = true;
+    scene.add(leaves, petals);
   }
 
   // The corners of a non-indexed geometry, three per triangle.
@@ -1153,20 +1189,84 @@
     return texture;
   }
 
-  // One floor (3.6 m) of facade: wall panels with a band of windows. Extruded walls get
-  // UVs in metres, so the texture repeats every 3.6 m.
-  function facadeTexture(wall, glass, share) {
-    return canvasTexture(256, (g, s) => {
-      g.fillStyle = wall; g.fillRect(0, 0, s, s);
-      const top = s * (0.62 - share / 2), height = s * share;
-      const shine = g.createLinearGradient(0, top, 0, top + height);
-      shine.addColorStop(0, glass); shine.addColorStop(1, "#6f8191");
-      g.fillStyle = shine; g.fillRect(0, top, s, height);
-      g.fillStyle = "rgba(255,255,255,0.35)";
-      for (let x = 0; x < s; x += 32) g.fillRect(x, top, 3, height);
-      g.fillStyle = "rgba(0,0,0,0.08)";
-      g.fillRect(0, s - 4, s, 4);
-    }, [1 / 3.6, 1 / 3.6]);
+  // A facade canvas is one floor, 3.6 m square. Extruded walls get UVs in metres, with v
+  // counting down from 1 as they rise (v = 1 - height). So the canvas goes up unflipped and
+  // shifted by a metre: its bottom row on the ground, its top row under the next floor.
+  function facadeTexture(draw) {
+    const texture = canvasTexture(256, draw, [1 / 3.6, 1 / 3.6]);
+    texture.flipY = false;
+    texture.offset.y = -1 / 3.6;
+    return texture;
+  }
+
+  // One floor of the Endress+Hauser buildings: silver cladding in thin horizontal panels
+  // around a ribbon window with its blinds half down, as in Apple's Look Around.
+  function claddingTexture() {
+    return facadeTexture((g, s) => {
+      const metal = g.createLinearGradient(0, 0, 0, s);
+      metal.addColorStop(0, "#dfe3e6");
+      metal.addColorStop(1, "#c6cdd2");
+      g.fillStyle = metal;
+      g.fillRect(0, 0, s, s);
+      for (let y = 0; y < s; y += 12) {
+        g.fillStyle = "rgba(255,255,255,0.5)";
+        g.fillRect(0, y, s, 1);
+        g.fillStyle = "rgba(60,72,82,0.16)";
+        g.fillRect(0, y + 1, s, 1);
+      }
+      const top = s * 0.3, height = s * 0.36;
+      const glass = g.createLinearGradient(0, top, 0, top + height);
+      glass.addColorStop(0, "#5d7385");
+      glass.addColorStop(1, "#2f3d49");
+      g.fillStyle = glass;
+      g.fillRect(0, top, s, height);
+      for (let y = top + 2; y < top + height * 0.55; y += 5) {
+        g.fillStyle = "rgba(196,204,210,0.55)";
+        g.fillRect(0, y, s, 2);
+      }
+      g.fillStyle = "#aeb7be";
+      for (let x = 0; x < s; x += 64) g.fillRect(x, top, 4, height);
+      g.fillStyle = "rgba(255,255,255,0.7)";
+      g.fillRect(0, top - 3, s, 3);
+      g.fillRect(0, top + height, s, 4);
+    });
+  }
+
+  // One floor of a rendered office: two framed windows with sills, the sky reflected in the glass.
+  function officeTexture(wall, glass) {
+    return facadeTexture((g, s) => {
+      g.fillStyle = wall;
+      g.fillRect(0, 0, s, s);
+      const top = s * 0.24, height = s * 0.46, width = s * 0.3;
+      for (const x of [s * 0.12, s * 0.58]) {
+        g.fillStyle = "rgba(0,0,0,0.13)";
+        g.fillRect(x - 4, top - 4, width + 8, height + 8);
+        const pane = g.createLinearGradient(0, top, 0, top + height);
+        pane.addColorStop(0, "#cfe0ec");
+        pane.addColorStop(0.45, glass);
+        pane.addColorStop(1, "#26323c");
+        g.fillStyle = pane;
+        g.fillRect(x, top, width, height);
+        g.fillStyle = "rgba(255,255,255,0.22)";
+        g.beginPath();
+        g.moveTo(x, top + height * 0.72);
+        g.lineTo(x + width * 0.55, top);
+        g.lineTo(x + width * 0.7, top);
+        g.lineTo(x, top + height * 0.9);
+        g.fill();
+        g.fillStyle = "#f6f4ef";
+        g.fillRect(x - 2, top - 2, width + 4, 4);
+        g.fillRect(x - 2, top, 4, height);
+        g.fillRect(x + width - 2, top, 4, height);
+        g.fillRect(x + width / 2 - 2, top, 4, height);
+        g.fillStyle = "rgba(0,0,0,0.2)";
+        g.fillRect(x - 7, top + height + 4, width + 14, 4);
+        g.fillStyle = "#ebe8e1";
+        g.fillRect(x - 7, top + height, width + 14, 5);
+      }
+      g.fillStyle = "rgba(0,0,0,0.06)";
+      g.fillRect(0, s - 5, s, 5);
+    });
   }
 
   // Solar panels in rows, like the roofs on the aerial photo of the block.
