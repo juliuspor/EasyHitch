@@ -14,6 +14,9 @@
 // once and BikeSpot.update(slots) on every change, with slots as the Availability API sends
 // them ({number, state, location: {lat, lon}}), racks as lists of slot numbers, and from, the
 // rider's {lat, lon}, or null. Every slot stands where the station catalog measured it.
+// The app loads the page ahead of time; it stays idle until show(), which draws the first frame
+// of the way in and holds it, posting "ready" to the app's `spot` message handler.
+// BikeSpot.go() starts the way in once the app has faded the view in.
 // Opened in a browser on its own
 // (spot.html?station=cmr-south-02&slots=10&lat=47.48686&lon=7.59992&heading=0) it runs a demo.
 
@@ -55,6 +58,7 @@
   let renderer, scene, camera, sun;
   // The way in: {start, duration, eye, focus, step(seconds)}. step sets the camera and returns
   // how far the pads have lit up; when it ends, the orbit takes over at `eye`, facing `focus`.
+  // Until go() sets `start`, it holds its first frame.
   let flight = null;
   // After landing the camera orbits the rack: `goal` follows the fingers, `now` eases after
   // it, `spin` keeps a flick turning for a moment. Angles as in THREE.Spherical.
@@ -84,7 +88,6 @@
     document.body.appendChild(renderer.domElement);
     // Hidden until show(), so the first frame is where the way in starts, not the default view.
     renderer.domElement.style.opacity = "0";
-    renderer.domElement.style.transition = "opacity 0.3s ease";
 
     scene = new THREE.Scene();
     scene.fog = new THREE.Fog(HORIZON, 300, 1500);
@@ -104,7 +107,7 @@
     camera.lookAt(0, 0, 0);
     window.addEventListener("resize", resize);
     resize();
-    renderer.setAnimationLoop(render);
+    // Nothing is drawn until show(): the app loads this page ahead of time and keeps it idle.
   }
 
   function resize() {
@@ -274,12 +277,23 @@
       || sight.some((line) => distanceToLine(p, line) < 3));
 
     const rack = racks[0];
-    if (!rack) return;
-    const clear = (p) => [...where.values()].some((q) => Math.hypot(p[0] - q[0], p[1] - q[1]) < 7);
-    flight = config.from ? navigationFlight(rack, local(config.from), clear) : aerialFlight(rack);
-    flight.start = clock.elapsedTime;
-    flight.step(0);
+    if (rack) {
+      const clear = (p) => [...where.values()].some((q) => Math.hypot(p[0] - q[0], p[1] - q[1]) < 7);
+      flight = config.from ? navigationFlight(rack, local(config.from), clear) : aerialFlight(rack);
+      flight.step(0);
+    }
+    // Compile every material and draw the first frame now, so the view is ready to fade in
+    // whole, without a stall when the way in starts.
+    renderer.compile(scene, camera);
+    renderer.render(scene, camera);
     renderer.domElement.style.opacity = "1";
+    renderer.setAnimationLoop(render);
+    window.webkit?.messageHandlers?.spot?.postMessage("ready");
+  }
+
+  // Starts the way in that show() is holding.
+  function go() {
+    if (flight && flight.start === undefined) flight.start = clock.elapsedTime;
   }
 
   // From high above the block down to the front of the rack.
@@ -337,7 +351,7 @@
       stepOrbit(dt);
       arrived = 1;
     } else if (flight) {
-      const seconds = Math.min(t - flight.start, flight.duration);
+      const seconds = flight.start === undefined ? 0 : Math.min(t - flight.start, flight.duration);
       arrived = flight.step(seconds);
       if (seconds === flight.duration) startOrbit(flight.eye, flight.focus);
     }
@@ -1296,7 +1310,7 @@
   }
 
   setup();
-  window.BikeSpot = { show, update: (list) => update(list, false) };
+  window.BikeSpot = { show, go, update: (list) => update(list, false) };
 
   // Standalone preview: one straight rack with made-up states that keep changing.
   const params = new URLSearchParams(location.search);
@@ -1311,6 +1325,7 @@
         lon: lon + along * Math.cos(heading) / (111320 * Math.cos(lat * Math.PI / 180)) } };
     });
     show({ id: params.get("station"), slots: demo, racks: [demo.map((slot) => slot.number)] });
+    go();
     setInterval(() => {
       const slot = demo[Math.floor(Math.random() * demo.length)];
       slot.state = slot.state === "taken" ? "free" : "taken";

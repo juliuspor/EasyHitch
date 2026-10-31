@@ -1,46 +1,104 @@
 import MapKit
 import SwiftUI
 
+/// A station in 3D, laid over the map once the map has leaned in towards it: the rack with a
+/// bike on every taken slot, the free count underneath, and the way back to the map. With a
+/// rider it starts in the rider's own view at street level and rides from there.
+///
+/// It stays over the map with no station, invisible, so its 3D page is loaded before the first
+/// station opens (see `SpotView`).
 struct StationScreen: View {
-    let station: Station
+    let station: Station?
+    let rider: Location?
+    /// The map has finished leaning in. The controls show then, and the 3D view fades in as
+    /// soon as it has drawn its first frame, then starts its way in.
+    let arrived: Bool
+    let close: () -> Void
     @Environment(StationStore.self) private var store
+    @State private var drawn = false
     @State private var lookAround: MKLookAroundScene?
     @State private var showLookAround = false
 
-    private var detail: StationDetail? { store.details[station.id] }
+    private var detail: StationDetail? { station.flatMap { store.details[$0.id] } }
+    private var shown: Bool { station != nil && arrived && drawn }
 
     var body: some View {
-        let racks = detail?.racks ?? []
         ZStack {
-            Color(hex: 0xE6EDF1).ignoresSafeArea()
-            if !racks.isEmpty {
-                SpotView(stationID: station.id, racks: racks, from: Backend.rider)
-                    .ignoresSafeArea()
-            } else {
-                ProgressView("Loading station")
-            }
-        }
-        .safeAreaInset(edge: .bottom) {
-            StatusCard(station: detail?.station ?? station)
-                .padding(.horizontal, 12)
-        }
-        .navigationTitle(station.name)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            if lookAround != nil {
-                Button { showLookAround = true } label: {
-                    Label("Look Around", systemImage: "binoculars.fill")
-                        .labelStyle(.titleAndIcon)
+            SpotView(stationID: station?.id, racks: detail?.racks ?? [], from: rider, go: shown,
+                     ready: { drawn = true })
+                .ignoresSafeArea()
+                .opacity(shown ? 1 : 0)
+                // As long as the map's push into the street, which runs with `arrived`.
+                .animation(.easeInOut(duration: 0.6), value: shown)
+                .allowsHitTesting(shown)
+                .accessibilityHidden(!shown)
+            if let station {
+                if arrived && !drawn {
+                    ProgressView()
+                        .padding(14)
+                        .glassBackground(in: Circle())
                 }
+                Color.clear
+                    .safeAreaInset(edge: .top) { controls(topBar(station)) }
+                    .safeAreaInset(edge: .bottom) { controls(StatusCard(station: detail?.station ?? station)) }
             }
         }
         .lookAroundViewer(isPresented: $showLookAround, initialScene: lookAround)
-        .task {
+        .onChange(of: station?.id) { drawn = false }
+        .task(id: station?.id) {
             // Apple's street-level imagery nearest the station. Nil where Apple has none or the
             // phone is offline, which keeps the button hidden instead of opening an empty viewer.
+            lookAround = nil
+            guard let station else { return }
             lookAround = try? await MKLookAroundSceneRequest(coordinate: station.coordinate).scene
         }
-        .task { await store.pollDetail(station.id) }
+        .task(id: station?.id) {
+            if let id = station?.id { await store.pollDetail(id) }
+        }
+    }
+
+    private func controls(_ content: some View) -> some View {
+        content
+            .padding(.horizontal, 12)
+            .opacity(arrived ? 1 : 0)
+            .allowsHitTesting(arrived)
+    }
+
+    private func topBar(_ station: Station) -> some View {
+        GlassGroup {
+            HStack(spacing: 8) {
+                circleButton("chevron.left", label: "Back to the map", action: close)
+                Spacer(minLength: 0)
+                Text(station.name)
+                    .font(.headline)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                    .padding(.horizontal, 16)
+                    .frame(height: 44)
+                    .glassBackground(in: Capsule())
+                Spacer(minLength: 0)
+                if lookAround != nil {
+                    circleButton("binoculars.fill", label: "Look Around") { showLookAround = true }
+                } else {
+                    // Keeps the name centred.
+                    Color.clear.frame(width: 44, height: 44)
+                }
+            }
+        }
+    }
+
+    private func circleButton(_ symbol: String, label: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .font(.body.weight(.semibold))
+                .frame(width: 44, height: 44)
+                .glassBackground(in: Circle(), interactive: true)
+                // The whole circle, not just the glyph: a thin chevron alone loses a tap
+                // beside it to the 3D view underneath.
+                .contentShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(label)
     }
 }
 

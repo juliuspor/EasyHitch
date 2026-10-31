@@ -3,13 +3,21 @@ import SwiftUI
 
 struct MapScreen: View {
     @Environment(StationStore.self) private var store
-    @State private var path: [Station] = []
     @State private var showSettings = false
     @State private var search = LocationSearch()
     @State private var destination: Destination?
     @State private var selectedID: Station.ID?
     @FocusState private var searchFocused: Bool
     @State private var position = Self.camera(at: Site.center, distance: 900)
+    /// Which way the map faces, so the rider's beam keeps pointing down the street as it turns.
+    @State private var heading: Double = 0
+    /// The station shown in 3D over the map, and whether the map has finished leaning in to it.
+    @State private var entered: Station?
+    @State private var arrived = false
+    /// Where the map leans in to, and a count that starts each move there.
+    @State private var lean = MapCamera(centerCoordinate: Site.center, distance: 900)
+    @State private var leans = 0
+    private static let leanSeconds = 1.4
     @AppStorage("demoMode") private var demoMode = false
 
     private static func camera(at center: CLLocationCoordinate2D, distance: Double) -> MapCameraPosition {
@@ -19,60 +27,11 @@ struct MapScreen: View {
     private var selected: Station? { store.stations.first { $0.id == selectedID } }
 
     var body: some View {
-        NavigationStack(path: $path) {
-            // Flat, north-up and pan/zoom only, like a mobility app map.
-            Map(position: $position, interactionModes: [.pan, .zoom]) {
-                if demoMode, let rider = Backend.rider {
-                    Annotation("Your position", coordinate: rider.coordinate, anchor: .center) { RiderDot() }
-                        .annotationTitles(.hidden)
-                }
-                ForEach(store.stations) { station in
-                    Annotation(station.name, coordinate: station.coordinate, anchor: .bottom) {
-                        Button { select(station) } label: { StationPin(station: station, selected: station.id == selectedID) }
-                            .buttonStyle(.plain)
-                    }
-                    .annotationTitles(.hidden)
-                }
-                if let destination {
-                    Marker(destination.name, systemImage: "building.2.fill", coordinate: destination.coordinate)
-                        .tint(Brand.blue)
-                }
-            }
-            .mapStyle(.standard(elevation: .flat, emphasis: .muted, pointsOfInterest: .excludingAll))
-            .mapControls {}
-            .safeAreaInset(edge: .top) {
-                SearchOverlay(search: search, focused: $searchFocused, stations: store.stations,
-                              openStation: { station in
-                                  searchFocused = false
-                                  select(station)
-                              },
-                              choose: { completion in Task { await go(to: completion) } })
-                    .padding(.horizontal, 12)
-            }
-            .safeAreaInset(edge: .bottom) {
-                Group {
-                    if let selected {
-                        StationCard(station: selected, distance: destination?.distance(to: selected),
-                                 dismiss: { selectedID = nil },
-                                 open: { path.append(selected) })
-                            .transition(.move(edge: .bottom).combined(with: .opacity))
-                    } else {
-                        StatusBar(destination: destination, clearDestination: clearDestination,
-                                  settings: { showSettings = true })
-                            .transition(.opacity)
-                    }
-                }
-                .padding(.horizontal, 12)
-                .opacity(searchFocused ? 0 : 1)
-                .allowsHitTesting(!searchFocused)
-                .animation(.easeOut(duration: 0.15), value: searchFocused)
-            }
-            // The keyboard covers the bottom controls instead of pushing them, and the map, upwards.
-            .ignoresSafeArea(.keyboard)
-            .navigationDestination(for: Station.self) { StationScreen(station: $0) }
-            .toolbar(.hidden, for: .navigationBar)
-            .sheet(isPresented: $showSettings) { SettingsSheet() }
+        ZStack {
+            map
+            StationScreen(station: entered, rider: Backend.rider, arrived: arrived, close: leave)
         }
+        .sheet(isPresented: $showSettings) { SettingsSheet() }
         // bikeslot://station/<id> opens a station directly, e.g. from a notification.
         .onOpenURL { url in
             if url.host == "station" { linkedStation = url.lastPathComponent }
@@ -83,18 +42,130 @@ struct MapScreen: View {
         .onChange(of: linkedStation) { openLinkedStation() }
     }
 
+    /// Flat, north-up and pan/zoom only, like a mobility app map. Only opening a station's 3D
+    /// view tilts and turns it.
+    private var map: some View {
+        Map(position: $position, interactionModes: [.pan, .zoom]) {
+            if demoMode, let rider = Backend.rider {
+                Annotation("Your position", coordinate: rider.coordinate, anchor: .center) { RiderDot(mapHeading: heading) }
+                    .annotationTitles(.hidden)
+            }
+            ForEach(store.stations) { station in
+                Annotation(station.name, coordinate: station.coordinate, anchor: .bottom) {
+                    Button { select(station) } label: { StationPin(station: station, selected: station.id == selectedID) }
+                        .buttonStyle(.plain)
+                }
+                .annotationTitles(.hidden)
+            }
+            if let destination {
+                Marker(destination.name, systemImage: "building.2.fill", coordinate: destination.coordinate)
+                    .tint(Brand.blue)
+            }
+        }
+        .mapStyle(.standard(elevation: .flat, emphasis: .muted, pointsOfInterest: .excludingAll))
+        .mapControls {}
+        .onMapCameraChange(frequency: .continuous) { heading = $0.camera.heading }
+        // Keyframes rather than an animated position, because MapKit picks its own, longer
+        // duration for those, and the 3D view's fade has to start right when the map stops.
+        .mapCameraKeyframeAnimator(trigger: leans) { _ in
+            KeyframeTrack(\MapCamera.centerCoordinate) { CubicKeyframe(lean.centerCoordinate, duration: Self.leanSeconds) }
+            KeyframeTrack(\MapCamera.distance) { CubicKeyframe(lean.distance, duration: Self.leanSeconds) }
+            KeyframeTrack(\MapCamera.heading) { CubicKeyframe(lean.heading, duration: Self.leanSeconds) }
+            KeyframeTrack(\MapCamera.pitch) { CubicKeyframe(lean.pitch, duration: Self.leanSeconds) }
+        }
+        .safeAreaInset(edge: .top) {
+            SearchOverlay(search: search, focused: $searchFocused, stations: store.stations,
+                          openStation: { station in
+                              searchFocused = false
+                              select(station)
+                          },
+                          choose: { completion in Task { await go(to: completion) } })
+                .padding(.horizontal, 12)
+                .opacity(entered == nil ? 1 : 0)
+                .allowsHitTesting(entered == nil)
+        }
+        .safeAreaInset(edge: .bottom) {
+            Group {
+                if let selected {
+                    StationCard(station: selected, distance: destination?.distance(to: selected),
+                             dismiss: { selectedID = nil },
+                             open: { enter(selected) })
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                } else {
+                    StatusBar(destination: destination, clearDestination: clearDestination,
+                              settings: { showSettings = true })
+                        .transition(.opacity)
+                }
+            }
+            .padding(.horizontal, 12)
+            .opacity(searchFocused || entered != nil ? 0 : 1)
+            .allowsHitTesting(!searchFocused && entered == nil)
+            .animation(.easeOut(duration: 0.15), value: searchFocused)
+        }
+        // The keyboard covers the bottom controls instead of pushing them, and the map, upwards.
+        .ignoresSafeArea(.keyboard)
+        // While the 3D view fades in, the map keeps moving forward, towards the blue dot low on
+        // the screen, so the change of view reads as one push into the street.
+        .scaleEffect(arrived ? 1.3 : 1, anchor: UnitPoint(x: 0.5, y: 0.8))
+        .allowsHitTesting(entered == nil)
+        .accessibilityHidden(entered != nil)
+    }
+
     @State private var linkedStation: String?
 
     private func select(_ station: Station) {
         withAnimation(.snappy) {
             selectedID = station.id
-            // With a rider on the map, show the way: the blue dot and the station together.
-            if demoMode, let rider = Backend.rider {
-                position = Self.region(around: [rider.coordinate, station.coordinate])
-            } else {
-                position = Self.camera(at: station.coordinate, distance: 700)
-            }
+            position = overview(of: station)
         }
+    }
+
+    /// The station on the map; with a rider on it, the way there: the blue dot and the station together.
+    private func overview(of station: Station) -> MapCameraPosition {
+        if demoMode, let rider = Backend.rider {
+            Self.region(around: [rider.coordinate, station.coordinate])
+        } else {
+            Self.camera(at: station.coordinate, distance: 700)
+        }
+    }
+
+    /// Opens a station's 3D view without leaving the map: the controls fade, the map leans in,
+    /// down behind the rider and round towards the station like a navigation app, or over the
+    /// station without a rider, and the 3D view fades in from there. Its first frame is the
+    /// rider's own view down the street.
+    private func enter(_ station: Station) {
+        withAnimation(.easeOut(duration: 0.25)) {
+            selectedID = station.id
+            entered = station
+            arrived = false
+        }
+        if demoMode, let rider = Backend.rider {
+            // Looking at a point ahead of the rider from high enough behind that MapKit's
+            // buildings never come between, with the blue dot low on the screen.
+            let heading = rider.bearing(to: station.location)
+            lean = MapCamera(centerCoordinate: rider.moved(70, towards: heading).coordinate, distance: 180,
+                             heading: heading, pitch: 60)
+        } else {
+            lean = MapCamera(centerCoordinate: station.coordinate, distance: 450, heading: 0, pitch: 55)
+        }
+        leans += 1
+        Task {
+            try? await Task.sleep(for: .seconds(Self.leanSeconds))
+            guard entered?.id == station.id else { return }
+            position = .camera(lean)
+            withAnimation(.easeInOut(duration: 0.6)) { arrived = true }
+        }
+    }
+
+    /// Fades the 3D view out while the map turns back to north up and the station's card returns.
+    private func leave() {
+        guard let station = entered else { return }
+        withAnimation(.easeInOut(duration: 0.6)) {
+            arrived = false
+        } completion: {
+            withAnimation(.easeOut(duration: 0.25)) { entered = nil }
+        }
+        withAnimation(.easeInOut(duration: 1.0)) { position = overview(of: station) }
     }
 
     private func go(to completion: MKLocalSearchCompletion) async {
@@ -136,7 +207,7 @@ struct MapScreen: View {
     private func openLinkedStation() {
         guard let id = linkedStation, let station = store.stations.first(where: { $0.id == id }) else { return }
         linkedStation = nil
-        path = [station]
+        enter(station)
     }
 }
 
@@ -371,6 +442,8 @@ private struct StationIcon: View {
 /// The rider's position, drawn like the location dot in Apple Maps: a blue dot in a white ring
 /// with a breathing halo, and a beam towards where the rider is heading, east down the street.
 private struct RiderDot: View {
+    /// The map's heading: the beam turns against it to keep pointing east.
+    let mapHeading: Double
     @State private var breathing = false
 
     var body: some View {
@@ -383,7 +456,7 @@ private struct RiderDot: View {
                 .fill(RadialGradient(colors: [Brand.location.opacity(0.55), Brand.location.opacity(0)],
                                      center: .center, startRadius: 6, endRadius: 34))
                 .frame(width: 68, height: 68)
-                .rotationEffect(.degrees(90))
+                .rotationEffect(.degrees(90 - mapHeading))
             Circle()
                 .fill(.white)
                 .frame(width: 22, height: 22)

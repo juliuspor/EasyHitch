@@ -19,6 +19,19 @@ struct Location: Codable, Hashable {
     func distance(to other: Location) -> CLLocationDistance {
         CLLocation(latitude: lat, longitude: lon).distance(from: CLLocation(latitude: other.lat, longitude: other.lon))
     }
+
+    /// The compass direction to another location nearby, in degrees clockwise from north.
+    func bearing(to other: Location) -> CLLocationDirection {
+        let east = (other.lon - lon) * cos(lat * .pi / 180), north = other.lat - lat
+        return (atan2(east, north) * 180 / .pi + 360).truncatingRemainder(dividingBy: 360)
+    }
+
+    /// The location `metres` away in the compass direction `bearing`.
+    func moved(_ metres: Double, towards bearing: CLLocationDirection) -> Location {
+        let angle = bearing * .pi / 180, degree = 111_320.0
+        return Location(lat: lat + metres * cos(angle) / degree,
+                        lon: lon + metres * sin(angle) / (degree * cos(lat * .pi / 180)))
+    }
 }
 
 /// A station with how many of its slots are free, taken, or not seen by a camera recently.

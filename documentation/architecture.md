@@ -112,7 +112,10 @@ slot positions in the station detail, lands in front of it, and shows a bike on
 every taken slot. Given the rider's position, it navigates instead: it finds
 the shortest way along the OpenStreetMap streets and rides it from the rider's
 own view in the bike lane, without stopping, turning to face the rack as it
-slows down, with low-poly street details only along that way. The controls are
+slows down, with low-poly street details only along that way. The 3D view lies
+over the map instead of on a screen of its own: the map leans in behind the
+rider and fades into it, and the page loads with the app and waits invisibly,
+so the change of view never stalls on parsing three.js. The controls are
 Liquid Glass on iOS 26 and materials on iOS 18. Only the demo has a rider, on
 Christoph-Merian-Ring
 ([`Backend.rider`](../code/ios/BikeSlot/APIClient.swift#L17-L21)); the live
