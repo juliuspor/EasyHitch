@@ -122,7 +122,9 @@ Needs an AWS account with the AWS CLI signed in, the SAM CLI
 
    For a demo, or stations without a camera, add
    `--parameter-overrides Simulation=on`: a function that a schedule starts
-   every minute then simulates the slots no camera reports.
+   every minute then simulates the slots no camera reports. An account that
+   caps Lambda memory, as some sandbox accounts do at 512 MB, also needs
+   `IngestMemory=512`.
 
 `sam deploy` prints `IngestUrl` for the cameras and `AvailabilityUrl` for
 clients. Agents use `AvailabilityUrl` plus `mcp`. Both functions run Python

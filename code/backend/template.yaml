@@ -17,6 +17,10 @@ Parameters:
   JevModel:
     Type: String
     Default: typesafe/jev-1.14
+  IngestMemory:
+    Type: Number
+    Default: 1024
+    Description: Memory of the Ingest function in MB. Some sandbox accounts allow at most 512
   Simulation:
     Type: String
     Default: "off"
@@ -69,7 +73,7 @@ Resources:
     Properties:
       Description: POST /v1/frames from the camera boards
       Handler: ingest.handler.handler
-      MemorySize: 1024
+      MemorySize: !Ref IngestMemory
       Timeout: 30
       Environment:
         Variables:
