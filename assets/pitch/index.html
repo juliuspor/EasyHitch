@@ -55,6 +55,13 @@
   #s1.play .tagline .old::after { transform: scaleX(1); }
   .tagline .new { color: var(--eh); display: inline-block; max-width: 0; overflow: hidden; white-space: nowrap; transition: max-width 0.8s 2s cubic-bezier(.2,.8,.2,1); vertical-align: bottom; }
   #s1.play .tagline .new { max-width: 200px; }
+  /* Opening: the logo alone in the middle, so the name stays a surprise. The first step forward brings in the name,
+     the tagline and the road. 197.5 px centres the logo on the screen: half the height of the name and the tagline
+     below it (137.5 px) plus half the hidden road (60 px). */
+  #s1 .logo-wrap { transition: transform 0.9s cubic-bezier(.2,.8,.2,1); }
+  #s1 .wordmark, #s1 .tagline { transition: opacity 0.7s 0.25s ease; }
+  #stage.cover #s1 .logo-wrap { transform: translateY(197.5px); }
+  #stage.cover #s1 .wordmark, #stage.cover #s1 .tagline, #stage.cover #bar { opacity: 0; }
 
   /* ---------- slide 2 ---------- */
   #s2 { display: grid; place-items: center; padding: 0; }
@@ -96,7 +103,7 @@
   #s3.play #arch .zone, #s3.play #arch .wires, #s3.play #arch .node { opacity: 1; transform: none; }
 
   /* ---------- bottom bar: the hamster rides between the three stops ---------- */
-  #bar { position: absolute; left: 0; right: 0; bottom: 0; height: 120px; pointer-events: none; transform-origin: 0 0; transition: transform 1.6s cubic-bezier(.65,0,.25,1); }
+  #bar { position: absolute; left: 0; right: 0; bottom: 0; height: 120px; pointer-events: none; transform-origin: 0 0; transition: transform 1.6s cubic-bezier(.65,0,.25,1), opacity 0.8s ease; }
   /* Finale: bar point (1274, -30) lands at the stage centre, 2.6x larger */
   #stage.finale #bar { transform: translate(-2512px, -252px) scale(2.6); }
   /* Ending: the camera glides on to centre the hamster where it landed (bar x 1480) */
@@ -156,7 +163,7 @@
 </style>
 </head>
 <body>
-<div id="stage">
+<div id="stage" class="cover">
   <div class="aurora"><i></i><i></i><i></i></div>
   <div class="grid-bg"></div>
   <div id="timer">0:00 / 3:00</div>
@@ -249,7 +256,7 @@ function fit() { const s = Math.min(innerWidth / 1600, innerHeight / 900); stage
 addEventListener('resize', fit); fit();
 const slides = [...document.querySelectorAll('.slide')];
 const NOTES = [
-  '~40 s · Innovation + impact. 7:45 at E+H: both stands look full, you circle, you are late. Easy+Hitch tells you which exact spot is free before you turn the corner. Spot-level, not just “full”, from low-cost cameras like the challenge’s ESP32 boards. Less searching, more people choosing the bike, and real occupancy data for facility planning.',
+  '~40 s · Innovation + impact. Open on the logo alone. 7:45 at E+H: both stands look full, you circle, you are late. Click to reveal the name: Easy+Hitch tells you which exact spot is free before you turn the corner. Spot-level, not just “full”, from low-cost cameras like the challenge’s ESP32 boards. Less searching, more people choosing the bike, and real occupancy data for facility planning.',
   '~80 s · Live demo on the phone, on Demo data: the blue dot on Christoph-Merian-Ring, the map with free spots per stand, the south stand, then 3D Navigation down the street, turning left to the free spot. If the live demo fails, this slide’s phone plays a recording of the same flow.',
   '~45 s · Technical depth + fair play. Edge: the XIAO ESP32S3 camera board feeds a secure edge device on site over USB, a Mac in our tests. There YOLO11n redacts faces and PP-OCRv5 redacts licence plates, and a frame leaves the site only when the view changed. AWS: two Lambda functions, each behind its own function URL, no API Gateway. The Ingest API compares each slot with its last fingerprint in DynamoDB and asks Jev 1.14, TypeSafe’s decision model, through OpenRouter, one yes-or-no question per changed slot, with no training data. DynamoDB keeps slot states and fingerprints, never images, and the keys sit in SSM Parameter Store. The Availability API serves the iOS app over REST and AI agents over MCP. In the demo, a simulator fills the stations without a camera. Nobody is tracked.',
   '~10 s · Close while the hamster lands: “You ride, we find the spot. Easy+Hitch.” Thank the jury.',
@@ -268,7 +275,7 @@ function show(i, dir = 1) {
   if (started === null && i > 0) started = performance.now();
 }
 addEventListener('keydown', (e) => {
-  if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); show(cur + 1); }
+  if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); forward(); }
   else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); show(cur - 1); }
   else if (e.key === 'f') document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
   else if (e.key === 'n') document.getElementById('notes').classList.toggle('on');
@@ -276,7 +283,7 @@ addEventListener('keydown', (e) => {
   else if (e.key === 'Home') show(0);
   eggs(e.key);
 });
-stage.addEventListener('click', (e) => { if (e.target.closest('#logo, #rider, button, a')) return; show(e.clientX > innerWidth / 2 ? cur + 1 : cur - 1); });
+stage.addEventListener('click', (e) => { if (e.target.closest('#logo, #rider, button, a')) return; if (e.clientX > innerWidth / 2) forward(); else show(cur - 1); });
 setInterval(() => {   // 3-minute pitch timer
   const s = started === null ? 0 : Math.floor((performance.now() - started) / 1000), el = document.getElementById('timer');
   el.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')} / 3:00`;
@@ -737,8 +744,16 @@ function parade() {
   }
 }
 
-slides[0].classList.add('active'); show(0); arrive();
-setTimeout(() => slides[0].classList.add('play'), 300);
+// The deck opens on the logo alone (the stage starts with class cover, so nothing slides on load), and the name stays
+// a surprise until the first step forward reveals it.
+slides[0].classList.add('active'); show(0);
+document.getElementById('notes').textContent = NOTES[0];
+function forward() { if (stage.classList.contains('cover')) reveal(); else show(cur + 1); }
+function reveal() {
+  stage.classList.remove('cover'); arrive();
+  setTimeout(() => slides[0].classList.add('play'), 700);   // E+H grows into Easy+Hitch once it has faded in
+  started = started ?? performance.now();
+}
 </script>
 </body>
 </html>
