@@ -83,5 +83,6 @@ class IngestService:
 
 
 def _needs_reading(slot: SlotOccupancy, known_print: int | None, new_print: int) -> bool:
-    """Read a slot that was never decided, waits for a confirming reading, or looks different."""
-    return slot.state is SlotState.UNKNOWN or slot.pending_taken is not None or has_changed(known_print, new_print)
+    """Read a slot that was never decided, waits for a confirming reading, was simulated, or looks different."""
+    return (slot.state is SlotState.UNKNOWN or slot.pending_taken is not None or slot.simulated
+            or has_changed(known_print, new_print))

@@ -4,7 +4,9 @@ For the demo, and for stations that have no camera yet. The simulator writes
 through the same OccupancyRepository and decide() rule as the Ingest API, so
 the Availability API, the MCP server and the app read a simulated slot like a
 reported one. A slot that a camera has reported within stale_after belongs to
-the camera, and the simulator leaves it alone until it goes stale.
+the camera, and the simulator leaves it alone until it goes stale. Each slot
+stores whether the simulator reported it last, so the simulator keeps no state
+of its own and can run as a fresh Lambda invocation every minute.
 """
 
 import math
@@ -34,8 +36,6 @@ class OccupancySimulator:
         self._stale_after = stale_after
         self._day = day
         self._rng = rng or random.Random()
-        # When this simulator last reported each slot, to tell its own reports from a camera's.
-        self._reported: dict[tuple[str, int], datetime] = {}
 
     def target(self, station_index: int, now: datetime) -> float:
         """Share of a station's slots taken at `now`: quiet at night, busiest in the middle of the day.
@@ -72,7 +72,7 @@ class OccupancySimulator:
     def _step_station(self, station: Station, target: float, now: datetime) -> int:
         current = self._occupancy.get(station.id) or StationOccupancy(station.id)
         slots = {slot.number: current.slot(slot.number) for slot in station.slots}
-        simulated = [number for number, slot in slots.items() if self._is_simulated(station.id, slot, now)]
+        simulated = [number for number, slot in slots.items() if self._is_simulated(slot, now)]
         if not simulated:
             return 0
 
@@ -94,15 +94,13 @@ class OccupancySimulator:
         updated = {}
         for number in simulated:
             reading = Reading(taken=number in taken, confidence=1.0)
-            updated[number] = decide(slots[number], reading, now).reported(now)
-            self._reported[(station.id, number)] = now
+            updated[number] = decide(slots[number], reading, now).reported(now, simulated=True)
         self._occupancy.save(current.with_slots(updated))
         return sum(1 for number in simulated if updated[number].state != slots[number].state)
 
-    def _is_simulated(self, station_id: str, slot: SlotOccupancy, now: datetime) -> bool:
-        """Never reported, gone stale, or last reported by this simulator, not by a camera."""
-        return (slot.reported_at is None or now - slot.reported_at > self._stale_after
-                or slot.reported_at == self._reported.get((station_id, slot.number)))
+    def _is_simulated(self, slot: SlotOccupancy, now: datetime) -> bool:
+        """Never reported, gone stale, or last reported by the simulator, not by a camera."""
+        return slot.reported_at is None or now - slot.reported_at > self._stale_after or slot.simulated
 
     def _pick(self, numbers: Sequence[int]) -> int:
         return self._rng.choice(numbers)

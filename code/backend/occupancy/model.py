@@ -21,6 +21,8 @@ class SlotOccupancy:
     reported_at: datetime | None = None
     # An unsure reading waits here until a second reading agrees with it.
     pending_taken: bool | None = None
+    # The last report came from the simulator (simulation/simulator.py), not from a camera.
+    simulated: bool = False
 
     def current_state(self, now: datetime, stale_after: timedelta) -> SlotState:
         """The state, or unknown once no camera has reported the slot for stale_after."""
@@ -28,8 +30,8 @@ class SlotOccupancy:
             return SlotState.UNKNOWN
         return self.state
 
-    def reported(self, at: datetime) -> "SlotOccupancy":
-        return replace(self, reported_at=at)
+    def reported(self, at: datetime, simulated: bool = False) -> "SlotOccupancy":
+        return replace(self, reported_at=at, simulated=simulated)
 
 
 @dataclass(frozen=True)

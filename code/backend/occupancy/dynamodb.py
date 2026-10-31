@@ -2,7 +2,7 @@
 
     {"station_id": "cmr-north-01", "version": 7,
      "slots": {"12": {"state": "taken", "confidence": 0.97, "changed_at": "...",
-                      "reported_at": "...", "pending_taken": null}}}
+                      "reported_at": "...", "pending_taken": null, "simulated": false}}}
 """
 
 import time
@@ -73,6 +73,7 @@ def _slot_item(slot: SlotOccupancy) -> dict:
         "changed_at": _text(slot.changed_at),
         "reported_at": _text(slot.reported_at),
         "pending_taken": slot.pending_taken,
+        "simulated": slot.simulated,
     }
 
 
@@ -90,6 +91,7 @@ def _slot(number: int, entry: dict) -> SlotOccupancy:
         changed_at=_time(entry.get("changed_at")),
         reported_at=_time(entry.get("reported_at")),
         pending_taken=entry.get("pending_taken"),
+        simulated=entry.get("simulated", False),  # items written before the simulator have none
     )
 
 

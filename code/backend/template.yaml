@@ -2,7 +2,8 @@ AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: >-
   Easy+Hitch backend: the Ingest function reads camera frames into slot states,
-  the Availability function serves them to the iOS app and to AI agents (MCP).
+  the Availability function serves them to the iOS app and to AI agents (MCP),
+  and with Simulation=on the Simulation function fills the slots no camera reports.
 
 Parameters:
   OpenRouterKeyParameter:
@@ -16,6 +17,14 @@ Parameters:
   JevModel:
     Type: String
     Default: typesafe/jev-1.14
+  Simulation:
+    Type: String
+    Default: "off"
+    AllowedValues: ["off", "on"]
+    Description: on simulates the slots no camera reports, for a demo or for stations without a camera
+
+Conditions:
+  SimulationOn: !Equals [!Ref Simulation, "on"]
 
 Globals:
   Function:
@@ -98,6 +107,26 @@ Resources:
         - Statement:
             - Effect: Allow
               Action: [dynamodb:GetItem, dynamodb:BatchGetItem]
+              Resource: !GetAtt OccupancyTable.Arn
+
+  SimulationFunction:
+    Type: AWS::Serverless::Function
+    Condition: SimulationOn
+    Properties:
+      Description: Simulates the slots no camera reports, a step every few seconds
+      Handler: simulation.handler.handler
+      MemorySize: 256
+      # Each run steps until shortly before this timeout, and the schedule starts the next.
+      Timeout: 60
+      Events:
+        EveryMinute:
+          Type: Schedule
+          Properties:
+            Schedule: rate(1 minute)
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: [dynamodb:GetItem, dynamodb:PutItem]
               Resource: !GetAtt OccupancyTable.Arn
 
 Outputs:

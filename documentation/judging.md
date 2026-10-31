@@ -78,7 +78,7 @@ the app opens the closest shelter that still has room
   for when a bike arrives or leaves, not per frame, and the serverless
   backend costs next to nothing while nobody parks.
 - **Technical.** Every slot carries when it last changed and when a camera
-  last saw it ([`SlotOccupancy`](../code/backend/occupancy/model.py#L16-L32)).
+  last saw it ([`SlotOccupancy`](../code/backend/occupancy/model.py#L16-L34)).
   The APIs are open contracts
   ([`availability.openapi.json`](api/availability.openapi.json),
   [`ingest.openapi.json`](api/ingest.openapi.json)), and the MCP server makes
@@ -114,7 +114,7 @@ in [`template.yaml`](../code/backend/template.yaml).
   backend leaves the slots behind them as they were
   ([`ingest`](../code/backend/ingest/service.py#L37-L52)).
 - A slot no camera reported for 10 minutes reads `unknown` instead of an old
-  state ([`current_state`](../code/backend/occupancy/model.py#L25-L29)).
+  state ([`current_state`](../code/backend/occupancy/model.py#L27-L31)).
 - Jev's answers are checked. A missing answer or a probability outside 0 to 1
   fails the frame instead of being misread, and the camera sends it again
   ([`_reading`](../code/backend/classification/jev.py#L106-L109),
@@ -197,7 +197,7 @@ All but the second print nothing.
     stores only slot states and times
     ([`ingest`](../code/backend/ingest/service.py#L37-L52)), and the state has
     no field for images or people
-    ([`SlotOccupancy`](../code/backend/occupancy/model.py#L16-L32)). Jev only
+    ([`SlotOccupancy`](../code/backend/occupancy/model.py#L16-L34)). Jev only
     sees slot crops ([`JevCropClassifier`](../code/backend/classification/jev.py#L34-L64)),
     and no request path writes a file.
   - Nobody is identified or tracked. A classifier answers "taken or free" per
@@ -256,7 +256,7 @@ Three ways to show it:
    at `/v1/stations`, or ask an AI agent through the MCP server where to park.
    With `BACKEND_SIMULATION=on`, the slots no camera reports, the bike garage
    and the Kägenstrasse shelter among them, fill and empty over a simulated
-   day ([`OccupancySimulator`](../code/backend/simulation/simulator.py#L29-L108)).
+   day ([`OccupancySimulator`](../code/backend/simulation/simulator.py#L31-L106)).
 2. **The app.** With the **Demo data** setting, or launched with
    `-demoMode YES`, built-in stations change every four seconds without a
    backend ([`Backend`](../code/ios/BikeSlot/APIClient.swift#L10-L16),
@@ -285,5 +285,6 @@ On 31 October 2026, on macOS with Python 3.13.16:
 | YOLO11n | `YoloPIIDetector` on `IMG_20261029_084104` | Finds the person at the right edge |
 | PP-OCRv5 | `TextPIIDetector` and `pixelate` on the seven recorded frames, sidecars ignored, each result checked by eye | The five readable plates in `cam-north-1`, `cam-north-2` and `cam-south-a` come out unreadable, the two yellow e-bike plates and a tilted motorbike plate among them. 2% of a frame is pixelated on average, 6% at most, in 0.1 s per frame |
 | iOS app | Built for iOS 18, run in the iPhone 17 Pro simulator against the local backend with the recorded cameras, then in demo mode | All four stations on the map. North: 26 of 45 free, 10 not seen by a camera, grey in 3D. South: slots 1 to 10 and 11 to 20 as two racks on two sides of the building, and the 3D view flies between them. The bike garage and the Kägenstrasse shelter have no camera, so they read unknown. With `BACKEND_SIMULATION=on` and no cameras, all four stations change every few seconds. In demo mode the camera-less ones get fixed sample states, and counts change every four seconds |
-| Simulation | `pytest` in `code/backend`, then the local backend with `BACKEND_SIMULATION=on` polled three times, six seconds apart | 5 tests pass: every slot of a camera-less station filled, the share taken follows the time of day, a slot a camera reports left alone and taken over once stale. All 126 slots known, and the counts changed between polls |
+| Simulation | `pytest` in `code/backend`, then the local backend with `BACKEND_SIMULATION=on` polled three times, six seconds apart | 9 tests pass: every slot of a camera-less station filled, the share taken follows the time of day, a slot a camera reports left alone and taken over once stale, a camera reads a simulated slot, a new simulator carries on, the flag survives DynamoDB, a scheduled run stops before its timeout. All 126 slots known, and the counts changed between polls |
+| Simulation on AWS | `cfn-lint` and SAM's transform with `Simulation=on`, then two scheduled runs of the Simulation handler against DynamoDB on moto, the second as a new container | Valid template: the function, its role, a `rate(1 minute)` rule and its permission, all under the `SimulationOn` condition. 17 steps per run; the second run carried on from the stored slots, which DynamoDB keeps with `"simulated": true`. Not yet deployed to a real account |
 | XIAO camera | `pytest` in `code/edge` with a pseudo-terminal answering like the firmware, and the firmware compiled with `arduino-cli` for `XIAO_ESP32S3` | 2 tests pass: a photo read and scaled to the calibrated size, a silent board times out. The firmware builds, 10% of the flash. Not yet run against the board itself |

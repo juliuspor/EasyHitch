@@ -76,16 +76,22 @@ Only [`composition.py`](../code/backend/composition.py) picks implementations.
 
 For the demo, and for stations without a camera, the local server simulates
 the slots no camera reports
-([`OccupancySimulator`](../code/backend/simulation/simulator.py#L29-L108)).
+([`OccupancySimulator`](../code/backend/simulation/simulator.py#L31-L106)).
 It writes through the same `OccupancyRepository` and state rule as the Ingest
 API, so the Availability API, the MCP server and the app read a simulated slot
 like a reported one. A working day takes ten minutes: the racks fill in the
 morning and empty in the evening, each station a little ahead of the last
 ([`target`](../code/backend/simulation/simulator.py#L40-L46)). A slot that a
 camera reported within `STALE_AFTER_SECONDS` belongs to the camera
-([`_is_simulated`](../code/backend/simulation/simulator.py#L102-L105)), so a
-new camera takes over its slots without any change to the simulation. It runs
-with `BACKEND_SIMULATION=on`, in the local server only.
+([`_is_simulated`](../code/backend/simulation/simulator.py#L101-L103)), so a
+new camera takes over its slots without any change to the simulation, and a
+camera always reads a slot the simulator reported instead of trusting it. Each
+slot stores whether the simulator reported it last, so the simulator keeps no
+state of its own. On a laptop it runs in the local server with
+`BACKEND_SIMULATION=on`. On AWS, the template's `Simulation=on` parameter adds
+a function that a schedule starts every minute, which steps the simulation
+every few seconds until its timeout
+([`handler`](../code/backend/simulation/handler.py#L19-L27)).
 
 ## Backend and clients: the Availability API and MCP
 

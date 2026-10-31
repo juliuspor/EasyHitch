@@ -29,7 +29,7 @@ other as `from occupancy.decider import decide`.
 | `classification/` | The classifier interface, `JevCropClassifier` and `StaticClassifier` |
 | `ingest/` | Frame decoding, slot fingerprints, `IngestService`, the ingest route and its Lambda handler |
 | `availability/` | `AvailabilityService`, its routes, the MCP server and its Lambda handler |
-| `simulation/` | `OccupancySimulator`, which fills the slots no camera reports over a simulated day |
+| `simulation/` | `OccupancySimulator`, which fills the slots no camera reports over a simulated day, and its scheduled Lambda handler |
 | `tests/` | Tests, run with `.venv/bin/pip install -r requirements-dev.txt` and `.venv/bin/python -m pytest` |
 | `data/` | Bundled data: stations, camera calibrations, fixed readings, development tokens |
 | `composition.py` | The one place that picks implementations from the environment |
@@ -80,7 +80,7 @@ BACKEND_SIMULATION=on .venv/bin/uvicorn local:app --port 8000
 | `BACKEND_CLASSIFIER` | `static` | `jev` | `static` answers from `data/static-readings.json` |
 | `BACKEND_STORAGE` | `memory` | `dynamodb` | Where slot states and fingerprints live |
 | `BACKEND_CAMERAS` | `file` | `ssm` | Where camera token hashes come from |
-| `BACKEND_SIMULATION` | `off` | `off` | `on` simulates the slots no camera reports, in the local server |
+| `BACKEND_SIMULATION` | `off` | `off` | `on` simulates the slots no camera reports, in the local server. On AWS, use the template's `Simulation` parameter |
 | `OPENROUTER_API_KEY` | | | The key itself, for `jev` on a laptop |
 | `OPENROUTER_API_KEY_PARAMETER` | | `/easyhitch/openrouter-api-key` | SSM parameter with the key, on AWS |
 | `CAMERA_TOKENS_PARAMETER` | | `/easyhitch/camera-tokens` | SSM parameter with the token hashes |
@@ -119,6 +119,10 @@ Needs an AWS account with the AWS CLI signed in, the SAM CLI
    ```bash
    sam build && sam deploy --guided
    ```
+
+   For a demo, or stations without a camera, add
+   `--parameter-overrides Simulation=on`: a function that a schedule starts
+   every minute then simulates the slots no camera reports.
 
 `sam deploy` prints `IngestUrl` for the cameras and `AvailabilityUrl` for
 clients. Agents use `AvailabilityUrl` plus `mcp`. Both functions run Python
