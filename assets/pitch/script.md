@@ -15,7 +15,7 @@ T timer (yellow at 2:30, red at 3:00), N notes.
 | Time | Slide | Beat |
 |---|---|---|
 | 0:00 | 1 · Hello | Bjoern is late: no free bike spot |
-| 0:30 | 2 · Demo | Live: the map, free spots, the rack in 3D |
+| 0:30 | 2 · Demo | Live: the map, free spots, 3D navigation to the rack |
 | 1:20 | 3 · Tech | Edge, AWS, AI model, end user |
 | 2:10 | 3 · Tech | "Where do I download this?" Plug it into your agent |
 | 2:35 | 4 · Finale | "Easy+Hitch!" Fireworks, thank you |
@@ -56,14 +56,16 @@ as Bjoern.*
 ## 0:30 · The demo (slide 2, live)
 
 *Screen: the live 3D drive down the road to the bike stand. Julius holds the
-phone, mirrored on the screen.*
+phone, mirrored on the screen, the app on Demo data for the blue dot and the
+drive.*
 
 **Julius:** "Imagine you ride down that road, you pick the next biking spot
 that has a free parking spot. It will 3D guide you to the exact parking lot
 and will directly tell you which ones are free, before you even arrive at the
 parking lot."
 
-*Show the map: every station with its free spots.*
+*Show the map: every station with its free spots, and the blue dot, you, on
+Christoph-Merian-Ring by the Kägenstrasse corner.*
 
 **Julius:** "Here's the whole campus, every bike stand and its free spots,
 live."
@@ -74,7 +76,9 @@ Christoph-Merian-Ring South.*
 
 **Julius:** "[Station], [N] of [M] free. Directions are one tap away."
 
-*Tap **View in 3D**: the rack in 3D, a bike on every taken spot.*
+*Tap **3D Navigation**: the view drops down to the blue dot, rides down
+Christoph-Merian-Ring, turns left at the stand and lands in front of the rack,
+a bike on every taken spot.*
 
 **Julius:** "And here's the rack in 3D. Every bike is taken, every gap is
 yours."

@@ -246,9 +246,9 @@ The deck, [`assets/pitch/index.html`](../assets/pitch/index.html), has four
 slides and one story: the 7:45 problem, the live demo, the pipeline, and a
 finale. It runs offline in a browser, and only its web fonts need a
 connection. Each slide has speaker notes
-([`NOTES`](../assets/pitch/index.html#L324-L329), press N). Press T for a
+([`NOTES`](../assets/pitch/index.html#L238-L243), press N). Press T for a
 three-minute timer that turns yellow at 2:30 and red at 3:00
-([`setInterval`](../assets/pitch/index.html#L353-L357)). The
+([`setInterval`](../assets/pitch/index.html#L267-L271)). The
 [script](../assets/pitch/script.md) gives every line, who says it and when.
 
 | Time | Slide | Focus |
@@ -274,7 +274,9 @@ Three ways to show it:
    `-demoMode YES`, built-in stations change every four seconds without a
    backend ([`Backend`](../code/ios/BikeSlot/APIClient.swift#L10-L22),
    [`DemoService`](../code/ios/BikeSlot/Demo/DemoService.swift#L7-L50)).
-3. **The deck.** The phone screen on slide 2 plays the app on its own.
+3. **The deck.** The phone screen on slide 2 plays a recording of the app's
+   demo mode: the blue dot, the south station, and 3D Navigation to its free
+   spot.
 
 A XIAO camera board on the USB cable of an edge computer
 ([`SerialFrameSource`](../code/edge/sources.py#L91-L128),

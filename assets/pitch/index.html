@@ -66,52 +66,7 @@
   .phone .btn { position: absolute; width: 4px; border-radius: 2px; background: #3a4552; }
   .phone .b1 { left: -4px; top: 150px; height: 34px; } .phone .b2 { left: -4px; top: 200px; height: 64px; } .phone .b3 { left: -4px; top: 276px; height: 64px; } .phone .b4 { right: -4px; top: 220px; height: 100px; }
   .screen { position: relative; width: 100%; height: 100%; border-radius: 48px; overflow: hidden; background: #0b1622; }
-  .island { position: absolute; top: 12px; left: 50%; width: 112px; height: 32px; margin-left: -56px; border-radius: 20px; background: #000; z-index: 20; }
-  .statusbar { position: absolute; top: 0; left: 0; right: 0; height: 54px; display: flex; justify-content: space-between; align-items: center; padding: 6px 30px 0; font-size: 15px; font-weight: 600; z-index: 19; color: #fff; }
-  .scene { position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s ease; }
-  .scene.on { opacity: 1; }
-  /* scene A: lock screen + notification */
-  #scA { background: linear-gradient(180deg, #ffb88a 0%, #f38e7a 28%, #6b6fb8 62%, #1d2d5c 100%); }
-  #scA .clock { position: absolute; top: 96px; width: 100%; text-align: center; color: #fff; }
-  #scA .clock b { display: block; font-size: 84px; font-weight: 600; letter-spacing: -0.03em; font-family: "Space Grotesk", sans-serif; }
-  #scA .clock span { font-size: 17px; opacity: 0.85; }
-  .notif { position: absolute; left: 12px; right: 12px; top: 300px; padding: 12px 14px; border-radius: 22px; background: rgba(255,255,255,0.78); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); color: #111;
-    display: grid; grid-template-columns: 38px 1fr; gap: 10px; transform: translateY(-40px) scale(0.96); opacity: 0; transition: all 0.6s cubic-bezier(.2,1.4,.4,1); }
-  .notif.on { transform: none; opacity: 1; }
-  .notif .ico { width: 38px; height: 38px; border-radius: 9px; background: #fff url(eh-mark.svg) center/78% no-repeat; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-  .notif .t { font-size: 13px; font-weight: 700; display: flex; justify-content: space-between; } .notif .t i { font-style: normal; font-weight: 400; opacity: 0.55; }
-  .notif .m { font-size: 13.5px; line-height: 1.32; margin-top: 2px; }
-  /* scene B: map */
-  #scB { background: #eef2f5; color: #13202e; }
-  #scB .hdr { position: absolute; top: 58px; left: 18px; right: 18px; display: flex; justify-content: space-between; align-items: center; }
-  #scB .hdr b { font-size: 21px; font-family: "Space Grotesk", sans-serif; } #scB .hdr span { font-size: 12px; background: #13202e; color: #fff; padding: 4px 9px; border-radius: 99px; }
-  #scB svg { position: absolute; top: 100px; left: 0; width: 100%; height: 400px; }
-  .sheet { position: absolute; left: 0; right: 0; bottom: 0; height: 250px; background: #fff; border-radius: 26px 26px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.12); padding: 10px 18px 0; }
-  .sheet .grab { width: 40px; height: 5px; border-radius: 3px; background: #d6dde4; margin: 0 auto 12px; }
-  .stand { display: grid; grid-template-columns: 1fr auto; align-items: center; margin-bottom: 12px; }
-  .stand b { font-size: 15px; } .stand small { display: block; font-size: 11.5px; color: #6c7c8c; margin-top: 2px; }
-  .stand .n { font-family: "Space Grotesk", sans-serif; font-size: 26px; font-weight: 700; color: #12a650; text-align: right; line-height: 1; } .stand .n i { font-style: normal; font-size: 12px; color: #6c7c8c; font-weight: 500; }
-  .dots { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(23, 1fr); gap: 3px; margin-top: 7px; }
-  .dots i { height: 8px; border-radius: 2px; background: #ffb3ad; transition: background 0.4s; } .dots i.f { background: #2bd46f; } .dots i.flash { background: #ff5a52; box-shadow: 0 0 0 2px #ffd0cc; }
-  .best { margin-top: 4px; padding: 10px 12px; border-radius: 14px; background: #e9f8ef; font-size: 13px; color: #0f6a37; font-weight: 600; display: flex; justify-content: space-between; }
-  /* scene C: arrival, street-level */
-  #scC { background: linear-gradient(180deg, #8ec5f2 0%, #d7e7f2 45%, #c9cbc6 46%, #9fa3a2 100%); perspective: 520px; }
-  #scC .bldg { position: absolute; left: -10px; right: -10px; top: 120px; height: 230px; background: repeating-linear-gradient(180deg, #dfe4e8 0 26px, #7c8a96 26px 40px); }
-  #scC .roof { position: absolute; left: 22px; right: 22px; top: 290px; height: 14px; background: linear-gradient(#c6ccd0, #8a949b); border-radius: 3px; box-shadow: 0 6px 12px rgba(0,0,0,0.25); }
-  #scC .post { position: absolute; top: 300px; width: 6px; height: 120px; background: #9aa5ab; }
-  #scC .floor { position: absolute; left: -40px; right: -40px; top: 400px; height: 360px; transform-origin: top; transform: rotateX(62deg); background: #b5b2a8;
-    display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; padding: 18px 48px; align-content: start; }
-  #scC .pad { height: 170px; border-radius: 6px; background: #ff5a52; box-shadow: 0 0 18px rgba(255,90,82,0.6); position: relative; }
-  #scC .pad.f { background: #2bd46f; box-shadow: 0 0 18px rgba(43,212,111,0.7); }
-  #scC .pad.me { animation: glow 0.9s ease-in-out infinite alternate; }
-  @keyframes glow { to { box-shadow: 0 0 40px rgba(43,212,111,1); filter: brightness(1.25); } }
-  #scC .bike { position: absolute; top: 330px; width: 46px; height: 46px; }
-  #scC .arrow { position: absolute; top: 236px; width: 40px; text-align: center; font-size: 30px; color: #2bd46f; text-shadow: 0 2px 8px rgba(0,0,0,0.3); animation: bob 0.8s ease-in-out infinite alternate; }
-  @keyframes bob { to { transform: translateY(10px); } }
-  #scC .cta { position: absolute; left: 14px; right: 14px; bottom: 22px; padding: 14px 16px; border-radius: 20px; background: rgba(255,255,255,0.92); color: #13202e; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-  #scC .cta b { font-size: 18px; display: block; font-family: "Space Grotesk", sans-serif; } #scC .cta span { font-size: 13px; color: #4b5b6b; }
-  #scC .done { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(18,166,80,0.92); color: #fff; text-align: center; opacity: 0; transition: opacity 0.5s; }
-  #scC .done.on { opacity: 1; } #scC .done b { font-size: 64px; display: block; } #scC .done span { font-size: 18px; font-weight: 600; }
+  .screen video { width: 100%; height: 100%; object-fit: cover; display: block; }
 
   /* ---------- slide 3 ---------- */
   #s3 { display: grid; place-items: center; padding: 0 96px; }
@@ -201,53 +156,12 @@
     <div class="tagline"><span class="old">People</span><span class="new">Bikers</span><span>for Process Automation</span></div>
   </section>
 
-  <!-- 2 · Demo on the phone (mocked) -->
+  <!-- 2 · Demo on the phone: a recording of the app's demo mode, the fallback for the live demo -->
   <section class="slide" id="s2">
     <div class="phone">
       <i class="btn b1"></i><i class="btn b2"></i><i class="btn b3"></i><i class="btn b4"></i>
       <div class="screen">
-        <div class="island"></div>
-        <div class="statusbar"><span id="sbTime">7:42</span><span>●●●● 5G ▮</span></div>
-
-        <div class="scene" id="scA">
-          <div class="clock"><b id="lockTime">7:42</b><span>Friday, 30 October</span></div>
-          <div class="notif" id="notif"><div class="ico"></div><div>
-            <div class="t">Easy+Hitch <i>now</i></div>
-            <div class="m">Morning! You’re 400 m out. <b>North stand: 19 free.</b> Bay 4 has your name on it 🚲</div>
-          </div></div>
-        </div>
-
-        <div class="scene" id="scB">
-          <div class="hdr"><b>Christoph-Merian-Ring</b><span>LIVE</span></div>
-          <svg viewBox="0 0 332 400">
-            <rect x="0" y="0" width="332" height="400" fill="#eef2f5"/>
-            <g fill="#d9dfe5"><rect x="20" y="20" width="110" height="150" rx="6"/><rect x="20" y="190" width="110" height="140" rx="6"/>
-              <rect x="210" y="20" width="110" height="120" rx="6"/><rect x="210" y="160" width="110" height="170" rx="6"/></g>
-            <path d="M170 0 V300 Q170 345 125 345 H0" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round"/>
-            <path d="M170 0 V300 Q170 345 125 345 H0" fill="none" stroke="#c9d2da" stroke-width="2" stroke-dasharray="6 8"/>
-            <rect x="138" y="40" width="12" height="120" rx="3" fill="#13202e" opacity="0.85"/>
-            <rect x="70" y="322" width="44" height="10" rx="3" fill="#13202e" opacity="0.85"/>
-            <g id="pinN" transform="translate(126 96)"><circle r="17" fill="#12a650"/><text y="6" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="Inter">19</text></g>
-            <g transform="translate(92 306)"><circle r="15" fill="#12a650"/><text y="5" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="Inter">9</text></g>
-            <path id="route" d="M170 400 V150 Q170 120 150 118" fill="none" stroke="#00aeef" stroke-width="6" stroke-linecap="round" stroke-dasharray="360" stroke-dashoffset="360"/>
-            <circle id="rider" r="9" fill="#1f7fb8" stroke="#fff" stroke-width="3" cx="170" cy="400"/>
-          </svg>
-          <div class="sheet"><div class="grab"></div>
-            <div class="stand"><div><b>North stand</b><small>Bruggrain · 53 m shelter · 45 spots</small></div><div class="n"><span id="nFree">19</span> <i>free</i></div><div class="dots" id="dotsN"></div></div>
-            <div class="stand"><div><b>South stand</b><small>Rounded corner · 20 spots</small></div><div class="n">9 <i>free</i></div></div>
-            <div class="best"><span>Best spot: Bay 4 · #18</span><span>120 m ›</span></div>
-          </div>
-        </div>
-
-        <div class="scene" id="scC">
-          <div class="bldg"></div>
-          <div class="roof"></div>
-          <div class="post" style="left:30px"></div><div class="post" style="left:163px"></div><div class="post" style="right:30px"></div>
-          <div class="floor" id="floor"></div>
-          <div class="arrow" id="arrow" style="left:212px">▼</div>
-          <div class="cta"><b>Park at #18 →</b><span>Bay 4 · 2nd from the right · roof cover</span></div>
-          <div class="done" id="done"><div><b>✓</b><span>Parked 7:44 · Have a great day!</span></div></div>
-        </div>
+        <video id="demo" src="demo.mp4" muted loop playsinline preload="auto"></video>
       </div>
     </div>
   </section>
@@ -323,7 +237,7 @@ addEventListener('resize', fit); fit();
 const slides = [...document.querySelectorAll('.slide')];
 const NOTES = [
   '~40 s · Innovation + impact. 7:45 at E+H: both stands look full, you circle, you are late. Easy+Hitch tells you which exact spot is free before you turn the corner. Spot-level, not just “full”, from low-cost cameras like the challenge’s ESP32 boards. Less searching, more people choosing the bike, and real occupancy data for facility planning.',
-  '~80 s · Live demo on the phone: heads-up before arriving, map with free spots per stand, arrival at the stand. If the live demo fails, this slide’s phone mock loops on its own as a fallback.',
+  '~80 s · Live demo on the phone, on Demo data: the blue dot on Christoph-Merian-Ring, the map with free spots per stand, the south stand, then 3D Navigation down the street, turning left to the free spot. If the live demo fails, this slide’s phone plays a recording of the same flow.',
   '~45 s · Technical depth + fair play. Edge: a XIAO ESP32S3 camera board, YOLO11n finds faces and PP-OCRv5 finds plates, and both are pixelated before a frame leaves the edge, only when the view changed. AWS: the Ingest Lambda asks Jev 1.14, through OpenRouter, one yes-or-no question per changed slot, with no training data. DynamoDB keeps slot states only, never images, and a simulator fills the slots no camera reports. End users: the iOS app with its three.js 3D view, and AI agents through MCP. Nobody is tracked.',
   '~10 s · Close while the hamster lands: “You ride, we find the spot. Easy+Hitch.” Thank the jury.',
 ];
@@ -711,44 +625,15 @@ function arrive() {
   setTimeout(() => requestAnimationFrame(step), 500);
 }
 
-// ---------------------------------------------------------------- slide 2: phone demo (mocked)
-const dotsN = document.getElementById('dotsN');
-const freeN = new Set([1, 3, 4, 7, 9, 12, 13, 14, 17, 18, 21, 22, 24, 27, 30, 31, 33, 38, 41]);
-for (let k = 0; k < 45; k++) { const i = document.createElement('i'); if (freeN.has(k)) i.className = 'f'; dotsN.appendChild(i); }
-dotsN.style.gridTemplateColumns = 'repeat(45, 1fr)';
-const floor = document.getElementById('floor');
-const padState = ['t', 't', 'f', 't', 'me', 't'];
-padState.forEach(s => { const d = document.createElement('div'); d.className = 'pad' + (s === 't' ? '' : ' f') + (s === 'me' ? ' me' : ''); floor.appendChild(d); });
-const scC = document.getElementById('scC');
-[[22, 1], [78, 0], [180, 0], [290, 1]].forEach(([x, flip]) => {   // parked bikes in the taken slots
-  const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('viewBox', '0 0 46 46'); s.setAttribute('class', 'bike'); s.style.left = x + 'px';
-  s.innerHTML = `<g fill="none" stroke="#1d2733" stroke-width="3" ${flip ? 'transform="translate(46 0) scale(-1 1)"' : ''}><circle cx="11" cy="32" r="9"/><circle cx="35" cy="32" r="9"/><path d="M11 32 L20 18 H33 L35 32 M20 18 L24 32 L33 18 M18 14 H24 M31 12 H37"/></g>`;
-  scC.appendChild(s);
-});
+// ---------------------------------------------------------------- slide 2: the app's demo mode, recorded
+// demo.mp4 is the iOS app in demo mode, recorded in the iPhone 17 Pro simulator: the rider's blue dot
+// on the map, the south station, then 3D Navigation down Christoph-Merian-Ring to its free spot.
 const phone = (() => {
-  let timers = [], loop = null;
-  const $ = (id) => document.getElementById(id);
-  const at = (ms, fn) => timers.push(setTimeout(fn, ms));
-  function scene(id) { ['scA', 'scB', 'scC'].forEach(s => $(s).classList.toggle('on', s === id)); }
-  function run() {
-    timers.forEach(clearTimeout); timers = [];
-    $('notif').classList.remove('on'); $('done').classList.remove('on'); $('nFree').textContent = '19';
-    const route = $('route'), rider = $('rider'); route.style.transition = 'none'; route.style.strokeDashoffset = 360; rider.setAttribute('cx', 170); rider.setAttribute('cy', 400);
-    [...dotsN.children].forEach(i => i.classList.remove('flash'));
-    $('sbTime').textContent = '7:42'; scene('scA');
-    at(700, () => $('notif').classList.add('on'));
-    at(3600, () => { scene('scB'); $('sbTime').textContent = '7:43'; void route.getBoundingClientRect(); route.style.transition = 'stroke-dashoffset 5s linear'; route.style.strokeDashoffset = 0; moveRider(5000); });
-    at(6000, () => { const d = dotsN.children[12]; d.classList.remove('f'); d.classList.add('flash'); $('nFree').textContent = '18'; });
-    at(9400, () => { scene('scC'); $('sbTime').textContent = '7:44'; });
-    at(13000, () => $('done').classList.add('on'));
-    loop = setTimeout(run, 16000);
-  }
-  function moveRider(dur) {
-    const path = $('route'), len = path.getTotalLength(), t0 = performance.now(), rider = $('rider');
-    const step = (now) => { const t = Math.min(1, (now - t0) / dur), p = path.getPointAtLength(len * t); rider.setAttribute('cx', p.x); rider.setAttribute('cy', p.y); if (t < 1 && loop) requestAnimationFrame(step); };
-    requestAnimationFrame(step);
-  }
-  return { start() { this.stop(); run(); }, stop() { timers.forEach(clearTimeout); timers = []; clearTimeout(loop); loop = null; } };
+  const video = document.getElementById('demo');
+  return {
+    start() { video.currentTime = 0; video.play().catch(() => {}); },   // autoplay may be refused before a key press
+    stop() { video.pause(); },
+  };
 })();
 
 // ---------------------------------------------------------------- slide 3: one frame at a time through the pipeline
