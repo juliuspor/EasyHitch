@@ -11,6 +11,9 @@ struct SpotView: UIViewRepresentable {
     let stationID: String
     /// The station's slots by rack, as `StationDetail.racks` groups them.
     let racks: [[Slot]]
+    /// The rider's position: given one, the view navigates from it along the streets instead
+    /// of flying in from above.
+    let from: Location?
 
     func makeCoordinator() -> Coordinator { Coordinator() }
 
@@ -31,13 +34,13 @@ struct SpotView: UIViewRepresentable {
     }
 
     func updateUIView(_ web: WKWebView, context: Context) {
-        context.coordinator.state = (stationID, racks)
+        context.coordinator.state = (stationID, racks, from)
         context.coordinator.flush(web)
     }
 
     @MainActor
     final class Coordinator: NSObject, WKNavigationDelegate {
-        var state: (stationID: String, racks: [[Slot]])?
+        var state: (stationID: String, racks: [[Slot]], from: Location?)?
         private var loaded = false
         private var sentSlots: [Slot]?
 
@@ -55,7 +58,7 @@ struct SpotView: UIViewRepresentable {
             if sentSlots == nil {
                 let numbers = state.racks.map { $0.map(\.number) }
                 script = "BikeSpot.show({id: \(Self.json(state.stationID)), slots: \(Self.json(slots)), "
-                    + "racks: \(Self.json(numbers))})"
+                    + "racks: \(Self.json(numbers)), from: \(Self.json(state.from))})"
             } else {
                 script = "BikeSpot.update(\(Self.json(slots)))"
             }

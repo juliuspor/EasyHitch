@@ -2,9 +2,13 @@ import Foundation
 
 /// Built-in sample stations so the app runs without a backend. Every few seconds a random
 /// slot is taken or freed, so the UI has live changes to show; slots no camera saw in the
-/// sample stay unknown. Refresh the data with code/ios/refresh-demo.sh.
+/// sample stay unknown, and a station's last free slot stays free, so the demo rider always
+/// has a spot to navigate to. Refresh the data with code/ios/refresh-demo.sh.
 actor DemoService: StationService {
     static let shared = DemoService()
+    /// A rider on Christoph-Merian-Ring, just past the corner with Kägenstrasse, cycling east in
+    /// the bike lane towards the south station.
+    static let rider = Location(lat: 47.4867629, lon: 7.5981029)
 
     private var details: [StationDetail]
     private var lastStep = Date()
@@ -37,6 +41,7 @@ actor DemoService: StationService {
             var slots = details[station].slots
             guard let index = slots.indices.filter({ slots[$0].state != .unknown }).randomElement() else { continue }
             let slot = slots[index]
+            if slot.state == .free && slots.filter({ $0.state == .free }).count == 1 { continue }
             slots[index] = Slot(number: slot.number, state: slot.state == .free ? .taken : .free,
                                 location: slot.location, changedAt: Date())
             details[station] = details[station].with(slots: slots, at: Date())

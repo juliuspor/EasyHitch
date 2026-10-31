@@ -12,6 +12,8 @@ enum Brand {
     static let slate = Color(hex: 0x36444C)
     /// Light slate for inactive states.
     static let mist = Color(hex: 0xA4B3BC)
+    /// The rider's location dot and route, Apple Maps' blue (Spot/spot.js uses the same value).
+    static let location = Color(hex: 0x007AFF)
     static let red = Color(hex: 0xD50C2F)
 }
 

@@ -10,6 +10,7 @@ struct MapScreen: View {
     @State private var selectedID: Station.ID?
     @FocusState private var searchFocused: Bool
     @State private var position = Self.camera(at: Site.center, distance: 900)
+    @AppStorage("demoMode") private var demoMode = false
 
     private static func camera(at center: CLLocationCoordinate2D, distance: Double) -> MapCameraPosition {
         .camera(MapCamera(centerCoordinate: center, distance: distance, heading: 0, pitch: 0))
@@ -21,6 +22,10 @@ struct MapScreen: View {
         NavigationStack(path: $path) {
             // Flat, north-up and pan/zoom only, like a mobility app map.
             Map(position: $position, interactionModes: [.pan, .zoom]) {
+                if demoMode, let rider = Backend.rider {
+                    Annotation("Your position", coordinate: rider.coordinate, anchor: .center) { RiderDot() }
+                        .annotationTitles(.hidden)
+                }
                 ForEach(store.stations) { station in
                     Annotation(station.name, coordinate: station.coordinate, anchor: .bottom) {
                         Button { select(station) } label: { StationPin(station: station, selected: station.id == selectedID) }
@@ -83,7 +88,12 @@ struct MapScreen: View {
     private func select(_ station: Station) {
         withAnimation(.snappy) {
             selectedID = station.id
-            position = Self.camera(at: station.coordinate, distance: 700)
+            // With a rider on the map, show the way: the blue dot and the station together.
+            if demoMode, let rider = Backend.rider {
+                position = Self.region(around: [rider.coordinate, station.coordinate])
+            } else {
+                position = Self.camera(at: station.coordinate, distance: 700)
+            }
         }
     }
 
@@ -103,6 +113,11 @@ struct MapScreen: View {
     private func framing(_ place: Destination) -> MapCameraPosition {
         let points = [place.coordinate] + store.stations.filter { place.distance(to: $0) < 3000 }.map(\.coordinate)
         guard points.count > 1 else { return Self.camera(at: place.coordinate, distance: 700) }
+        return Self.region(around: points)
+    }
+
+    /// A region showing all the points, with room around them for the pins and the card.
+    private static func region(around points: [CLLocationCoordinate2D]) -> MapCameraPosition {
         let lats = points.map(\.latitude), lons = points.map(\.longitude)
         let center = CLLocationCoordinate2D(latitude: (lats.min()! + lats.max()!) / 2,
                                             longitude: (lons.min()! + lons.max()!) / 2)
@@ -267,14 +282,14 @@ private struct StationCard: View {
             }
             Spacer(minLength: 8)
             Button(action: open) {
-                Image(systemName: "cube.transparent")
+                Image(systemName: "location.fill")
                     .font(.body.weight(.semibold))
                     .frame(width: 28, height: 28)
             }
             .prominentGlassButton()
             .buttonBorderShape(.circle)
             .tint(Brand.blue)
-            .accessibilityLabel("View in 3D")
+            .accessibilityLabel("3D Navigation")
         }
     }
 
@@ -309,7 +324,9 @@ private struct StationCard: View {
 
             HStack(spacing: 10) {
                 Button(action: open) {
-                    Label("View in 3D", systemImage: "cube.transparent")
+                    Label("3D Navigation", systemImage: "location.fill")
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
                         .frame(maxWidth: .infinity)
                 }
                 .prominentGlassButton()
@@ -344,6 +361,51 @@ private struct StationIcon: View {
             .foregroundStyle(.white)
             .frame(width: size, height: size)
             .background(station.availability.color.gradient, in: Circle())
+    }
+}
+
+/// The rider's position, drawn like the location dot in Apple Maps: a blue dot in a white ring
+/// with a breathing halo, and a beam towards where the rider is heading, east down the street.
+private struct RiderDot: View {
+    @State private var breathing = false
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(Brand.location.opacity(0.18))
+                .frame(width: 56, height: 56)
+                .scaleEffect(breathing ? 1 : 0.7)
+            HeadingBeam()
+                .fill(RadialGradient(colors: [Brand.location.opacity(0.55), Brand.location.opacity(0)],
+                                     center: .center, startRadius: 6, endRadius: 34))
+                .frame(width: 68, height: 68)
+                .rotationEffect(.degrees(90))
+            Circle()
+                .fill(.white)
+                .frame(width: 22, height: 22)
+                .shadow(color: .black.opacity(0.25), radius: 3, y: 1)
+            Circle()
+                .fill(Brand.location)
+                .frame(width: 15, height: 15)
+        }
+        .onAppear {
+            withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) { breathing = true }
+        }
+        .accessibilityElement()
+        .accessibilityLabel("Your position")
+    }
+}
+
+/// A wedge opening upwards from the centre; rotated, it points the way the rider is heading.
+private struct HeadingBeam: Shape {
+    func path(in rect: CGRect) -> Path {
+        let centre = CGPoint(x: rect.midX, y: rect.midY)
+        var path = Path()
+        path.move(to: centre)
+        path.addArc(center: centre, radius: rect.width / 2, startAngle: .degrees(-118), endAngle: .degrees(-62),
+                    clockwise: false)
+        path.closeSubpath()
+        return path
     }
 }
 

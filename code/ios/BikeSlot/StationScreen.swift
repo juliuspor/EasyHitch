@@ -14,7 +14,7 @@ struct StationScreen: View {
         ZStack {
             Color(hex: 0xE6EDF1).ignoresSafeArea()
             if !racks.isEmpty {
-                SpotView(stationID: station.id, racks: racks)
+                SpotView(stationID: station.id, racks: racks, from: Backend.rider)
                     .ignoresSafeArea()
             } else {
                 ProgressView("Loading station")

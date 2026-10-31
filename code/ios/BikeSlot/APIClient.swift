@@ -13,6 +13,12 @@ enum Backend {
     static var current: any StationService {
         UserDefaults.standard.bool(forKey: "demoMode") ? DemoService.shared : APIClient()
     }
+
+    /// Where the rider is, for the blue dot on the map and the start of the 3D navigation. The
+    /// demo has one; the live app has none, because it does not ask for the phone's location.
+    static var rider: Location? {
+        UserDefaults.standard.bool(forKey: "demoMode") ? DemoService.rider : nil
+    }
 }
 
 /// Talks to the Availability API. The base URL can be changed in the app.

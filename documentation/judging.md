@@ -37,7 +37,7 @@ a count ([`SlotDetail`](../code/backend/availability/views.py#L34-L38),
 shows each station in a 3D model of the block, with every slot where the
 station catalog measured it, a bike on every taken slot, and a grey pad where
 no camera looked recently
-([`SpotView`](../code/ios/BikeSlot/SpotView.swift#L10-L71)), above a card with
+([`SpotView`](../code/ios/BikeSlot/SpotView.swift#L10-L74)), above a card with
 the free count
 ([`StatusCard`](../code/ios/BikeSlot/StationScreen.swift#L47-L79)).
 
@@ -61,7 +61,18 @@ ever looks at slot crops.
 
 **Found before you arrive.** Search for the building you are cycling to, and
 the app opens the closest shelter that still has room
-([`go`](../code/ios/BikeSlot/MapScreen.swift#L90-L100)).
+([`go`](../code/ios/BikeSlot/MapScreen.swift#L100-L110)).
+
+**3D Navigation to the free spot.** In demo mode the map shows the rider as a
+blue dot ([`RiderDot`](../code/ios/BikeSlot/MapScreen.swift#L369-L397)).
+**3D Navigation** drops down to it, follows it along the streets to the
+station, and turns to face the rack
+([`navigationFlight`](../code/ios/BikeSlot/Spot/spot.js#L373-L423)), on the shortest way
+along the OpenStreetMap streets
+([`planRoute`](../code/ios/BikeSlot/Spot/spot.js#L429-L505)). Low-poly curbs,
+gutters, bike-lane markings, hedges and parked cars dress only the streets on
+that way, after Apple's Look Around imagery of Christoph-Merian-Ring
+([`streetDetails`](../code/ios/BikeSlot/Spot/spot.js#L599-L685)).
 
 ## Impact
 
@@ -101,7 +112,7 @@ the 3D scenes are built in parallel ([architecture.md](architecture.md)):
 | [`OccupancyRepository`](../code/backend/occupancy/repository.py#L15-L21) | [`InMemoryOccupancyRepository`](../code/backend/occupancy/repository.py#L24-L44) and [`DynamoOccupancyRepository`](../code/backend/occupancy/dynamodb.py#L22-L58) |
 | [`FingerprintStore`](../code/backend/ingest/fingerprints.py#L11-L14) | [`InMemoryFingerprintStore`](../code/backend/ingest/fingerprints.py#L17-L28) and [`DynamoFingerprintStore`](../code/backend/ingest/dynamodb.py#L9-L22) |
 | [`FrameSource`](../code/edge/sources.py#L25-L26), [`PIIDetector`](../code/edge/pii.py#L27-L28), [`FrameUploader`](../code/edge/upload.py#L17-L19) on the camera | A webcam or a XIAO board on USB with YOLO11n, PP-OCRv5 and HTTP, or recorded frames with marked regions and a dry run |
-| [`StationService`](../code/ios/BikeSlot/APIClient.swift#L5-L8) in the app | [`APIClient`](../code/ios/BikeSlot/APIClient.swift#L19-L69) and [`DemoService`](../code/ios/BikeSlot/Demo/DemoService.swift#L6-L45) |
+| [`StationService`](../code/ios/BikeSlot/APIClient.swift#L5-L8) in the app | [`APIClient`](../code/ios/BikeSlot/APIClient.swift#L25-L75) and [`DemoService`](../code/ios/BikeSlot/Demo/DemoService.swift#L7-L50) |
 
 One place picks the implementations from the environment
 ([`classifier`](../code/backend/composition.py#L85-L99)), so the same code runs
@@ -261,8 +272,8 @@ Three ways to show it:
    day ([`OccupancySimulator`](../code/backend/simulation/simulator.py#L31-L106)).
 2. **The app.** With the **Demo data** setting, or launched with
    `-demoMode YES`, built-in stations change every four seconds without a
-   backend ([`Backend`](../code/ios/BikeSlot/APIClient.swift#L10-L16),
-   [`DemoService`](../code/ios/BikeSlot/Demo/DemoService.swift#L6-L45)).
+   backend ([`Backend`](../code/ios/BikeSlot/APIClient.swift#L10-L22),
+   [`DemoService`](../code/ios/BikeSlot/Demo/DemoService.swift#L7-L50)).
 3. **The deck.** The phone screen on slide 2 plays the app on its own.
 
 A XIAO camera board on the USB cable of an edge computer
@@ -288,7 +299,7 @@ On 31 October 2026, on macOS with Python 3.13.16:
 | Jev 1.14, live | The local backend with `BACKEND_CLASSIFIER=jev` and an OpenRouter key, then the recorded cameras for two rounds, compared with `data/static-readings.json` | All 7 frames read, 1 to 3 s per camera. After the first round 38 of the 55 seen slots matched the fixed readings and 12 waited for a second, agreeing reading. After the second, 47 matched, 7 read taken where the fixed readings say free, and 1 was still unsure |
 | YOLO11n | `YoloPIIDetector` on `IMG_20261029_084104` | Finds the person at the right edge |
 | PP-OCRv5 | `TextPIIDetector` and `pixelate` on the seven recorded frames, sidecars ignored, each result checked by eye | The five readable plates in `cam-north-1`, `cam-north-2` and `cam-south-a` come out unreadable, the two yellow e-bike plates and a tilted motorbike plate among them. 2% of a frame is pixelated on average, 6% at most, in 0.1 s per frame |
-| iOS app | Built for iOS 18, run in the iPhone 17 Pro simulator against the local backend with the recorded cameras, then in demo mode | All four stations on the map. North: 26 of 45 free, 10 not seen by a camera, grey in 3D. Each station is one rack, and the 3D view lands in front of it. The bike garage has no camera, so it reads unknown, as do the 3 Kägenstrasse slots its camera does not see. With `BACKEND_SIMULATION=on` and no cameras, all four stations change every few seconds. In demo mode the camera-less ones get fixed sample states, and counts change every four seconds |
+| iOS app | Built for iOS 18, run in the iPhone 17 Pro simulator against the local backend with the recorded cameras, then in demo mode | All four stations on the map. North: 26 of 45 free, 10 not seen by a camera, grey in 3D. Each station is one rack, and the 3D view lands in front of it. The bike garage has no camera, so it reads unknown, as do the 3 Kägenstrasse slots its camera does not see. With `BACKEND_SIMULATION=on` and no cameras, all four stations change every few seconds. In demo mode the camera-less ones get fixed sample states, and counts change every four seconds. With Demo data, the blue dot sits on Christoph-Merian-Ring, and 3D Navigation to the south station drops down to it, rides about 140 m east in the bike lane and turns left to land in front of the rack, recorded for slide 2 of the deck |
 | Simulation | `pytest` in `code/backend`, then the local backend with `BACKEND_SIMULATION=on` polled three times, six seconds apart | 9 tests pass: every slot of a camera-less station filled, the share taken follows the time of day, a slot a camera reports left alone and taken over once stale, a camera reads a simulated slot, a new simulator carries on, the flag survives DynamoDB, a scheduled run stops before its timeout. All 126 slots known, and the counts changed between polls |
 | Simulation on AWS | `cfn-lint` and SAM's transform with `Simulation=on`, then two scheduled runs of the Simulation handler against DynamoDB on moto, the second as a new container | Valid template: the function, its role, a `rate(1 minute)` rule and its permission, all under the `SimulationOn` condition. 17 steps per run; the second run carried on from the stored slots, which DynamoDB keeps with `"simulated": true`. Not yet deployed to a real account |
 | XIAO camera | `pytest` in `code/edge` with a pseudo-terminal answering like the firmware, and the firmware compiled with `arduino-cli` for `XIAO_ESP32S3` | 2 tests pass: a photo read and scaled to the calibrated size, a silent board times out. The firmware builds, 10% of the flash. On the board itself: 640x480 photos over USB in 0.3 to 0.7 s. A dry run with YOLO11n and PP-OCRv5 took 23 photos in 100 s and would have sent 3, the others unchanged. With a temporary four-slot calibration, a local backend with Jev accepted the uploads and read all four slots free, right for a desk with no bikes; later uploads re-read only the slot that changed |
