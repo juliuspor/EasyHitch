@@ -5,7 +5,8 @@ functions or as one local server:
 
 - **Ingest API** (`POST /v1/frames`): cameras upload pixelated frames. The
   backend reads each changed slot with Jev 1.14 through OpenRouter and keeps
-  only the current state of each slot. Frames never leave memory.
+  only the current state and a fingerprint of each slot. Frames never leave
+  memory.
 - **Availability API** (`GET /v1/stations`): stations, free slots and 3D
   models for the iOS app and any other client.
 - **MCP server** (`/mcp`): the same answers as tools for AI agents.

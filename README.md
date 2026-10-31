@@ -7,10 +7,10 @@ the suggested features, the available resources and the privacy rules.
 Easy+Hitch shows riders which bike slots are free at the Endress+Hauser site
 in Reinach before they arrive. Cameras pixelate faces and licence plates and
 send a frame only when their view changes. A serverless backend on AWS reads
-every changed slot with Jev 1.14 and keeps only the current state of each slot,
-never the images. Riders see the free slots in the iOS app, with a map,
-cycling directions and a 3D view of every shelter, and AI agents get the same
-answers through an MCP server.
+every changed slot with Jev 1.14 and keeps only the current state and a
+fingerprint of each slot, never the images. Riders see the free slots in the
+iOS app, with a map, cycling directions and a 3D view of every shelter, and AI
+agents get the same answers through an MCP server.
 
 ## How it works
 

@@ -80,7 +80,8 @@ Christoph-Merian-Ring ([`streetDetails`](../code/ios/BikeSlot/Spot/spot.js#L599-
   to work easier to choose. Free and taken are green and red, and never by
   colour alone: pins and cards carry the free count, and in 3D a taken slot
   holds a bike ([`Brand`](../code/ios/BikeSlot/Theme.swift#L4-L16)). Nobody is watched: the
-  backend keeps slot states only (see [Fair play](#fair-play)).
+  backend keeps slot states and fingerprints, never images (see
+  [Fair play](#fair-play)).
 - **Economic.** The camera pipeline is designed for the low-cost ESP32 boards
   the challenge provides. A camera uploads only when its view changed
   ([`ChangeDetector`](../code/edge/change.py#L13-L31)), and the backend asks
@@ -205,8 +206,10 @@ All but the second print nothing.
     recorded frame lists the same regions by hand
     ([`SidecarPIIDetector`](../code/edge/pii.py#L36-L54)).
   - No images are kept. The ingest service decodes each frame in memory and
-    stores only slot states and times
-    ([`ingest`](../code/backend/ingest/service.py#L37-L52)), and the state has
+    stores only slot states, times and a 72-bit fingerprint per slot
+    ([`ingest`](../code/backend/ingest/service.py#L37-L52)): a difference hash
+    and the mean grey level of the slot crop
+    ([`fingerprint`](../code/backend/ingest/frame.py#L37-L48)). The state has
     no field for images or people
     ([`SlotOccupancy`](../code/backend/occupancy/model.py#L16-L34)). Jev only
     sees slot crops ([`JevCropClassifier`](../code/backend/classification/jev.py#L34-L64)),
