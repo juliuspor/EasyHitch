@@ -37,9 +37,9 @@ a count ([`SlotDetail`](../code/backend/availability/views.py#L34-L38),
 shows each station in a 3D model of the block, with every slot where the
 station catalog measured it, a bike on every taken slot, and a grey pad where
 no camera looked recently
-([`SpotView`](../code/ios/BikeSlot/SpotView.swift#L10-L73)), above a card with
+([`SpotView`](../code/ios/BikeSlot/SpotView.swift#L10-L71)), above a card with
 the free count
-([`StatusCard`](../code/ios/BikeSlot/StationScreen.swift#L56-L98)).
+([`StatusCard`](../code/ios/BikeSlot/StationScreen.swift#L47-L79)).
 
 **No training data.** The backend crops every slot and asks Jev 1.14, a
 decision model, one yes or no question per crop
@@ -258,7 +258,7 @@ Three ways to show it:
    [edge README](../code/edge/README.md#run)), then watch the stations fill in
    at `/v1/stations`, or ask an AI agent through the MCP server where to park.
    With `BACKEND_SIMULATION=on`, the slots no camera reports, the bike garage
-   and the Kägenstrasse shelter among them, fill and empty over a simulated
+   among them, fill and empty over a simulated
    day ([`OccupancySimulator`](../code/backend/simulation/simulator.py#L31-L106)).
 2. **The app.** With the **Demo data** setting, or launched with
    `-demoMode YES`, built-in stations change every four seconds without a
@@ -278,7 +278,7 @@ On 31 October 2026, on macOS with Python 3.13.16:
 
 | Check | How | Result |
 |---|---|---|
-| Pipeline, end to end | Local backend, then the recorded cameras for two rounds | All 7 cameras accepted. North: 26 free, 9 taken, 10 unknown. South: 10 free, 10 taken. The second round sent nothing |
+| Pipeline, end to end | Local backend, then the recorded cameras for two rounds | All 7 cameras accepted. North: 26 free, 9 taken, 10 unknown. South: 1 free, 9 taken. Kägenstrasse: 9 free, 1 taken, 3 unknown. The second round sent nothing |
 | Bad input | No or wrong token, PNG body, 1.1 MB body, missing `X-Captured-At`, bad `X-Person-Boxes`, 640x480 frame | 401, 415, 413, 422, 422, 422, as problem details |
 | ETag | `If-None-Match` with the station list's ETag | 304 |
 | MCP | All three tools through the MCP Python SDK's client | Correct answers. An unknown station and a latitude of 120 return tool errors |
@@ -289,7 +289,7 @@ On 31 October 2026, on macOS with Python 3.13.16:
 | Jev 1.14, live | The local backend with `BACKEND_CLASSIFIER=jev` and an OpenRouter key, then the recorded cameras for two rounds, compared with `data/static-readings.json` | All 7 frames read, 1 to 3 s per camera. After the first round 38 of the 55 seen slots matched the fixed readings and 12 waited for a second, agreeing reading. After the second, 47 matched, 7 read taken where the fixed readings say free, and 1 was still unsure |
 | YOLO11n | `YoloPIIDetector` on `IMG_20261029_084104` | Finds the person at the right edge |
 | PP-OCRv5 | `TextPIIDetector` and `pixelate` on the seven recorded frames, sidecars ignored, each result checked by eye | The five readable plates in `cam-north-1`, `cam-north-2` and `cam-south-a` come out unreadable, the two yellow e-bike plates and a tilted motorbike plate among them. 2% of a frame is pixelated on average, 6% at most, in 0.1 s per frame |
-| iOS app | Built for iOS 18, run in the iPhone 17 Pro simulator against the local backend with the recorded cameras, then in demo mode | All four stations on the map. North: 26 of 45 free, 10 not seen by a camera, grey in 3D. South: slots 1 to 10 and 11 to 20 as two racks on two sides of the building, and the 3D view flies between them. The bike garage and the Kägenstrasse shelter have no camera, so they read unknown. With `BACKEND_SIMULATION=on` and no cameras, all four stations change every few seconds. In demo mode the camera-less ones get fixed sample states, and counts change every four seconds |
+| iOS app | Built for iOS 18, run in the iPhone 17 Pro simulator against the local backend with the recorded cameras, then in demo mode | All four stations on the map. North: 26 of 45 free, 10 not seen by a camera, grey in 3D. Each station is one rack, and the 3D view lands in front of it. The bike garage has no camera, so it reads unknown, as do the 3 Kägenstrasse slots its camera does not see. With `BACKEND_SIMULATION=on` and no cameras, all four stations change every few seconds. In demo mode the camera-less ones get fixed sample states, and counts change every four seconds |
 | Simulation | `pytest` in `code/backend`, then the local backend with `BACKEND_SIMULATION=on` polled three times, six seconds apart | 9 tests pass: every slot of a camera-less station filled, the share taken follows the time of day, a slot a camera reports left alone and taken over once stale, a camera reads a simulated slot, a new simulator carries on, the flag survives DynamoDB, a scheduled run stops before its timeout. All 126 slots known, and the counts changed between polls |
 | Simulation on AWS | `cfn-lint` and SAM's transform with `Simulation=on`, then two scheduled runs of the Simulation handler against DynamoDB on moto, the second as a new container | Valid template: the function, its role, a `rate(1 minute)` rule and its permission, all under the `SimulationOn` condition. 17 steps per run; the second run carried on from the stored slots, which DynamoDB keeps with `"simulated": true`. Not yet deployed to a real account |
 | XIAO camera | `pytest` in `code/edge` with a pseudo-terminal answering like the firmware, and the firmware compiled with `arduino-cli` for `XIAO_ESP32S3` | 2 tests pass: a photo read and scaled to the calibrated size, a silent board times out. The firmware builds, 10% of the flash. On the board itself: 640x480 photos over USB in 0.3 to 0.7 s. A dry run with YOLO11n and PP-OCRv5 took 23 photos in 100 s and would have sent 3, the others unchanged. With a temporary four-slot calibration, a local backend with Jev accepted the uploads and read all four slots free, right for a desk with no bikes; later uploads re-read only the slot that changed |

@@ -1,5 +1,5 @@
 {
- "source": "Slot positions measured from OSM way 1463536691, satellite imagery, and the 29 Oct 2026 site photos; occupancy is illustrative. The bike garage and the Kägenstrasse shelter are placed from the team's site markings and have no camera yet, so their status is a placeholder; their x and y are converted from longitude and latitude",
+ "source": "Slot positions measured from OSM way 1463536691, satellite imagery, and the 29 Oct 2026 site photos; occupancy is illustrative. The bike garage and the Kägenstrasse shelter are placed from the team's site markings, and their status is a placeholder; their x and y are converted from longitude and latitude. The Kägenstrasse shelter is the one in IMG_20261029_083657, which camera cam-west-b replays",
  "slots": [
   {
    "zone_id": "CMR_NORTH_01",
@@ -495,96 +495,6 @@
    "y": -110.03,
    "lon": 7.5999802,
    "lat": 47.4868599
-  },
-  {
-   "zone_id": "CMR_SOUTH_02",
-   "slot": 11,
-   "status": "free",
-   "x": 146.83,
-   "y": -98.75,
-   "lon": 7.6002019,
-   "lat": 47.4869614
-  },
-  {
-   "zone_id": "CMR_SOUTH_02",
-   "slot": 12,
-   "status": "taken",
-   "x": 146.83,
-   "y": -98.25,
-   "lon": 7.6002019,
-   "lat": 47.4869659
-  },
-  {
-   "zone_id": "CMR_SOUTH_02",
-   "slot": 13,
-   "status": "taken",
-   "x": 146.83,
-   "y": -97.75,
-   "lon": 7.6002019,
-   "lat": 47.4869704
-  },
-  {
-   "zone_id": "CMR_SOUTH_02",
-   "slot": 14,
-   "status": "free",
-   "x": 146.83,
-   "y": -97.25,
-   "lon": 7.6002019,
-   "lat": 47.4869749
-  },
-  {
-   "zone_id": "CMR_SOUTH_02",
-   "slot": 15,
-   "status": "taken",
-   "x": 146.83,
-   "y": -96.75,
-   "lon": 7.6002019,
-   "lat": 47.4869794
-  },
-  {
-   "zone_id": "CMR_SOUTH_02",
-   "slot": 16,
-   "status": "free",
-   "x": 146.83,
-   "y": -96.25,
-   "lon": 7.6002019,
-   "lat": 47.4869839
-  },
-  {
-   "zone_id": "CMR_SOUTH_02",
-   "slot": 17,
-   "status": "free",
-   "x": 146.83,
-   "y": -95.75,
-   "lon": 7.6002019,
-   "lat": 47.4869884
-  },
-  {
-   "zone_id": "CMR_SOUTH_02",
-   "slot": 18,
-   "status": "taken",
-   "x": 146.83,
-   "y": -95.25,
-   "lon": 7.6002019,
-   "lat": 47.4869929
-  },
-  {
-   "zone_id": "CMR_SOUTH_02",
-   "slot": 19,
-   "status": "free",
-   "x": 146.83,
-   "y": -94.75,
-   "lon": 7.6002019,
-   "lat": 47.4869974
-  },
-  {
-   "zone_id": "CMR_SOUTH_02",
-   "slot": 20,
-   "status": "free",
-   "x": 146.83,
-   "y": -94.25,
-   "lon": 7.6002019,
-   "lat": 47.4870019
   },
   {
    "zone_id": "CMR_GARAGE_03",

@@ -77,15 +77,15 @@ pinned by its SHA-256, and any other file is refused.
 
 ## Recorded frames
 
-`assets/camera-frames/<camera_id>/` holds the hosts' photos of the north
-and south stations, one photo per camera, upright and scaled to 1280x960. Each frame has
+`assets/camera-frames/<camera_id>/` holds the hosts' photos of the north,
+south and Kägenstrasse stations, one photo per camera, upright and scaled to 1280x960. Each frame has
 a sidecar JSON file listing `people` and `pii_regions`: faces, readable
 plates, and plates on parked cars.
 
 | Camera | Photo | Station | Slots |
 |---|---|---|---|
 | `cam-south-a` | `IMG_20261029_083909` | `cmr-south-02` | 1 to 10 |
-| `cam-south-b` | `IMG_20261029_083657` | `cmr-south-02` | 11 to 20 |
+| `cam-west-b` | `IMG_20261029_083657` | `kaegen-west-04` | 1 to 10 |
 | `cam-north-1` to `cam-north-4` | `084154`, `084203`, `084213`, `084248` | `cmr-north-01` | 1 to 20, one bay each |
 | `cam-north-5` | `IMG_20261029_084118` | `cmr-north-01` | 21 to 35 |
 

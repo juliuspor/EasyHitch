@@ -33,7 +33,7 @@ cd code/backend && python3.13 -m venv .venv && .venv/bin/pip install -r requirem
 ```
 
 In a second terminal, start the recorded cameras, which replay the hosts'
-photos of the north and south stations:
+photos of the north, south and Kägenstrasse stations:
 
 ```bash
 cd code/edge && python3.13 -m venv .venv && .venv/bin/pip install -r requirements.txt && .venv/bin/python main.py --source ../../assets/camera-frames --pii sidecar --upload http --url http://localhost:8000 --tokens dev-tokens.json

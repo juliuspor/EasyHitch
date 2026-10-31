@@ -675,8 +675,8 @@
       "id": "cmr-south-02",
       "name": "Christoph-Merian-Ring South",
       "location": {
-        "lat": 47.4869208,
-        "lon": 7.6000761
+        "lat": 47.4868599,
+        "lon": 7.5999503
       },
       "slots": [
         {
@@ -747,76 +747,6 @@
           "location": {
             "lat": 47.4868599,
             "lon": 7.5999802
-          }
-        },
-        {
-          "number": 11,
-          "location": {
-            "lat": 47.4869614,
-            "lon": 7.6002019
-          }
-        },
-        {
-          "number": 12,
-          "location": {
-            "lat": 47.4869659,
-            "lon": 7.6002019
-          }
-        },
-        {
-          "number": 13,
-          "location": {
-            "lat": 47.4869704,
-            "lon": 7.6002019
-          }
-        },
-        {
-          "number": 14,
-          "location": {
-            "lat": 47.4869749,
-            "lon": 7.6002019
-          }
-        },
-        {
-          "number": 15,
-          "location": {
-            "lat": 47.4869794,
-            "lon": 7.6002019
-          }
-        },
-        {
-          "number": 16,
-          "location": {
-            "lat": 47.4869839,
-            "lon": 7.6002019
-          }
-        },
-        {
-          "number": 17,
-          "location": {
-            "lat": 47.4869884,
-            "lon": 7.6002019
-          }
-        },
-        {
-          "number": 18,
-          "location": {
-            "lat": 47.4869929,
-            "lon": 7.6002019
-          }
-        },
-        {
-          "number": 19,
-          "location": {
-            "lat": 47.4869974,
-            "lon": 7.6002019
-          }
-        },
-        {
-          "number": 20,
-          "location": {
-            "lat": 47.4870019,
-            "lon": 7.6002019
           }
         }
       ]
