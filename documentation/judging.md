@@ -235,9 +235,9 @@ The deck, [`assets/pitch/index.html`](../assets/pitch/index.html), has four
 slides and one story: the 7:45 problem, the live demo, the pipeline, and a
 finale. It runs offline in a browser, and only its web fonts need a
 connection. Each slide has speaker notes
-([`NOTES`](../assets/pitch/index.html#L323-L328), press N). Press T for a
+([`NOTES`](../assets/pitch/index.html#L324-L329), press N). Press T for a
 three-minute timer that turns yellow at 2:30 and red at 3:00
-([`setInterval`](../assets/pitch/index.html#L352-L356)).
+([`setInterval`](../assets/pitch/index.html#L353-L357)).
 
 | Time | Slide | Focus |
 |---|---|---|
