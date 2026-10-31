@@ -118,7 +118,10 @@ backend. Turn it on with the **Demo data** switch in
 the app's settings, or launch with `-demoMode YES` (in Xcode, as an argument
 of the scheme's Run action). The backend client and the demo both implement
 [`StationService`](../code/ios/BikeSlot/APIClient.swift#L5-L8), and
-`Backend.current` picks one.
+`Backend.current` picks one. A Debug build talks to the backend on the Mac
+that built it. Built with the setting `BACKEND_URL=<AvailabilityUrl>`, the app
+talks to a deployed backend instead (`code/ios/project.yml`), and the
+**Backend URL** field in its settings overrides either.
 
 ## 3D scenes and station models
 

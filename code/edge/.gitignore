@@ -3,3 +3,6 @@ __pycache__/
 # Model weights, downloaded on first use
 *.pt
 *.onnx
+# Real camera tokens for a deployed backend, and their hashes, never committed
+aws-tokens.json
+aws-token-hashes.json

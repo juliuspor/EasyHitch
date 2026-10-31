@@ -95,7 +95,7 @@
 			buildPhases = (
 				7CA54B8C086D46F07D2EA292 /* Sources */,
 				746D4E9A36B68E315BFE72D1 /* Resources */,
-				92720208652D725B2FF6EF3D /* Point Debug builds at this Mac's backend */,
+				5E8B62CAA7ADE9E1DF2DD111 /* Point the app at its backend */,
 			);
 			buildRules = (
 			);
@@ -151,7 +151,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		92720208652D725B2FF6EF3D /* Point Debug builds at this Mac's backend */ = {
+		5E8B62CAA7ADE9E1DF2DD111 /* Point the app at its backend */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -161,14 +161,14 @@
 			);
 			inputPaths = (
 			);
-			name = "Point Debug builds at this Mac's backend";
+			name = "Point the app at its backend";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "[ \"$CONFIGURATION\" = \"Debug\" ] || exit 0\nfor interface in en0 en1 en2; do\n  ip=$(ipconfig getifaddr \"$interface\") && break\ndone\n[ -n \"$ip\" ] || exit 0\necho \"http://$ip:8000\" > \"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/backend-url.txt\"\necho \"backend-url.txt = http://$ip:8000\"\n";
+			shellScript = "url=\"$BACKEND_URL\"\nif [ -z \"$url\" ] && [ \"$CONFIGURATION\" = \"Debug\" ]; then\n  for interface in en0 en1 en2; do\n    ip=$(ipconfig getifaddr \"$interface\") && break\n  done\n  [ -n \"$ip\" ] && url=\"http://$ip:8000\"\nfi\n[ -n \"$url\" ] || exit 0\necho \"$url\" > \"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/backend-url.txt\"\necho \"backend-url.txt = $url\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

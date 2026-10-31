@@ -36,16 +36,21 @@ targets:
           NSAllowsArbitraryLoads: true
         NSLocalNetworkUsageDescription: Bike Slot connects to the parking backend on your local network.
     postBuildScripts:
-      - name: Point Debug builds at this Mac's backend
+      # A deployed backend: build with BACKEND_URL=<AvailabilityUrl>, e.g. as an xcodebuild setting.
+      # Otherwise Debug builds use the backend on the Mac that built them.
+      - name: Point the app at its backend
         basedOnDependencyAnalysis: false
         script: |
-          [ "$CONFIGURATION" = "Debug" ] || exit 0
-          for interface in en0 en1 en2; do
-            ip=$(ipconfig getifaddr "$interface") && break
-          done
-          [ -n "$ip" ] || exit 0
-          echo "http://$ip:8000" > "$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/backend-url.txt"
-          echo "backend-url.txt = http://$ip:8000"
+          url="$BACKEND_URL"
+          if [ -z "$url" ] && [ "$CONFIGURATION" = "Debug" ]; then
+            for interface in en0 en1 en2; do
+              ip=$(ipconfig getifaddr "$interface") && break
+            done
+            [ -n "$ip" ] && url="http://$ip:8000"
+          fi
+          [ -n "$url" ] || exit 0
+          echo "$url" > "$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/backend-url.txt"
+          echo "backend-url.txt = $url"
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: ch.baselhack.bikeslot
