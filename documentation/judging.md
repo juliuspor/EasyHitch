@@ -237,14 +237,17 @@ finale. It runs offline in a browser, and only its web fonts need a
 connection. Each slide has speaker notes
 ([`NOTES`](../assets/pitch/index.html#L324-L329), press N). Press T for a
 three-minute timer that turns yellow at 2:30 and red at 3:00
-([`setInterval`](../assets/pitch/index.html#L353-L357)).
+([`setInterval`](../assets/pitch/index.html#L353-L357)). The
+[script](../assets/pitch/script.md) gives every line, who says it and when,
+with fallbacks and answers for the jury.
 
 | Time | Slide | Focus |
 |---|---|---|
-| 0:00 to 0:40 | Hello | Problem at 7:45, value proposition, impact |
-| 0:40 to 2:00 | Demo | The app and the live pipeline |
-| 2:00 to 2:45 | Tech | Pipeline, privacy by design |
-| 2:45 to 3:00 | Finale | One-line close while the hamster lands: "You ride, we find the spot." |
+| 0:00 to 0:30 | Hello | A teammate arrives late, no free bike spot: the problem at 7:45 |
+| 0:30 to 1:20 | Demo | Live: the map, free spots per station, directions, the rack in 3D |
+| 1:20 to 2:10 | Tech | Edge, AWS, AI model, end user, privacy by design, what is built |
+| 2:10 to 2:35 | Tech | The same answers for AI agents through MCP |
+| 2:35 to 3:00 | Finale | "Easy+Hitch!" with the hamster, then "You ride, we find the spot." |
 
 ## Demo
 
