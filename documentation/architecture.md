@@ -110,11 +110,11 @@ and cycling directions, and a 3D view of the station. The 3D view is three.js
 in a web view (`code/ios/BikeSlot/Spot`): it builds the station's rack from the
 slot positions in the station detail, lands in front of it, and shows a bike on
 every taken slot. Given the rider's position, it navigates instead: it finds
-the shortest way along the OpenStreetMap streets, swoops down from straight
-above the rider into the bike lane, rides it without stopping and turns to
-face the rack as it slows down, with low-poly street details only along that
-way. The controls are Liquid Glass on iOS 26 and materials on iOS 18. Only the
-demo has a rider, on Christoph-Merian-Ring
+the shortest way along the OpenStreetMap streets and rides it from the rider's
+own view in the bike lane, without stopping, turning to face the rack as it
+slows down, with low-poly street details only along that way. The controls are
+Liquid Glass on iOS 26 and materials on iOS 18. Only the demo has a rider, on
+Christoph-Merian-Ring
 ([`Backend.rider`](../code/ios/BikeSlot/APIClient.swift#L17-L21)); the live
 app does not ask for the phone's location. It ships sample stations in
 `code/ios/BikeSlot/Demo/demo-stations.json`, a snapshot of the live pipeline
