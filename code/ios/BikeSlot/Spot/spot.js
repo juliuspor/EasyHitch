@@ -8,10 +8,10 @@
 // The world comes from site.js (OpenStreetMap buildings, streets and car parks, with street
 // trees, bushes, lamps and parked cars; written by code/scene-generator/site_world.py) and
 // models.js (Kenney CC0 models from the three.js prototype in assets/, written by
-// code/scene-generator/kenney_models.py). The app calls BikeSpot.show({id, slots, racks, rack})
-// once, BikeSpot.update(slots) on every change and BikeSpot.focus(rack) to fly to another
-// rack, with slots as the Availability API sends them ({number, state, location: {lat, lon}})
-// and racks as lists of slot numbers. Every slot stands where the station catalog measured it.
+// code/scene-generator/kenney_models.py). The app calls BikeSpot.show({id, slots, racks}) once
+// and BikeSpot.update(slots) on every change, with slots as the Availability API sends them
+// ({number, state, location: {lat, lon}}) and racks as lists of slot numbers. Every slot stands
+// where the station catalog measured it.
 // Opened in a browser on its own
 // (spot.html?station=cmr-south-02&slots=10&lat=47.48686&lon=7.59992&heading=0) it runs a demo.
 
@@ -26,8 +26,7 @@
   const RED = 0xd50c2f; // Brand.red: taken
   const MIST = 0xa4b3bc; // Brand.mist: no camera has seen the slot recently
   const HORIZON = 0xe2ebf1; // fog colour, matches the bottom of the CSS sky
-  const FLIGHT_SECONDS = 3.6; // from high above the block down to the first rack
-  const HOP_SECONDS = 2.2; // over the roofs to another rack of the same station
+  const FLIGHT_SECONDS = 3.6;
   const EYE_HEIGHT = 1.7;
 
   const STEEL = new THREE.MeshStandardMaterial({ color: 0x6f7980, metalness: 0.7, roughness: 0.35 });
@@ -52,8 +51,7 @@
   const PITCH = 0.6; // slot spacing of a rack with a single slot, where none can be measured
 
   let renderer, scene, camera, sun;
-  let flight = null; // {start, seconds, eye: [P0..P3], target: [from, to], fade}
-  const look = new THREE.Vector3(); // where the camera looks, so a hop can start from there
+  let flight = null; // {start, eye: [P0..P3], target: [from, to]}
   // After landing the camera orbits the rack: `goal` follows the fingers, `now` eases after
   // it, `spin` keeps a flick turning for a moment. Angles as in THREE.Spherical.
   const orbit = { active: false, focus: null, home: null, now: null, goal: null, lift: 0,
@@ -254,28 +252,17 @@
     const sight = racks.map((r) => [[r.eye.x, -r.eye.z], [r.holder.position.x, -r.holder.position.z]]);
     clearProps((p) => [...where.values()].some((q) => Math.hypot(p[0] - q[0], p[1] - q[1]) < 4)
       || sight.some((line) => distanceToLine(p, line) < 3));
-    focus(config.rack || 0);
-  }
 
-  // Fly to one of the station's racks: on the way in from high above the block, between racks
-  // in a short hop over the roofs.
-  function focus(index) {
-    const rack = racks[THREE.MathUtils.clamp(index, 0, racks.length - 1)];
+    // Fly in from high above the block and land in front of the station's rack.
+    const rack = racks[0];
     if (!rack) return;
-    const first = !flight, start = camera.position.clone(), centre = rack.holder.position;
-    const away = start.clone().sub(look).setY(0).normalize();
-    orbit.active = false;
+    const start = camera.position.clone(), centre = rack.holder.position;
     aimSun(centre);
     flight = {
       start: clock.elapsedTime,
-      seconds: first ? FLIGHT_SECONDS : HOP_SECONDS,
-      eye: first
-        ? [start, centre.clone().addScaledVector(rack.front, 110).setY(170),
-          centre.clone().addScaledVector(rack.front, rack.distance + 22).setY(16), rack.eye]
-        : [start, start.clone().addScaledVector(away, 10).setY(start.y + 20),
-          rack.eye.clone().addScaledVector(rack.front, 10).setY(rack.eye.y + 20), rack.eye],
-      target: [look.clone(), rack.target],
-      fade: first, // the pads light up as you arrive, once
+      eye: [start, centre.clone().addScaledVector(rack.front, 110).setY(170),
+        centre.clone().addScaledVector(rack.front, rack.distance + 22).setY(16), rack.eye],
+      target: [new THREE.Vector3(), rack.target],
     };
   }
 
@@ -312,18 +299,18 @@
     const dt = Math.min(clock.getDelta(), 0.05);
     const t = clock.elapsedTime;
 
-    let arrived = 1;
+    let arrived = 0;
     if (flight) {
-      const k = Math.min((t - flight.start) / flight.seconds, 1);
+      const k = Math.min((t - flight.start) / FLIGHT_SECONDS, 1);
       if (orbit.active) {
         stepOrbit(dt);
       } else {
         const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; // ease in and out
         camera.position.copy(bezier(flight.eye, e));
-        camera.lookAt(look.copy(flight.target[0]).lerp(flight.target[1], Math.min(1, e * 1.25)));
+        camera.lookAt(flight.target[0].clone().lerp(flight.target[1], Math.min(1, e * 1.25)));
         if (k === 1) startOrbit(flight.eye[3], flight.target[1]);
       }
-      if (flight.fade) arrived = THREE.MathUtils.clamp((k - 0.75) / 0.25, 0, 1);
+      arrived = THREE.MathUtils.clamp((k - 0.75) / 0.25, 0, 1);
     }
 
     for (const s of slots.values()) {
@@ -387,7 +374,7 @@
     orbit.lift += (roof - orbit.lift) * ease;
     position.y = Math.max(position.y, orbit.lift);
     camera.position.copy(position);
-    camera.lookAt(look.copy(orbit.focus));
+    camera.lookAt(orbit.focus);
   }
 
   window.addEventListener("pointerdown", (e) => {
@@ -872,7 +859,7 @@
   }
 
   setup();
-  window.BikeSpot = { show, focus, update: (list) => update(list, false) };
+  window.BikeSpot = { show, update: (list) => update(list, false) };
 
   // Standalone preview: one straight rack with made-up states that keep changing.
   const params = new URLSearchParams(location.search);

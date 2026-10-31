@@ -366,9 +366,15 @@ private struct SettingsSheet: View {
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                 } footer: {
-                    Text("Debug builds use the Mac they were built on (\(APIClient.defaultURL)). The iPhone must be on the same Wi-Fi, and Bike Slot needs Local Network access in iOS Settings.")
+                    Text("This build uses \(APIClient.defaultURL). A backend on a Mac needs the iPhone on the same Wi-Fi, and Bike Slot needs Local Network access in iOS Settings.")
                 }
                 .disabled(demoMode)
+                // The 3D view is built from OpenStreetMap data, whose licence (ODbL) asks for this credit.
+                Section("Credits") {
+                    Text("3D map data © OpenStreetMap contributors, under the Open Database License. Trees, cars and lamps by Kenney (CC0), drawn with three.js (MIT).")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)

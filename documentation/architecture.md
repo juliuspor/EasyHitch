@@ -107,9 +107,9 @@ cheap polling.
 
 The app shows the site map with a pin per station, a card with the free count
 and cycling directions, and a 3D view of the station. The 3D view is three.js
-in a web view (`code/ios/BikeSlot/Spot`): it builds each rack from the slot
-positions in the station detail, stands in front of one rack at a time, and
-shows a bike on every taken slot. It ships sample stations in
+in a web view (`code/ios/BikeSlot/Spot`): it builds the station's rack from the
+slot positions in the station detail, lands in front of it, and shows a bike on
+every taken slot. It ships sample stations in
 `code/ios/BikeSlot/Demo/demo-stations.json`, a snapshot of the live pipeline
 taken with `code/ios/refresh-demo.sh` (a station no camera covers gets fixed
 sample states there), and in demo mode a random slot changes

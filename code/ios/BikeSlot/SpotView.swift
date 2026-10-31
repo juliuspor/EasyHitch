@@ -2,7 +2,7 @@ import SwiftUI
 import WebKit
 
 /// The 3D view of one station: Spot/spot.html (three.js) flies down into a model of the
-/// Endress+Hauser block and lands in front of one of the station's racks, with a green pad on
+/// Endress+Hauser block and lands in front of the station's rack, with a green pad on
 /// every free slot, a bike on every taken one, and a grey pad where no camera has looked
 /// recently. Once landed you look around it like in Google Maps 3D (drag, pinch, twist); the
 /// page handles those gestures, so the web view must not scroll or zoom, and a sideways drag
@@ -11,8 +11,6 @@ struct SpotView: UIViewRepresentable {
     let stationID: String
     /// The station's slots by rack, as `StationDetail.racks` groups them.
     let racks: [[Slot]]
-    /// The rack to stand in front of; changing it flies over to that rack.
-    let rack: Int
 
     func makeCoordinator() -> Coordinator { Coordinator() }
 
@@ -33,36 +31,36 @@ struct SpotView: UIViewRepresentable {
     }
 
     func updateUIView(_ web: WKWebView, context: Context) {
-        context.coordinator.state = (stationID, racks, rack)
+        context.coordinator.state = (stationID, racks)
         context.coordinator.flush(web)
     }
 
     @MainActor
     final class Coordinator: NSObject, WKNavigationDelegate {
-        var state: (stationID: String, racks: [[Slot]], rack: Int)?
+        var state: (stationID: String, racks: [[Slot]])?
         private var loaded = false
-        private var sent: (slots: [Slot], rack: Int)?
+        private var sentSlots: [Slot]?
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             loaded = true
             flush(webView)
         }
 
-        /// The racks are built once; later changes only update the slots or fly to another rack.
+        /// The racks are built once; later changes only update the slots.
         func flush(_ web: WKWebView) {
             guard loaded, let state, !state.racks.isEmpty else { return }
             let slots = state.racks.flatMap { $0 }
-            var script = ""
-            if let sent {
-                if sent.slots != slots { script += "BikeSpot.update(\(Self.json(slots)));" }
-                if sent.rack != state.rack { script += "BikeSpot.focus(\(state.rack));" }
-            } else {
+            guard slots != sentSlots else { return }
+            let script: String
+            if sentSlots == nil {
                 let numbers = state.racks.map { $0.map(\.number) }
                 script = "BikeSpot.show({id: \(Self.json(state.stationID)), slots: \(Self.json(slots)), "
-                    + "racks: \(Self.json(numbers)), rack: \(state.rack)});"
+                    + "racks: \(Self.json(numbers))})"
+            } else {
+                script = "BikeSpot.update(\(Self.json(slots)))"
             }
-            sent = (slots, state.rack)
-            if !script.isEmpty { web.evaluateJavaScript(script) }
+            sentSlots = slots
+            web.evaluateJavaScript(script)
         }
 
         /// JSON text of a value, safe to paste into a script.
