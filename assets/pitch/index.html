@@ -437,7 +437,7 @@ const HALF = [56, 64, 48];   // half widths of the stops, in stage pixels
 const labels = [];
 const stands = STAND_X.map((x, i) => {
   const svg = [makeHouse, makeOffice, makeTech][i](); svg.style.left = (x - HALF[i]) + 'px'; bar.appendChild(svg);
-  const l = document.createElement('div'); l.className = 'stand-lbl'; l.style.left = x + 'px'; l.textContent = ['HOME', 'E+H OFFICE', 'TECH'][i]; bar.appendChild(l);
+  const l = document.createElement('div'); l.className = 'stand-lbl'; l.style.left = x + 'px'; l.textContent = ['HOME', 'E+H OFFICE', 'TECH STACK'][i]; bar.appendChild(l);
   labels.push(l);
   return svg;
 });
@@ -524,7 +524,7 @@ rider.addEventListener('click', () => trick());
 
 function ride(from, to) {
   // Into DEMO: hop a bump, find the stand FULL, check the app, a spot frees up, park.
-  // Into TECH: park, pause, then the three lines 8 s apart. Backwards: just ride.
+  // Into TECH STACK: park, pause, then the three lines 8 s apart. Backwards: just ride.
   story.forEach(clearTimeout); story = []; ham.getAnimations().forEach(a => a.cancel()); busy = true;
   const my = ++epoch;
   const forward = to > from, full = forward && to === 1, target = spot(to) - (full ? WAIT : 0), start = hx, t0 = performance.now(), dur = 1500;
