@@ -214,7 +214,9 @@ All but the second print nothing.
     and each text line grows by two line heights to cover the whole plate
     ([`TextPIIDetector`](../code/edge/text.py#L32-L52)). The sidecar of a
     recorded frame lists the same regions by hand
-    ([`SidecarPIIDetector`](../code/edge/pii.py#L36-L54)).
+    ([`SidecarPIIDetector`](../code/edge/pii.py#L36-L54)). YOLO11n runs with
+    Ultralytics' usage analytics switched off, so the camera sends nothing but
+    the pixelated frame ([`YoloPIIDetector`](../code/edge/pii.py#L57-L73)).
   - No images are kept. The ingest service decodes each frame in memory and
     stores only slot states, times and a 72-bit fingerprint per slot
     ([`ingest`](../code/backend/ingest/service.py#L37-L52)): a difference hash

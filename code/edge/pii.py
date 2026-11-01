@@ -60,7 +60,11 @@ class YoloPIIDetector:
     def __init__(self, weights: str) -> None:
         # Ultralytics is an optional dependency (requirements-camera.txt), only needed here.
         from ultralytics import YOLO
+        from ultralytics.utils.events import events
 
+        # Ultralytics reports every prediction run to its usage analytics by default. Only the
+        # pixelated frame is meant to leave the edge, so that is off for this process.
+        events.enabled = False
         self._model = YOLO(weights)
 
     def detect(self, frame: Frame) -> Detections:
