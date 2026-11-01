@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		04F0ABB95D39E6EC44773F0D /* LocationSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB38E27D822D22D55527FBB7 /* LocationSearch.swift */; };
 		0AAB02A580E72E6C284B1FD4 /* DemoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AF70BEF5BEAB583C2626EF6 /* DemoService.swift */; };
+		0C1BAD149B030D20369A0728 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A34D98B6554B9B1D10721711 /* Assets.xcassets */; };
 		5916335985ACAACC792D95FE /* BikeSlotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E1D93A46E6B2D981B36F9B5 /* BikeSlotApp.swift */; };
 		60B967919A522D22F942B942 /* Glass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 194C028748FF3D48AFE832EB /* Glass.swift */; };
 		A25F819556F02353B05C74CC /* MapScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DA5BE1C26A8F65605D2871 /* MapScreen.swift */; };
@@ -32,6 +33,7 @@
 		88BEF5E4055FCC756AF762F1 /* BikeSlot.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BikeSlot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C7B23A95758A64547214D79 /* Spot */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Spot; path = BikeSlot/Spot; sourceTree = SOURCE_ROOT; };
 		8F1D847DCB2CFEB86F74D37F /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		A34D98B6554B9B1D10721711 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A4C991959AFECC1AB9A4EBFD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		CB38E27D822D22D55527FBB7 /* LocationSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSearch.swift; sourceTree = "<group>"; };
 		D41B9797E21B125106C2D69B /* StationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationScreen.swift; sourceTree = "<group>"; };
@@ -63,6 +65,7 @@
 			isa = PBXGroup;
 			children = (
 				D513B4AAB57A88D9CD3184FA /* APIClient.swift */,
+				A34D98B6554B9B1D10721711 /* Assets.xcassets */,
 				6E1D93A46E6B2D981B36F9B5 /* BikeSlotApp.swift */,
 				194C028748FF3D48AFE832EB /* Glass.swift */,
 				A4C991959AFECC1AB9A4EBFD /* Info.plist */,
@@ -143,6 +146,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0C1BAD149B030D20369A0728 /* Assets.xcassets in Resources */,
 				B8A918A673DF9189B72862A5 /* Spot in Resources */,
 				BE9AC8C3FBE0041D43FC128F /* demo-stations.json in Resources */,
 			);

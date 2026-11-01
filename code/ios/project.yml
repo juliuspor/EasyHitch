@@ -23,7 +23,7 @@ targets:
     info:
       path: BikeSlot/Info.plist
       properties:
-        CFBundleDisplayName: Bike Slot
+        CFBundleDisplayName: Easy+Hitch
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         # The design is light only, so the app ignores the phone's Dark Mode.
@@ -34,7 +34,7 @@ targets:
         # The hackathon backend runs over plain HTTP on a laptop.
         NSAppTransportSecurity:
           NSAllowsArbitraryLoads: true
-        NSLocalNetworkUsageDescription: Bike Slot connects to the parking backend on your local network.
+        NSLocalNetworkUsageDescription: Easy+Hitch connects to the parking backend on your local network.
     postBuildScripts:
       # A deployed backend: build with BACKEND_URL=<AvailabilityUrl>, e.g. as an xcodebuild setting.
       # Otherwise Debug builds use the backend on the Mac that built them.

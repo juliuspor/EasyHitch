@@ -505,7 +505,7 @@ private struct SettingsSheet: View {
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                 } footer: {
-                    Text("This build uses \(APIClient.defaultURL). A backend on a Mac needs the iPhone on the same Wi-Fi, and Bike Slot needs Local Network access in iOS Settings.")
+                    Text("This build uses \(APIClient.defaultURL). A backend on a Mac needs the iPhone on the same Wi-Fi, and Easy+Hitch needs Local Network access in iOS Settings.")
                 }
                 .disabled(demoMode)
                 // The 3D view is built from OpenStreetMap data, whose licence (ODbL) asks for this credit.

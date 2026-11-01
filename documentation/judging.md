@@ -241,7 +241,8 @@ All but the second print nothing.
   bundles canvas-confetti with its
   [ISC licence](../assets/pitch/vendor/LICENSE-canvas-confetti), and its
   architecture slide uses brand icons from Simple Icons under CC0, AWS's
-  classic DynamoDB logo, and TypeSafe's mark from its website.
+  classic DynamoDB logo, and TypeSafe's mark from its website. The app's icon
+  is the Endress+Hauser mark the deck opens on.
   The marks belong to their owners. The campus map data comes from
   OpenStreetMap under the ODbL, attributed in the
   [README](../README.md#credits). The recorded frames are the hosts' photos.
