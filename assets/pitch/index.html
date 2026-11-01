@@ -86,13 +86,13 @@
   /* The privacy filter is one stage inside the edge device, so a solid line instead of a group's dashes. */
   #arch .zone.filter rect { stroke: rgba(191,230,247,0.55); stroke-dasharray: none; }
   #arch .node .plus { font-size: 30px; font-weight: 700; fill: var(--eh-pale); text-anchor: middle; dominant-baseline: central;
-    transition: fill 0.4s, filter 0.4s; }   /* it glows, never scales: some browsers scale SVG text about the drawing's corner */
+  }
   /* A box glows in the colour of the blob that reaches it: the edge device as the camera takes a frame, the privacy
-     filter while it redacts it (its plus lights up in place), AWS as the pixelated frame arrives, OpenRouter while Jev
+     filter while it redacts it (its plus stays as it is), AWS as the pixelated frame arrives, OpenRouter while Jev
      decides, and the end users as the new states reach them. */
   #arch .zone rect { transition: stroke 0.4s, filter 0.4s; }
   #arch.capturing .zone.edge rect, #arch.redacting .zone.filter rect { stroke: rgba(255,200,87,0.9); filter: drop-shadow(0 0 12px rgba(255,200,87,0.45)); }
-  #arch.redacting .node .plus { fill: var(--sun); filter: drop-shadow(0 0 6px rgba(255,200,87,0.85)); }
+  #arch .node.still { transform: none; transition: opacity 0.6s; }   /* the plus only fades in, it never moves */
   #arch.ingesting .zone.aws rect { stroke: rgba(0,174,239,0.95); filter: drop-shadow(0 0 12px rgba(0,174,239,0.45)); }
   #arch.deciding .zone.model rect { stroke: rgba(255,255,255,0.85); filter: drop-shadow(0 0 12px rgba(255,255,255,0.35)); }
   #arch.serving .zone.users rect { stroke: rgba(43,212,111,0.9); filter: drop-shadow(0 0 12px rgba(43,212,111,0.4)); }
@@ -215,7 +215,7 @@
         <text class="t" x="94" y="139">Camera board</text><text class="d" x="94" y="159">XIAO ESP32S3</text></g>
       <g class="node" style="transition-delay:0.23s"><rect class="tile" x="294" y="54" width="60" height="60" rx="14"/><use href="#i-yolo" x="305" y="65" width="38" height="38" fill="#111F68"/>
         <text class="t" x="368" y="81">YOLO11n</text><text class="d" x="368" y="101">redacts faces</text></g>
-      <g class="node" style="transition-delay:0.27s"><text class="plus" x="398" y="142">+</text></g>
+      <g class="node still" style="transition-delay:0.27s"><text class="plus" x="398" y="142">+</text></g>
       <g class="node" style="transition-delay:0.31s"><rect class="tile" x="294" y="170" width="60" height="60" rx="14"/><use href="#i-paddlepaddle" x="305" y="181" width="38" height="38" fill="#0062B0"/>
         <text class="t" x="368" y="197">PP-OCRv5</text><text class="d" x="368" y="217">redacts licence plates</text></g>
       <g class="node" style="transition-delay:0.39s"><rect class="tile" x="576" y="112" width="60" height="60" rx="14"/><use href="#i-awslambda" x="587" y="123" width="38" height="38" fill="#FF9900"/>
