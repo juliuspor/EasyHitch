@@ -293,11 +293,11 @@ Three ways to show it:
    backend ([`Backend`](../code/ios/BikeSlot/APIClient.swift#L10-L22),
    [`DemoService`](../code/ios/BikeSlot/Demo/DemoService.swift#L8-L51)).
 3. **The deck.** The phone screen on slide 2 plays a recording of the app's
-   demo mode once, from the blue dot and the south station through 3D
-   Navigation to its free spot, and then stays on the rack
+   demo mode once, from the home screen into the app, the blue dot and the
+   south station, through 3D Navigation to its free spot, and then stays on
+   the rack
    ([`phone`](../assets/pitch/index.html#L653-L659)). The speaker notes give the
-   times of its two taps, so the demo can be acted out on a phone in time with
-   it.
+   times of its taps, so the demo can be acted out on a phone in time with it.
 
 A XIAO camera board on the USB cable of an edge computer
 ([`SerialFrameSource`](../code/edge/sources.py#L91-L128),
