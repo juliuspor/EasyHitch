@@ -294,8 +294,8 @@ Three ways to show it:
    [`DemoService`](../code/ios/BikeSlot/Demo/DemoService.swift#L8-L51)).
 3. **The deck.** The phone screen on slide 2 plays a recording of the app's
    demo mode once, from the home screen into the app, the blue dot and the
-   south station, through 3D Navigation to its free spot, and then stays on
-   the rack
+   south station, through 3D Navigation to its free spot, turns the rack a
+   little by hand to show it is 3D, and then stays on it
    ([`phone`](../assets/pitch/index.html#L653-L659)). The speaker notes give the
    times of its taps, so the demo can be acted out on a phone in time with it.
 
