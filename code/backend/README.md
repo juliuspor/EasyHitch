@@ -65,7 +65,7 @@ with Jev instead:
 OPENROUTER_API_KEY=<key> BACKEND_CLASSIFIER=jev .venv/bin/uvicorn local:app --port 8000
 ```
 
-For a demo, or for stations without a camera yet, simulate the slots no camera
+For a demo, or for stations without a camera, simulate the slots no camera
 reports. A working day takes ten minutes, each station moves one slot every
 eight seconds and always keeps one free, and a slot a camera reports stays the
 camera's:
@@ -125,8 +125,7 @@ Needs an AWS account with the AWS CLI signed in, the SAM CLI
    For a demo, or stations without a camera, add
    `--parameter-overrides Simulation=on`: a function that a schedule starts
    every minute then simulates the slots no camera reports. An account that
-   caps Lambda memory, as some sandbox accounts do at 512 MB, also needs
-   `IngestMemory=512`.
+   caps Lambda memory at 512 MB also needs `IngestMemory=512`.
 
 `sam deploy` prints `IngestUrl` for the cameras and `AvailabilityUrl` for
 clients. Agents use `AvailabilityUrl` plus `mcp`. Both functions run Python

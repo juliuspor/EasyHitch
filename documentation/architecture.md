@@ -121,10 +121,11 @@ slows down, with low-poly street details only along that way. The 3D view lies
 over the map instead of on a screen of its own: the map leans in behind the
 rider and fades into it, and the page loads with the app and waits invisibly,
 so the change of view never stalls on parsing three.js. The controls are
-Liquid Glass on iOS 26 and materials on iOS 18. Only the demo has a rider, on
-Christoph-Merian-Ring
-([`Backend.rider`](../code/ios/BikeSlot/APIClient.swift#L17-L21)); the live
-app does not ask for the phone's location. It ships sample stations in
+Liquid Glass on iOS 26 and materials on iOS 18. The live app never asks for
+the phone's location; the rider that 3D Navigation starts from is the demo's,
+on Christoph-Merian-Ring
+([`Backend.rider`](../code/ios/BikeSlot/APIClient.swift#L17-L21)). It ships
+sample stations in
 `code/ios/BikeSlot/Demo/demo-stations.json`, a snapshot of the live pipeline
 taken with `code/ios/refresh-demo.sh` (a station no camera covers gets fixed
 sample states there), and in demo mode a random slot changes
@@ -141,12 +142,14 @@ talks to a deployed backend instead (`code/ios/project.yml`), and the
 
 ## 3D scenes and station models
 
-The Availability API serves `data/models/<station_id>.usdz`. A station model
-has one node per slot, named `slot_<number>`, so a client can place a bike on
-every taken slot and match it with the slot states. The scene generator in
-`code/scene-generator` builds shelter models from layout files in Blender. The
-app does not load these models yet (planned): its 3D view builds the racks
-itself, from the slot positions.
+The Availability API serves a station's model from
+`data/models/<station_id>.usdz`, and reports `model_url` as `null` for a
+station without one. A station model has one node per slot, named
+`slot_<number>`, so a client can place a bike on every taken slot and match it
+with the slot states. The scene generator in `code/scene-generator` builds
+shelter models from layout files in Blender. The app needs no model download:
+its 3D view builds the racks itself, from the slot positions in the station
+detail.
 
 ## Where it runs
 

@@ -1,9 +1,9 @@
 # Edge
 
-The camera pipeline in Python. It runs on any computer with a camera, and it
-replays recorded frames for development and demonstrations. Its design targets
-the XIAO ESP32S3 Sense: a small person detector, coarse pixelation and an
-HTTPS upload are all within reach of the board.
+The camera pipeline in Python. It runs on the edge computer a camera is
+plugged into, a Mac in our tests, with a XIAO ESP32S3 Sense board on its USB
+cable or any webcam, and it replays recorded frames for development and
+demonstrations.
 
 For each frame the pipeline:
 

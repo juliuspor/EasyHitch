@@ -1,11 +1,10 @@
-# three.js prototype: 3D world of Endress+Hauser
+# First 3D sketch: Christoph-Merian-Ring in three.js
 
-An archived prototype, not part of the app. It is a low-poly, street-level
-model of Christoph-Merian-Ring between the two bicycle stations at
-Endress+Hauser, built directly in three.js: you ride down the Ring and see
-which spots at each stand are free (green) or taken (red). The team dropped
-the 3D world for the web maps view; this folder keeps it runnable for
-reference.
+An early three.js sketch of the ride to a free spot, kept runnable on its own.
+It is a low-poly, street-level model of Christoph-Merian-Ring between the two
+bicycle stations at Endress+Hauser: you ride down the Ring and see which spots
+at each stand are free (green) or taken (red). The app's 3D view and 3D
+Navigation are in [`code/ios/BikeSlot/Spot`](../../code/ios/BikeSlot/Spot).
 
 ## Run it
 
@@ -47,5 +46,5 @@ three.js r170 loads from jsDelivr, so the page needs internet access.
 - Shelters, racks, bicycles, kerbs, and road markings are generated in code
   from the 29 October 2026 site photos.
 - three.js r170 (MIT licence) loads from jsDelivr and is not vendored here.
-- Slot occupancy is seeded and illustrative: 45 slots north, 20 south. No
-  camera or sensor feeds this prototype.
+- Slot states are seeded in the page, 45 slots north and 20 south. The app
+  reads them from the backend.

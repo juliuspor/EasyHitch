@@ -12,6 +12,6 @@ USB.
 
 We used it to aim the camera and check its image quality. On 1 November two
 of the stills went through the whole pipeline, YOLO11n and PP-OCRv5 on the
-edge and Jev in the backend, with a temporary calibration of the racks in view
+edge and Jev in the backend, with the racks in view calibrated for the test
 ([How we tested it](../../../documentation/overview.md#how-we-tested-it)). The
 backend never stores frames; these were saved on purpose for the team.
