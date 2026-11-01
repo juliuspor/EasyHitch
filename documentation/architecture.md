@@ -108,8 +108,10 @@ cheap polling.
 
 ## iOS app
 
-The app shows the site map with a pin per station, a card with the free count
-and cycling directions, and a 3D view of the station. The 3D view is three.js
+The app, Easy+Hitch on the home screen with the Endress+Hauser mark as its
+icon ([`project.yml`](../code/ios/project.yml)), shows the site map with a pin
+per station, a card with the free count and cycling directions, and a 3D view
+of the station. The 3D view is three.js
 in a web view (`code/ios/BikeSlot/Spot`): it builds the station's rack from the
 slot positions in the station detail, lands in front of it, and shows a bike on
 every taken slot. Given the rider's position, it navigates instead: it finds
@@ -145,3 +147,13 @@ every taken slot and match it with the slot states. The scene generator in
 `code/scene-generator` builds shelter models from layout files in Blender. The
 app does not load these models yet (planned): its 3D view builds the racks
 itself, from the slot positions.
+
+## Where it runs
+
+| Part | On a laptop | Deployed |
+|---|---|---|
+| Camera pipeline | `main.py` on the computer the camera is plugged into | The same, on an edge computer at the shelter with a XIAO board on its USB cable, a Mac in our tests |
+| Backend | `local:app`, one server that keeps everything in memory | The stack `easyhitch` in AWS's `eu-north-1` region ([`template.yaml`](../code/backend/template.yaml)): the Ingest and Availability functions behind Lambda Function URLs, with `Simulation=on` a Simulation function that a schedule starts every minute, two DynamoDB tables, and the OpenRouter key and the camera token hashes in SSM Parameter Store |
+| App | A Debug build reads the backend on the Mac that built it | Built with `BACKEND_URL=<AvailabilityUrl>`, it reads the deployed backend |
+
+[How we tested it](overview.md#how-we-tested-it) lists the runs on both.

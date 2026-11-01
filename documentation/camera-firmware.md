@@ -52,6 +52,15 @@ While the camera reports a slot, it owns it: the
 [simulator](../code/backend/simulation/simulator.py) only fills slots no camera
 has reported recently.
 
+## On site
+
+On 31 October the board filmed the memox bike shelter in Basel, carried along
+the shelter and read over USB
+([`assets/camera-tests/memox-2026-10-31`](../assets/camera-tests/memox-2026-10-31)).
+On 1 November two of its stills went through the whole pipeline, YOLO11n and
+PP-OCRv5 on the edge and Jev in the backend
+([How we tested it](overview.md#how-we-tested-it)).
+
 ## Flashing (macOS)
 
 1. Arduino IDE: add

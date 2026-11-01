@@ -133,6 +133,11 @@ clients. Agents use `AvailabilityUrl` plus `mcp`. Both functions run Python
 3.13 on arm64 behind Lambda Function URLs. The template creates the two
 DynamoDB tables and gives each function only the permissions it needs.
 
+Our deployment is the stack `easyhitch` in `eu-north-1`, deployed with
+`--parameter-overrides Simulation=on IngestMemory=512`. The
+[overview](../../documentation/overview.md#how-we-tested-it) lists the
+end-to-end runs against it.
+
 ## Data
 
 - **Stations**: `data/stations.json` is built from the campus map:

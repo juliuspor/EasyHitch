@@ -98,3 +98,19 @@ Each photo is its own camera, with its own calibration in
 
 Then fill in its sidecar, add its calibration and token in the backend, and
 check the slot boxes with the backend's `cameras.preview`.
+
+## Footage from the camera board
+
+`assets/camera-tests/memox-2026-10-31/` holds the XIAO board's footage of the
+memox bike shelter in Basel. The board was carried along the shelter, so there
+is no fixed view to calibrate, and the stills have no sidecars. Run them
+through the live detectors as a dry run:
+
+```bash
+.venv/bin/python main.py --source ../../assets/camera-tests/memox-2026-10-31 --pii yolo --upload dry-run --rounds 23 --interval 0
+```
+
+All 23 stills would be uploaded, as each shows a new part of the shelter, and
+in 2 of them YOLO11n reads the team's shadows as two people. How two of the
+stills went through the whole pipeline with Jev is in the
+[overview](../../documentation/overview.md#how-we-tested-it).

@@ -1,35 +1,56 @@
-# Judging criteria
+# Easy+Hitch: what it does, how it is built, how we tested it
 
-BaselHack 2026 rates every project on these criteria:
-
-| Criterion | What it means |
-|---|---|
-| Innovation | A value proposition that stands out |
-| Impact | Social, economic, and technical relevance |
-| Technical depth | How well it is built |
-| AI code review | Quality of the code and the commit history |
-| Fair play | Staying within the hackathon rules |
-| Pitch | Clear story, confident delivery |
-| Demo | It works, live |
-
-This page maps each criterion to the code that meets it. Every claim links to
-the code behind it, and [What we checked](#what-we-checked) lists the commands
-we ran and their results. The sponsor's brief is summarised in
-[`challenge.md`](challenge.md).
+Easy+Hitch is a working product. Its backend is deployed on AWS, its app runs
+on iPhone, and the whole chain, from a camera frame to a free spot in the app,
+is tested end to end on real bike shelters: Endress+Hauser's shelters in
+Reinach, from the hosts' photos in
+[`assets/camera-frames`](../assets/camera-frames), and the memox bike shelter
+in Basel, filmed with our camera board
+([`assets/camera-tests/memox-2026-10-31`](../assets/camera-tests/memox-2026-10-31)).
+Every claim on this page links to the code behind it, and
+[How we tested it](#how-we-tested-it) lists the commands we ran and their
+results. The sponsor's brief is summarised in [`challenge.md`](challenge.md).
 
 ## At a glance
 
-| Criterion | Easy+Hitch | Details |
+| | Easy+Hitch | Details |
 |---|---|---|
-| Innovation | Which exact slot is free, read from a camera image by a decision model without training data, for riders and for AI agents | [Innovation](#innovation) |
-| Impact | Less searching at 7:45, low-cost cameras, model calls only for slots that changed, privacy by design | [Impact](#impact) |
-| Technical depth | One pipeline from camera frame to slot states, with swappable parts, running on a laptop and on AWS Lambda | [Technical depth](#technical-depth) |
-| AI code review | Every commit follows the format in `AGENTS.md`, and the code is organised by feature with one composition root | [AI code review](#ai-code-review) |
-| Fair play | Built during the event, the challenge's rules enforced in code, third parties credited | [Fair play](#fair-play) |
-| Pitch | Four slides, one story, speaker notes and a timer | [Pitch](#pitch) |
-| Demo | A live pipeline, an offline mode in the app, and the deck | [Demo](#demo) |
+| Running today | Deployed on AWS Lambda, the app on iPhone, tested end to end on Endress+Hauser's shelters and at the memox shelter in Basel | [Where it runs](#where-it-runs) |
+| What is new | Which exact slot is free, read from a camera image by a decision model without training data, for riders and for AI agents | [What is new](#what-is-new) |
+| Who it helps | Less searching at 7:45, low-cost cameras, model calls only for slots that changed, privacy by design | [Who it helps](#who-it-helps) |
+| How it is built | One pipeline from camera frame to slot states, with swappable parts, on a laptop and on AWS Lambda | [How it is built](#how-it-is-built) |
+| How it is kept | Every commit in one format, the code organised by feature with one composition root | [Code and history](#code-and-history) |
+| The rules it keeps | Built during the event, the challenge's privacy rules enforced in code, third parties credited | [Privacy, rules and credits](#privacy-rules-and-credits) |
+| Showing it | A four-slide deck with one story, the live pipeline, and an offline demo mode in the app | [The deck and the demo](#the-deck-and-the-demo) |
 
-## Innovation
+## Where it runs
+
+- **Backend.** The stack `easyhitch` runs in AWS's `eu-north-1` region, as
+  [`template.yaml`](../code/backend/template.yaml) defines it: the Ingest
+  function for the cameras and the Availability function with the MCP server
+  for the app and AI agents, both behind Lambda Function URLs, a Simulation
+  function that a schedule starts every minute for the slots no camera
+  reports, two DynamoDB tables, and the OpenRouter key and the camera token
+  hashes in SSM Parameter Store.
+- **Cameras.** A XIAO ESP32S3 Sense board on the USB cable of an edge
+  computer, a Mac in our tests ([camera board](camera-firmware.md)). The edge
+  computer runs the camera pipeline, which pixelates faces and plates before a
+  frame leaves it ([`EdgePipeline`](../code/edge/pipeline.py#L26-L53)).
+  Recorded frames take the same route
+  ([`FolderFrameSource`](../code/edge/sources.py#L29-L56)).
+- **App.** Easy+Hitch on iPhone, from iOS 18, with the Endress+Hauser mark as
+  its icon. Built with `BACKEND_URL=<AvailabilityUrl>`, it reads the deployed
+  backend ([`project.yml`](../code/ios/project.yml)), and with **Demo data**
+  on, it runs on its own
+  ([`Backend`](../code/ios/BikeSlot/APIClient.swift#L10-L22)).
+- **Tested end to end** on 1 November 2026. The hosts' photos of
+  Endress+Hauser's three camera-covered shelters went through the camera
+  pipeline, with YOLO11n and PP-OCRv5, into the deployed backend. Two of the
+  camera board's stills of the memox shelter went through the same pipeline
+  into the backend with Jev on a laptop. The results are in
+  [How we tested it](#how-we-tested-it).
+
+## What is new
 
 **Spot level, not "the stand is full".** The API reports every slot, not just
 a count ([`SlotDetail`](../code/backend/availability/views.py#L34-L38),
@@ -48,7 +69,8 @@ answers with a calibrated probability, so the backend changes a slot only on a
 sure answer or on two unsure answers that agree
 ([`decide`](../code/backend/occupancy/decider.py#L14-L25)). A new station
 needs a calibration ([`load_camera`](../code/backend/cameras/camera.py#L51-L65)),
-not a trained model.
+not a trained model: the memox shelter in Basel was read from slot boxes
+drawn on one photo per view ([How we tested it](#how-we-tested-it)).
 
 **Built for agents as well as apps.** An MCP server answers the same questions
 as the API, so an AI agent can tell a rider where to park
@@ -77,29 +99,30 @@ gutters, bike-lane markings, hedges, flower beds and parked cars dress only
 the streets on that way, after Apple's Look Around imagery of
 Christoph-Merian-Ring ([`streetDetails`](../code/ios/BikeSlot/Spot/spot.js#L550-L645)).
 
-## Impact
+## Who it helps
 
-- **Social.** Riders stop circling full shelters at 7:45, which makes cycling
+- **Riders.** Riders stop circling full shelters at 7:45, which makes cycling
   to work easier to choose. Free and taken are green and red, and never by
   colour alone: pins and cards carry the free count, and in 3D a taken slot
-  holds a bike ([`Brand`](../code/ios/BikeSlot/Theme.swift#L4-L16)). Nobody is watched: the
-  backend keeps slot states and fingerprints, never images (see
-  [Fair play](#fair-play)).
-- **Economic.** The camera pipeline is designed for the low-cost ESP32 boards
-  the challenge provides. A camera uploads only when its view changed
+  holds a bike ([`Brand`](../code/ios/BikeSlot/Theme.swift#L4-L16)). Nobody is
+  watched: the backend keeps slot states and fingerprints, never images (see
+  [Privacy, rules and credits](#privacy-rules-and-credits)).
+- **The site.** The camera pipeline runs with the low-cost ESP32 camera
+  boards the challenge provides ([camera board](camera-firmware.md)). A camera
+  uploads only when its view changed
   ([`ChangeDetector`](../code/edge/change.py#L13-L31)), and the backend asks
   Jev only about the slots whose fingerprint changed
-  ([`has_changed`](../code/backend/ingest/frame.py#L51-L57)). The model is paid
-  for when a bike arrives or leaves, not per frame, and the serverless
+  ([`has_changed`](../code/backend/ingest/frame.py#L51-L57)). The model is
+  paid for when a bike arrives or leaves, not per frame, and the serverless
   backend costs next to nothing while nobody parks.
-- **Technical.** Every slot carries when it last changed and when a camera
+- **Other systems.** Every slot carries when it last changed and when a camera
   last saw it ([`SlotOccupancy`](../code/backend/occupancy/model.py#L16-L34)).
   The APIs are open contracts
   ([`availability.openapi.json`](api/availability.openapi.json),
   [`ingest.openapi.json`](api/ingest.openapi.json)), and the MCP server makes
   the data available to any AI agent.
 
-## Technical depth
+## How it is built
 
 **One pipeline.** A camera posts a pixelated JPEG, the backend fingerprints
 every slot, reads only the changed ones, applies the state rule and stores the
@@ -133,7 +156,8 @@ in [`template.yaml`](../code/backend/template.yaml).
 - Jev's answers are checked. A missing answer or a probability outside 0 to 1
   fails the frame instead of being misread, and the camera sends it again
   ([`_reading`](../code/backend/classification/jev.py#L106-L109),
-  [`_read`](../code/backend/ingest/service.py#L54-L61)).
+  [`_read`](../code/backend/ingest/service.py#L54-L61)). The same holds when
+  OpenRouter is briefly unavailable, as it was during the deployed test.
 - Two cameras of one station cannot overwrite each other: a save names the
   version it read, and a conflict is retried once
   ([`_save`](../code/backend/ingest/service.py#L63-L69),
@@ -153,14 +177,14 @@ in [`template.yaml`](../code/backend/template.yaml).
   the map never stalls while it moves
   ([`SpotView`](../code/ios/BikeSlot/SpotView.swift#L13-L117)).
 
-## AI code review
+## Code and history
 
 **Commit history.** [`AGENTS.md`](../AGENTS.md) sets the rules: Conventional
 Commits with a scope, small focused commits, linear history on `main`, and
-only team members as authors. On 31 October 2026, at commit `7622cae`, all 18
-commits on `main` matched the format, all were authored by three team members,
-none carried AI attribution, and no keys or tokens were found anywhere in the
-history. Anyone can rerun the checks:
+only team members as authors. On 1 November 2026, at commit `979d923`, all 118
+commits on `main` matched the format, all were authored by the three team
+members, none carried AI attribution, and no keys or tokens were found
+anywhere in the history. Anyone can rerun the checks:
 
 ```bash
 git log --format=%s | grep -Ev '^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)\([a-z0-9]+(-[a-z0-9]+)*\)!?: \S(.*\S)?$'
@@ -196,12 +220,12 @@ All but the second print nothing.
   generated and committed on purpose
   ([`export_openapi.py`](../code/backend/export_openapi.py)).
 
-## Fair play
+## Privacy, rules and credits
 
 - **Built at the event.** The repository starts from the BaselHack template
   (`f33cc57`: the readme, the licence, and empty `code/`, `documentation/`,
-  and `assets/` folders), and every commit is dated 30 or 31 October 2026
-  (`git log --all --format=%ad --date=short | sort -u`).
+  and `assets/` folders), and every commit is dated between 30 October and
+  1 November 2026 (`git log --all --format=%ad --date=short | sort -u`).
 - **Template structure.** Code is in `code/`, documentation in
   `documentation/`, and media in `assets/`, as the template asks
   ([`AGENTS.md`](../AGENTS.md)).
@@ -230,6 +254,9 @@ All but the second print nothing.
     slot ([`Reading`](../code/backend/classification/classifier.py#L18-L20)),
     and person boxes only decide which slots to skip. Nothing links a slot or
     a frame to a person.
+  - The camera board's test footage from memox was saved on purpose, outside
+    the pipeline, and its video was trimmed so that no people are in it
+    ([its README](../assets/camera-tests/memox-2026-10-31/README.md)).
 - **Third parties credited.** Python packages are listed in the
   [backend](../code/backend/requirements.txt) and
   [edge](../code/edge/requirements.txt) requirements. YOLO11n and Ultralytics
@@ -257,7 +284,7 @@ Jev receives slot crops through OpenRouter and TypeSafe for one answer each.
 Easy+Hitch stores neither crops nor frames, and the fixed readings send
 nothing anywhere.
 
-## Pitch
+## The deck and the demo
 
 The deck, [`assets/pitch/index.html`](../assets/pitch/index.html), has four
 slides and one story: the 7:45 problem, the demo, the pipeline, and a
@@ -277,9 +304,7 @@ three-minute timer that turns yellow at 2:30 and red at 3:00
 | Architecture slide | Edge, AWS, AI model and end user |
 | After the architecture | Download the app, or plug it into an AI agent |
 
-## Demo
-
-Three ways to show it:
+Three ways to show it running:
 
 1. **Live pipeline.** Start the backend and the recorded cameras
    ([backend README](../code/backend/README.md#run-locally),
@@ -288,6 +313,7 @@ Three ways to show it:
    With `BACKEND_SIMULATION=on`, the slots no camera reports, the bike garage
    among them, fill and empty over a simulated
    day ([`OccupancySimulator`](../code/backend/simulation/simulator.py#L32-L107)).
+   The deployed stack does the same with `Simulation=on`.
 2. **The app.** With the **Demo data** setting, or launched with
    `-demoMode YES`, built-in stations change every eight seconds without a
    backend ([`Backend`](../code/ios/BikeSlot/APIClient.swift#L10-L22),
@@ -305,18 +331,23 @@ A XIAO camera board on the USB cable of an edge computer
 cameras ([`IngestClient`](../code/edge/upload.py#L22-L58)), with a
 calibration in `data/cameras/<camera_id>.json` for its view of the station.
 
-## What we checked
+## How we tested it
 
-On 31 October 2026, on macOS with Python 3.13.16:
+On 31 October and 1 November 2026, on macOS with Python 3.13.13. The first
+four rows run the whole chain on real bike shelters.
 
 | Check | How | Result |
 |---|---|---|
-| Pipeline, end to end | Local backend, then the recorded cameras for two rounds | All 7 cameras accepted. North: 26 free, 9 taken, 10 unknown. South: 1 free, 9 taken. Kägenstrasse: 9 free, 1 taken, 3 unknown. The second round sent nothing |
+| Endress+Hauser shelters, deployed | 1 November: the recorded cameras with YOLO11n and PP-OCRv5 on a Mac, one round to the deployed `IngestUrl` with the tokens from SSM, and `/v1/stations` and `/mcp` at the `AvailabilityUrl` | All 7 cameras accepted, and the stations served Jev's readings with the cameras' report times. OpenRouter answered 503 for the first seconds: the Ingest function saved nothing and answered 502, and the cameras' retries went through. The MCP server listed its tools |
+| Endress+Hauser shelters, local | 1 November: the backend with Jev on a laptop, then the recorded cameras with YOLO11n and PP-OCRv5 instead of their sidecars, for two rounds | All 7 cameras accepted, 55 slots read. The second round re-read only the 10 slots still waiting for a second, agreeing reading |
+| memox shelter, Basel | 1 November: two views from the camera board's stills, `135014` then `135019` as one camera and `135133` as another, as a temporary station with a calibration of 8 and 5 slots. Both went through YOLO11n and PP-OCRv5 into the backend with Jev on a laptop, each view twice | Both cameras accepted. All 8 slots of the first view read as we see them, 5 taken and 3 free: 5 on the first frame and 3 on the second, agreeing one. In the second view, PP-OCRv5 read the large graffiti above the rack as text, and the margin it adds to cover a whole plate also pixelated the three bikes below it, so Jev read all 5 slots free: 10 of 13 right. YOLO11n took the team's shadows for two people; no slot lay behind them |
+| Privacy filter at memox | 1 November: `main.py --pii yolo --upload dry-run` over all 23 memox stills, then `YoloPIIDetector`, `TextPIIDetector` and `pixelate` on each, checked by eye | All 23 would be sent, as each still shows a new part of the shelter. Both detectors and the pixelation take 0.2 s per still. PP-OCRv5 found text in every still, mostly graffiti: 14% of a still pixelated on average, 52% at most. The team's shadows read as two people in 2 stills |
+| Pipeline, end to end | The local backend as in the README, then the recorded cameras for two rounds on 31 October, and one round again on 1 November | All 7 cameras accepted. North: 26 free, 9 taken, 10 unknown. South: 1 free, 9 taken. Kägenstrasse: 9 free, 1 taken, 3 unknown. The second round on 31 October sent nothing, and 1 November gave the same counts |
 | Bad input | No or wrong token, PNG body, 1.1 MB body, missing `X-Captured-At`, bad `X-Person-Boxes`, 640x480 frame | 401, 415, 413, 422, 422, 422, as problem details |
 | ETag | `If-None-Match` with the station list's ETag | 304 |
 | MCP | All three tools through the MCP Python SDK's client | Correct answers. An unknown station and a latitude of 120 return tool errors |
 | AWS Lambda | `cfn-lint`, SAM's transform, `sam build` for arm64, and both handlers invoked with Function URL events against DynamoDB and SSM on moto | Valid template, each function gets only its own permissions, 81 MB package, frame ingested with the SSM token, stations listed, MCP answered on repeated invocations |
-| AWS, deployed | `sam deploy` to `eu-north-1` with `Simulation=on` and `IngestMemory=512`, the sandbox account's memory cap, then `/v1/health` and `/v1/stations` at the `AvailabilityUrl`, and the app built with `BACKEND_URL` in the simulator | The stack came up with the three functions and both tables. Health answered 200, the Simulation function's first scheduled run filled all 126 slots, and the counts changed between calls. The app showed the live stations. Then the recorded cameras sent two rounds to the `IngestUrl` with tokens from SSM, and Jev read them: 48 of the 55 seen slots match the fixed readings, and the other 7 are the same slots that read taken locally |
+| AWS, first deploy | 31 October: `sam deploy` to `eu-north-1` with `Simulation=on` and `IngestMemory=512`, the sandbox account's memory cap, then `/v1/health` and `/v1/stations` at the `AvailabilityUrl`, and the app built with `BACKEND_URL` in the simulator | The stack came up with the three functions and both tables. Health answered 200, the Simulation function's first scheduled run filled all 126 slots, and the counts changed between calls. The app showed the live stations. Then the recorded cameras sent two rounds to the `IngestUrl` with tokens from SSM, and Jev read them: 48 of the 55 seen slots match the fixed readings, and the other 7 are the same slots that read taken locally |
 | DynamoDB and SSM code | The repositories and the parameter reader against moto | Versioned saves, conflicts rejected, 72-bit fingerprints kept |
 | Jev request | `JevCropClassifier` against a stand-in for the Decisions API | Request as documented, crops within Jev's size limits, errors become `502` |
 | Jev 1.14, live | The local backend with `BACKEND_CLASSIFIER=jev` and an OpenRouter key, then the recorded cameras for two rounds, compared with `data/static-readings.json` | All 7 frames read, 1 to 3 s per camera. After the first round 38 of the 55 seen slots matched the fixed readings and 12 waited for a second, agreeing reading. After the second, 47 matched, 7 read taken where the fixed readings say free, and 1 was still unsure |
@@ -325,4 +356,4 @@ On 31 October 2026, on macOS with Python 3.13.16:
 | iOS app | Built for iOS 18, run in the iPhone 17 Pro simulator against the local backend with the recorded cameras, then in demo mode | All four stations on the map. North: 26 of 45 free, 10 not seen by a camera, grey in 3D. Each station is one rack, and the 3D view lands in front of it. The bike garage has no camera, so it reads unknown, as do the 3 Kägenstrasse slots its camera does not see. With `BACKEND_SIMULATION=on` and no cameras, all four stations change every eight seconds. In demo mode the camera-less ones get fixed sample states, a slot changes every eight seconds, and every station keeps at least one free slot. With Demo data, the blue dot sits on Christoph-Merian-Ring, and 3D Navigation to the south station leans the map in behind it, fades into the rider's view in the bike lane, rides about 140 m east without stopping and turns left to land in front of the rack, recorded for slide 2 of the deck. Back fades the 3D view out over the map |
 | Simulation | `pytest` in `code/backend`, then the local backend with `BACKEND_SIMULATION=on` polled four times, nine seconds apart | 11 tests pass: every slot of a camera-less station filled, the share taken follows the time of day, one slot always left free, a slot a camera reports left alone and taken over once stale, a camera reads a simulated slot and takes it over from unknown, a new simulator carries on, the flag survives DynamoDB, a scheduled run stops before its timeout, the simulation off unless asked for. All 126 slots known; between polls the busy stations moved by about one slot each, and the south station stayed at one free slot |
 | Simulation on AWS | `cfn-lint` and SAM's transform with `Simulation=on`, then two scheduled runs of the Simulation handler against DynamoDB on moto, the second as a new container | Valid template: the function, its role, a `rate(1 minute)` rule and its permission, all under the `SimulationOn` condition. 5 steps per run, one every 8 seconds; the second run carried on from the stored slots, which DynamoDB keeps with `"simulated": true`. On the deployed stack (above), a scheduled run made 6 steps, one every 8 seconds, and polled nine seconds apart each station moved about one slot while the south station stayed at one free slot |
-| XIAO camera | `pytest` in `code/edge` with a pseudo-terminal answering like the firmware, and the firmware compiled with `arduino-cli` for `XIAO_ESP32S3` | 2 tests pass: a photo read and scaled to the calibrated size, a silent board times out. The firmware builds, 10% of the flash. On the board itself: 640x480 photos over USB in 0.3 to 0.7 s. A dry run with YOLO11n and PP-OCRv5 took 23 photos in 100 s and would have sent 3, the others unchanged. With a temporary four-slot calibration, a local backend with Jev accepted the uploads and read all four slots free, right for a desk with no bikes; later uploads re-read only the slot that changed |
+| XIAO camera | `pytest` in `code/edge` with a pseudo-terminal answering like the firmware, and the firmware compiled with `arduino-cli` for `XIAO_ESP32S3` | 2 tests pass: a photo read and scaled to the calibrated size, a silent board times out. The firmware builds, 10% of the flash. On the board itself: 640x480 photos over USB in 0.3 to 0.7 s. A dry run with YOLO11n and PP-OCRv5 took 23 photos in 100 s and would have sent 3, the others unchanged. With a temporary four-slot calibration, a local backend with Jev accepted the uploads and read all four slots free, right for a desk with no bikes; later uploads re-read only the slot that changed. On 1 November, a photo every 3 s, the unchanged ones skipped, and a person in view found in three photos in a row |

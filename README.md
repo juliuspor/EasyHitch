@@ -9,8 +9,17 @@ in Reinach before they arrive. Cameras pixelate faces and licence plates and
 send a frame only when their view changes. A serverless backend on AWS reads
 every changed slot with Jev 1.14 and keeps only the current state and a
 fingerprint of each slot, never the images. Riders see the free slots in the
-iOS app, with a map, cycling directions and a 3D view of every shelter, and AI
-agents get the same answers through an MCP server.
+Easy+Hitch app on iPhone, with a map, cycling directions and a 3D view of
+every shelter, and its demo mode adds 3D navigation from the rider to the free
+spot. AI agents get the same answers through an MCP server.
+
+Easy+Hitch is deployed and tested end to end. The backend runs on AWS Lambda in
+`eu-north-1`, the app runs on iPhone, and frames from real bike shelters have
+gone through the whole chain: the hosts' photos of Endress+Hauser's shelters
+into the deployed backend, and our camera board's stills of the memox bike
+shelter in Basel through the same pipeline with Jev. The
+[overview](documentation/overview.md#how-we-tested-it) lists every test and
+its result.
 
 ## How it works
 
@@ -53,6 +62,11 @@ Claude Code ask where to park:
 claude mcp add --transport http easy-hitch http://localhost:8000/mcp
 ```
 
+For the app, open `code/ios/BikeSlot.xcodeproj` in Xcode and run the
+`BikeSlot` scheme on an iPhone or a simulator. A Debug build reads the backend
+on the Mac that built it. Turn on **Demo data** in the app's settings, or
+launch it with `-demoMode YES`, to run it without a backend.
+
 Deploying to AWS, reading slots with Jev and connecting a live camera are
 described in the [backend](code/backend/README.md) and
 [edge](code/edge/README.md) READMEs.
@@ -63,15 +77,17 @@ described in the [backend](code/backend/README.md) and
 |---|---|
 | [`code/backend`](code/backend) | Ingest API, Availability API and MCP server, for AWS Lambda or a laptop |
 | [`code/edge`](code/edge) | The camera pipeline: change check, pixelation, upload |
-| [`code/ios`](code/ios) | SwiftUI app: map, search, station cards, 3D view, and an offline demo mode |
+| [`code/firmware`](code/firmware) | Firmware that turns a XIAO ESP32S3 Sense board into the camera of an edge computer |
+| [`code/ios`](code/ios) | The Easy+Hitch app in SwiftUI: map, search, station cards, 3D view and navigation, and an offline demo mode |
 | [`code/scene-generator`](code/scene-generator) | Blender scripts that build shelter models from layout files |
-| [`documentation`](documentation) | Architecture, API contracts, and the judging criteria |
-| [`assets`](assets) | Site photos, recorded camera frames, campus map data, and the pitch deck |
+| [`documentation`](documentation) | Architecture, API contracts, and an overview of what is built and how it was tested |
+| [`assets`](assets) | Site photos, recorded camera frames, the camera board's test at the memox bike shelter, campus map data, and the pitch deck |
 
 ## Documentation
 
+- [Overview: what it does, how it is built, how we tested it](documentation/overview.md)
 - [Architecture: parts and seams](documentation/architecture.md)
-- [Judging criteria, with evidence from the code](documentation/judging.md)
+- [Camera board: XIAO ESP32S3 Sense](documentation/camera-firmware.md)
 - API contracts: [Availability API](documentation/api/availability.openapi.json), [Ingest API](documentation/api/ingest.openapi.json)
 - [Pitch deck](assets/pitch/index.html)
 
@@ -90,6 +106,9 @@ described in the [backend](code/backend/README.md) and
 - **Plate detection.** PP-OCRv5's mobile text detector by PaddlePaddle, under
   Apache-2.0, downloaded only for a live camera.
 - **Pitch deck.** canvas-confetti, under the ISC licence.
+- **Endress+Hauser symbol.** From endress.com, the app's icon and the deck's
+  logo, used for the sponsor's own challenge. The mark belongs to
+  Endress+Hauser.
 
 ## Licence
 

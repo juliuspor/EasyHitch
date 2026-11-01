@@ -9,7 +9,8 @@
 - **Last checked:** 31 October 2026
 
 This is a summary of the sponsor's brief. The source has the latest version.
-[`judging.md`](judging.md) shows how Easy+Hitch meets the event's criteria.
+[`overview.md`](overview.md) shows what Easy+Hitch builds from it and how we
+tested it.
 
 ## Problem and audience
 

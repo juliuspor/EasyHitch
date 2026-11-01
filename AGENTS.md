@@ -8,14 +8,12 @@ These instructions apply to all agents working anywhere in this repository.
 - Put code documentation in `documentation/`.
 - Put media, presentations, and other assets in `assets/`.
 
-## Judging criteria
+## Keeping the documentation true
 
-BaselHack 2026 judges this repository on seven criteria: innovation, impact,
-technical depth, AI code review (quality of the code and the commit history),
-fair play, pitch, and demo. We adhere to all seven, and
-[`documentation/judging.md`](documentation/judging.md) proves it criterion by
-criterion, with links to the code and the commands that verify it. Keep it
-true:
+[`documentation/overview.md`](documentation/overview.md) shows what is new in
+Easy+Hitch, who it helps, how it is built, how the code and its history are
+kept, the rules it keeps, how to show it, and how we tested it, with links to
+the code and the commands that verify it. Keep it true:
 
 - Ground every claim. A statement in `documentation/` about what the product
   does links to the code that does it. Link line ranges as
@@ -37,8 +35,9 @@ true:
 - Play fair. Respect the challenge's no-gos: never write camera frames to
   disk, and never identify or track people. Credit third-party code, data,
   and assets with their licence.
-- When a change affects a criterion (a feature, a dependency, a run step, a
-  privacy property), update `documentation/judging.md` in the same commit.
+- When a change affects what the overview claims (a feature, a dependency, a
+  run step, a privacy property), update `documentation/overview.md` in the
+  same commit.
 
 ## Branches and pull requests
 
