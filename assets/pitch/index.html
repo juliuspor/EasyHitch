@@ -86,13 +86,13 @@
   /* The privacy filter is one stage inside the edge device, so a solid line instead of a group's dashes. */
   #arch .zone.filter rect { stroke: rgba(191,230,247,0.55); stroke-dasharray: none; }
   #arch .node .plus { font-size: 30px; font-weight: 700; fill: var(--eh-pale); text-anchor: middle; dominant-baseline: central;
-    transform-box: fill-box; transform-origin: center; transition: fill 0.4s, transform 0.4s; }
+    transition: fill 0.4s, filter 0.4s; }   /* it glows, never scales: some browsers scale SVG text about the drawing's corner */
   /* A box glows in the colour of the blob that reaches it: the edge device as the camera takes a frame, the privacy
-     filter while it redacts it (its plus pulses too), AWS as the pixelated frame arrives, OpenRouter while Jev decides,
-     and the end users as the new states reach them. */
+     filter while it redacts it (its plus lights up in place), AWS as the pixelated frame arrives, OpenRouter while Jev
+     decides, and the end users as the new states reach them. */
   #arch .zone rect { transition: stroke 0.4s, filter 0.4s; }
   #arch.capturing .zone.edge rect, #arch.redacting .zone.filter rect { stroke: rgba(255,200,87,0.9); filter: drop-shadow(0 0 12px rgba(255,200,87,0.45)); }
-  #arch.redacting .node .plus { fill: var(--sun); transform: scale(1.35); }
+  #arch.redacting .node .plus { fill: var(--sun); filter: drop-shadow(0 0 6px rgba(255,200,87,0.85)); }
   #arch.ingesting .zone.aws rect { stroke: rgba(0,174,239,0.95); filter: drop-shadow(0 0 12px rgba(0,174,239,0.45)); }
   #arch.deciding .zone.model rect { stroke: rgba(255,255,255,0.85); filter: drop-shadow(0 0 12px rgba(255,255,255,0.35)); }
   #arch.serving .zone.users rect { stroke: rgba(43,212,111,0.9); filter: drop-shadow(0 0 12px rgba(43,212,111,0.4)); }
